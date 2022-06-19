@@ -1,12 +1,15 @@
-﻿// ART.cpp : Defines the entry point for the application.
-//
-
 #include "ART.h"
 
-using namespace std;
+void ART::insert(uint32_t value) {
 
-int main()
-{
-	cout << "Hello CMake." << endl;
-	return 0;
+}
+
+uint32_t ART::find(uint32_t value) const {
+    return 0;
+}
+
+std::vector<uint32_t> ART::find_range(uint32_t from, uint32_t to) const {
+    std::vector<uint32_t> result = std::vector<uint32_t>();
+
+    return result;
 }

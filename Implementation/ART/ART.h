@@ -1,8 +1,14 @@
-﻿// ART.h : Include file for standard system include files,
-// or project specific include files.
-
 #pragma once
 
-#include <iostream>
+#include <cstdint>
+#include <vector>
 
-// TODO: Reference additional headers your program requires here.
+class ART {
+public:
+    void insert(uint32_t value);
+
+    uint32_t find(uint32_t value) const;
+
+    std::vector<uint32_t> find_range(uint32_t from, uint32_t to) const;
+};
+
