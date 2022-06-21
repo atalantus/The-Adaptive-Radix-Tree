@@ -4,7 +4,7 @@
 #include <vector>
 #include <unordered_map>
 
-class Trie {
+class trie {
 private:
     /**
      * We store the complete trie in a single hashmap.
@@ -20,6 +20,8 @@ private:
      *
      * Note that since we're only storing exactly 32bit keys with a static span of 4 we don't need to mark nodes
      * as leaves as every node at the 4th layer must be a leaf indicating the presence of the given 32bit value.
+     *
+     * TODO: Check performance (time and memory) unordered_map vs map
      */
     std::unordered_map<uint32_t, uint32_t> trie;
 
@@ -37,8 +39,15 @@ public:
      * @param value the value to search for
      * @return true if the value exists otherwise false
      */
-    bool find(uint32_t value) const;
+    [[nodiscard]] bool find(uint32_t value) const;
 
-    std::vector<uint32_t> find_range(uint32_t from, uint32_t to) const;
+    /**
+     * Finds all 32 bit values in the trie within a given range.
+     *
+     * @param from the value to search from (inclusive)
+     * @param to the value to search to (inclusive)
+     * @return vector of values sorted in ascending order
+     */
+    [[nodiscard]] std::vector<uint32_t> find_range(uint32_t from, uint32_t to) const;
 };
 

@@ -1,6 +1,6 @@
-#include "Trie.h"
+#include "trie.h"
 
-void Trie::insert(uint32_t value) {
+void trie::insert(uint32_t value) {
     // current node index (0th to 27th bit)
     uint32_t node_index{0};
 
@@ -25,7 +25,7 @@ void Trie::insert(uint32_t value) {
     }
 }
 
-bool Trie::find(uint32_t value) const {
+bool trie::find(uint32_t value) const {
     // current node index (0th to 27th bit)
     uint32_t node_index{0};
 
@@ -50,8 +50,10 @@ bool Trie::find(uint32_t value) const {
     return true;
 }
 
-std::vector<uint32_t> Trie::find_range(uint32_t from, uint32_t to) const {
+std::vector<uint32_t> trie::find_range(uint32_t from, uint32_t to) const {
     std::vector<uint32_t> result = std::vector<uint32_t>();
+
+    // TODO: Range search
 
     return result;
 }
