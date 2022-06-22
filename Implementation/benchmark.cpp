@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <iostream>
 #include <string>
-#include "trie.h"
+#include <chrono>
 
 const char USAGE_MSG[] = "usage: %s [-h] -b benchmark -s size [-i number_iterations]\n";
 const char HELP_MSG[] = "This program benchmarks different indexing structures using 32 bit unsigned integers. "
@@ -22,6 +22,12 @@ enum class Benchmark {
     insert, search, range_search
 };
 
+auto runBenchmarkIteration(Benchmark benchmark, uint16_t size) {
+    std::vector<std::tuple<double, double, double, double>> structureTimes(1);
+
+    // TODO
+}
+
 void runBenchmark(Benchmark benchmark, uint16_t size, uint32_t iterations) {
     auto benchmarkToString = [benchmark]() {
         switch (benchmark) {
@@ -34,12 +40,36 @@ void runBenchmark(Benchmark benchmark, uint16_t size, uint32_t iterations) {
         }
     };
 
-    std::cout << "Running '" << benchmarkToString() << "' benchmark with size '" << size << "' and '" << iterations
-              << "' iterations..." << std::endl;
+    std::cout << "Starting '" << benchmarkToString() << "' benchmark with size '" << size << "' and '" << iterations
+              << "' iterations." << std::endl;
 
     // TODO: Run benchmark
+    std::vector<std::pair<std::string, std::tuple<double, double, double, double>>> structureTimes{
+            {"Trie\t\t", {213.123123, 113.123123, 123.123123, 0.0}}
+    };
 
-    std::cout << "Finished running '" << benchmarkToString() << "' benchmark." << std::endl;
+    for (int i = 0; i < iterations; ++i) {
+        std::cout << "Running iteration " << (i + 1) << "/" << iterations << "..." << std::endl;
+    }
+
+    std::cout << "\n=================================================================================" << std::endl;
+    std::cout << "\t\t\t\tBENCHMARK RESULTS\t\t\t\t" << std::endl;
+    std::cout << "=================================================================================" << std::endl;
+
+    std::cout << "Index Structure\t|\tMin\t|\tMax\t|\tAvg\t|\tMed\t|" << std::endl;
+    std::cout << "---------------------------------------------------------------------------------" << std::endl;
+
+    std::cout.precision(2);
+
+    for (const auto& structure: structureTimes) {
+        std::cout << std::fixed << structure.first << "|\t"
+                  << std::get<0>(structure.second) << "s\t|\t"
+                  << std::get<1>(structure.second) << "s\t|\t"
+                  << std::get<2>(structure.second) << "s\t|\t"
+                  << std::get<3>(structure.second) << "s\t|\t" << std::endl;
+    }
+
+    std::cout << "\nFinished running '" << benchmarkToString() << "' benchmark." << std::endl;
 }
 
 char* getCmdArg(char** begin, char** end, const std::string& arg) {
