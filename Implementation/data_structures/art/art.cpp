@@ -5,8 +5,8 @@ namespace ART {
 
     }
 
-    uint32_t art::find(uint32_t value) const {
-        return 0;
+    bool art::find(uint32_t value) const {
+        return false;
     }
 
     std::vector<uint32_t> art::find_range(uint32_t from, uint32_t to) const {

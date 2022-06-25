@@ -1,4 +1,0 @@
-class index_structure {
-
-};
-
