@@ -4,11 +4,11 @@
 #include <vector>
 #include <unordered_map>
 
-namespace Trie {
+namespace trie {
     class trie {
     private:
         /**
-         * We store the complete trie in a single hashmap.
+         * We store the complete trie in a single hash-map.
          *
          * The key is a 32 bit integer where the first 28 bits (0th up to 27th) represent the current node index
          * and the last 4 bits represent the current symbol used (this means the trie implementation has a span of 4).
@@ -24,10 +24,10 @@ namespace Trie {
          *
          * TODO: Check performance (time and memory) unordered_map vs map
          */
-        std::unordered_map<uint32_t, uint32_t> node_map;
+        std::unordered_map<uint32_t, uint32_t> node_map_;
 
     public:
-        trie() : node_map{{}} {}
+        trie() : node_map_{{}} {}
 
         /**
          * Inserts a 32 bit value into the trie.

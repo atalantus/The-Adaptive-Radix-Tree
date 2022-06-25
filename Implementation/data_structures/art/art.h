@@ -4,13 +4,13 @@
 #include <vector>
 #include "node/node.h"
 
-namespace ART {
+namespace art {
     class art {
     private:
-        Node::node root;
+        Node::node root_;
 
     public:
-        art() : root{} {}
+        art() : root_{} {}
 
         /**
          * Inserts a 32 bit value into the ART.

@@ -35,6 +35,9 @@
 # JetBrains Stuff
 .idea
 
+# VisualStudio Stuff
+.vs
+
 ## File-based project format:
 *.iws
 
