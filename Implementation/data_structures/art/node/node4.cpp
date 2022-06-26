@@ -1,4 +1,4 @@
 #include "node4.h"
 
-namespace Node {
+namespace node {
 }

@@ -1,7 +1,9 @@
+#pragma once
+
 #include "node.h"
 
-namespace Node {
-    class node16 : node {
+namespace node {
+    class Node16 : public Node {
 
     };
 }

@@ -1,6 +1,8 @@
-namespace Node {
+#pragma once
 
-    class node {
+namespace node {
+
+    class Node {
 
     };
 

@@ -1,7 +1,7 @@
 #include "trie.h"
 
 namespace trie {
-    void trie::insert(const uint32_t value) {
+    void Trie::Insert(const uint32_t value) {
         // current node index (0th to 27th bit)
         uint32_t node_index{0};
 
@@ -26,7 +26,7 @@ namespace trie {
         }
     }
 
-    bool trie::find(const uint32_t value) const {
+    bool Trie::Find(const uint32_t value) const {
         // current node index (0th to 27th bit)
         uint32_t node_index{0};
 
@@ -41,17 +41,18 @@ namespace trie {
                 // there was no node for this comparison key
                 // -> value doesn't exist
                 return false;
-            } else {
-                // go to next node
-                node_index = node_map_.find(trie_key)->second;
             }
+
+            // go to next node
+            node_index = node_map_.find(trie_key)->second;
         }
 
         // compared full value so it exists
         return true;
     }
 
-    std::vector<uint32_t> trie::find_range(const uint32_t from, const uint32_t to) const {
+    std::vector<uint32_t> Trie::FindRange(const uint32_t from, const uint32_t to)
+    {
 	    auto result = std::vector<uint32_t>();
 
         // TODO: Range search

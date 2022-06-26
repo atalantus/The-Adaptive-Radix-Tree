@@ -9,14 +9,14 @@
  * would introduce a significant performance overhead.
  */
 
-void art_insert(const std::vector<uint32_t>& numbers);
+inline void ArtInsert(const std::vector<uint32_t>& numbers);
 
-void art_search(const std::vector<uint32_t>& numbers);
+inline void ArtSearch(const std::vector<uint32_t>& numbers);
 
-void art_range_search(const std::vector<uint32_t>& numbers);
+inline void ArtRangeSearch(const std::vector<uint32_t>& numbers);
 
-void trie_insert(const std::vector<uint32_t>& numbers);
+inline void TrieInsert(const std::vector<uint32_t>& numbers);
 
-void trie_search(const std::vector<uint32_t>& numbers);
+inline void TrieSearch(const std::vector<uint32_t>& numbers);
 
-void trie_range_search(const std::vector<uint32_t>& numbers);
+inline void TrieRangeSearch(const std::vector<uint32_t>& numbers);

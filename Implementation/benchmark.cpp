@@ -1,29 +1,25 @@
 #include "benchmark.h"
 
-void art_insert(const std::vector<uint32_t>& numbers) {
-    art::art art;
+inline void ArtInsert(const std::vector<uint32_t>& numbers) {
+    art::Art art;
 
     for (const auto& n: numbers) {
-        art.insert(n);
+        art.Insert(n);
     }
 }
 
-void art_search(const std::vector<uint32_t>& numbers) {
-}
+inline void ArtSearch(const std::vector<uint32_t>& numbers) {}
 
-void art_range_search(const std::vector<uint32_t>& numbers) {
-}
+inline void ArtRangeSearch(const std::vector<uint32_t>& numbers) {}
 
-void trie_insert(const std::vector<uint32_t>& numbers) {
-    trie::trie trie;
+inline void TrieInsert(const std::vector<uint32_t>& numbers) {
+    trie::Trie trie;
 
     for (const auto& n: numbers) {
-        trie.insert(n);
+        trie.Insert(n);
     }
 }
 
-void trie_search(const std::vector<uint32_t>& numbers) {
-}
+inline void TrieSearch(const std::vector<uint32_t>& numbers) {}
 
-void trie_range_search(const std::vector<uint32_t>& numbers) {
-}
+inline void TrieRangeSearch(const std::vector<uint32_t>& numbers) {}

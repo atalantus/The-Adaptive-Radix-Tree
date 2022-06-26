@@ -1,14 +1,13 @@
 #include <algorithm>
+#include <chrono>
+#include <functional>
 #include <iostream>
 #include <random>
-#include <functional>
 #include <string>
-#include <chrono>
-#include "data_structures/data_structures.h"
 #include "benchmark.h"
 
-constexpr char usage_msg[] = "usage: %s [-h] -b benchmark -s size [-i number_iterations]\n";
-constexpr char help_msg[] = "This program benchmarks different indexing structures using 32 bit unsigned integers. "
+constexpr char kUsageMsg[] = "usage: %s [-h] -b benchmark -s size [-i number_iterations]\n";
+constexpr char kHelpMsg[] = "This program benchmarks different indexing structures using 32 bit unsigned integers. "
 	"For the specified benchmark and size the benchmark is run number_iterations times for each "
 	"index structure and the min, max and average times are outputted.\n\n"
 	"usage: %s [-h] -b benchmark -s size [-i number_iterations]\n"
@@ -18,27 +17,26 @@ constexpr char help_msg[] = "This program benchmarks different indexing structur
 	"\t-s <1/2/3>\t\t\t: Specifies the benchmark size. Options are 1 with 65 thousand integers, 2 with 16 million integers and 3 with 256 million integers.\n"
 	"\t-i <number>\t\t\t: Specifies the number of iterations the benchmark is run. Default value is %u. Should be an integer between 1 and 10000 (inclusive).\n";
 
-const std::vector<std::string> index_structures{"ART", "Trie"};
+const std::vector<std::string> kIndexStructures{"ART", "Trie"};
 
-constexpr uint32_t default_iterations{10};
+constexpr uint32_t kDefaultIterations{10};
 
 
-enum class benchmark
+enum class Benchmark
 {
-	insert,
-	search,
-	range_search
+	kInsert,
+	kSearch,
+	kRangeSearch
 };
 
-void aggregate_benchmark_results(auto& total, const std::vector<double>& results, const uint32_t iteration)
+void AggregateBenchmarkResults(auto& total, const std::vector<double>& results, const uint32_t iteration)
 {
-	for (uint32_t i = 0; i < index_structures.size(); ++i)
+	for (uint32_t i = 0; i < kIndexStructures.size(); ++i)
 	{
 		// first iteration
 		if (iteration == 0)
 		{
 			total[i] = {results[i], results[i], results[i], results[i]};
-			continue;
 			continue;
 		}
 
@@ -58,7 +56,7 @@ void aggregate_benchmark_results(auto& total, const std::vector<double>& results
 	}
 }
 
-double test_index_structure(const std::function<void(std::vector<uint32_t>)>& benchmark,
+double TestIndexStructure(const std::function<void(std::vector<uint32_t>)>& benchmark,
                             const std::vector<uint32_t>& numbers)
 {
 	const auto t1 = std::chrono::high_resolution_clock::now();
@@ -72,9 +70,9 @@ double test_index_structure(const std::function<void(std::vector<uint32_t>)>& be
 	return dur.count() / 1000.0;
 }
 
-auto run_benchmark_iteration(const benchmark benchmark, const uint32_t size)
+auto RunBenchmarkIteration(const Benchmark benchmark, const uint32_t size)
 {
-	std::vector<double> structure_times(index_structures.size());
+	std::vector<double> structure_times(kIndexStructures.size());
 
 	/*
 	 * Pre-Generate Random Numbers
@@ -92,30 +90,30 @@ auto run_benchmark_iteration(const benchmark benchmark, const uint32_t size)
 
 	switch (benchmark)
 	{
-	case benchmark::insert:
-		structure_times[0] = test_index_structure({art_insert}, numbers);
-		structure_times[1] = test_index_structure({trie_insert}, numbers);
+	case Benchmark::kInsert:
+		structure_times[0] = TestIndexStructure({ArtInsert}, numbers);
+		structure_times[1] = TestIndexStructure({TrieInsert}, numbers);
 		break;
-	case benchmark::search:
+	case Benchmark::kSearch:
 		break;
-	case benchmark::range_search:
+	case Benchmark::kRangeSearch:
 		break;
 	}
 
 	return structure_times;
 }
 
-void run_benchmark(benchmark benchmark, uint32_t size, const uint32_t iterations)
+void RunBenchmark(Benchmark benchmark, uint32_t size, const uint32_t iterations)
 {
 	auto benchmark_to_string = [benchmark]()
 	{
 		switch (benchmark)
 		{
-		case benchmark::insert:
+		case Benchmark::kInsert:
 			return "insert";
-		case benchmark::search:
+		case Benchmark::kSearch:
 			return "search";
-		case benchmark::range_search:
+		case Benchmark::kRangeSearch:
 			return "range_search";
 		}
 	};
@@ -136,13 +134,13 @@ void run_benchmark(benchmark benchmark, uint32_t size, const uint32_t iterations
 		break;
 	}
 
-	std::vector<std::tuple<double, double, double, double>> structureTimes(index_structures.size());
+	std::vector<std::tuple<double, double, double, double>> structureTimes(kIndexStructures.size());
 
 	// Run Benchmarks
 	for (uint32_t i = 0; i < iterations; ++i)
 	{
 		std::cout << "Running iteration " << (i + 1) << "/" << iterations << "..." << std::endl;
-		aggregate_benchmark_results(structureTimes, run_benchmark_iteration(benchmark, size), i);
+		AggregateBenchmarkResults(structureTimes, RunBenchmarkIteration(benchmark, size), i);
 	}
 
 	std::cout << "\nFinished running '" << benchmark_to_string() << "' benchmark.\n" << std::endl;
@@ -156,18 +154,18 @@ void run_benchmark(benchmark benchmark, uint32_t size, const uint32_t iterations
 
 	std::cout.precision(2);
 
-	for (uint32_t i = 0; i < index_structures.size(); ++i)
+	for (uint32_t i = 0; i < kIndexStructures.size(); ++i)
 	{
 		auto& times = structureTimes[i];
 
-		std::cout << std::fixed << index_structures[i] << "\t\t|\t"
+		std::cout << std::fixed << kIndexStructures[i] << "\t\t|\t"
 			<< std::get<0>(times) << "s\t|\t"
 			<< std::get<1>(times) << "s\t|\t"
 			<< std::get<2>(times) << "s\t|\t" << std::endl;
 	}
 }
 
-char* get_cmd_arg(char** begin, char** end, const std::string& arg)
+char* GetCmdArg(char** begin, char** end, const std::string& arg)
 {
 	char** itr = std::find(begin, end, arg);
 	if (itr != end && ++itr != end)
@@ -175,16 +173,16 @@ char* get_cmd_arg(char** begin, char** end, const std::string& arg)
 	return nullptr;
 }
 
-bool cmd_arg_exists(char** begin, char** end, const std::string& arg)
+bool CmdArgExists(char** begin, char** end, const std::string& arg)
 {
 	return std::find(begin, end, arg) != end;
 }
 
 int main(int argc, char* argv[])
 {
-	if (cmd_arg_exists(argv, argv + argc, "-h"))
+	if (CmdArgExists(argv, argv + argc, "-h"))
 	{
-		printf(help_msg, argv[0], default_iterations);
+		printf(kHelpMsg, argv[0], kDefaultIterations);
 		return EXIT_SUCCESS;
 	}
 
@@ -196,9 +194,9 @@ int main(int argc, char* argv[])
 	}
 	*/
 
-	char* benchmark_arg = get_cmd_arg(argv, argv + argc, "-b");
-	char* size_arg = get_cmd_arg(argv, argv + argc, "-s");
-	char* iterations_arg = get_cmd_arg(argv, argv + argc, "-i");
+	char* benchmark_arg = GetCmdArg(argv, argv + argc, "-b");
+	char* size_arg = GetCmdArg(argv, argv + argc, "-s");
+	char* iterations_arg = GetCmdArg(argv, argv + argc, "-i");
 
 	// TODO: Default Values
 	/*
@@ -218,21 +216,21 @@ int main(int argc, char* argv[])
 	/**
 	 * Benchmark Parameters.
 	 */
-	benchmark benchmark;
+	Benchmark benchmark;
 	uint32_t size = 0;
-	uint32_t iterations{default_iterations};
+	uint32_t iterations{kDefaultIterations};
 
 	if (benchmark_str == "insert")
 	{
-		benchmark = benchmark::insert;
+		benchmark = Benchmark::kInsert;
 	}
 	else if (benchmark_str == "search")
 	{
-		benchmark = benchmark::search;
+		benchmark = Benchmark::kSearch;
 	}
 	else if (benchmark_str == "range_search")
 	{
-		benchmark = benchmark::range_search;
+		benchmark = Benchmark::kRangeSearch;
 	}
 	else
 	{
@@ -285,7 +283,7 @@ int main(int argc, char* argv[])
 	/**
 	 * Run Benchmark.
 	 */
-	run_benchmark(benchmark, size, iterations);
+	RunBenchmark(benchmark, size, iterations);
 
 	return EXIT_SUCCESS;
 }
