@@ -10,7 +10,9 @@ namespace art {
     }
 
     std::vector<uint32_t> Art::FindRange(const uint32_t from, const uint32_t to) const {
-	    auto result = std::vector<uint32_t>();
+    	auto result = std::vector<uint32_t>();
+
+        // TODO: Range search
 
         return result;
     }

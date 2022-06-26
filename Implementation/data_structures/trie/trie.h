@@ -35,7 +35,7 @@ namespace trie
 		 * @param to the value to search to (inclusive)
 		 * @return vector of values sorted in ascending order
 		 */
-		static std::vector<uint32_t> FindRange(uint32_t from, uint32_t to);
+		std::vector<uint32_t> FindRange(uint32_t from, uint32_t to) const;
 
 	private:
 		/**

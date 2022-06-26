@@ -51,7 +51,7 @@ namespace trie {
         return true;
     }
 
-    std::vector<uint32_t> Trie::FindRange(const uint32_t from, const uint32_t to)
+    std::vector<uint32_t> Trie::FindRange(const uint32_t from, const uint32_t to) const
     {
 	    auto result = std::vector<uint32_t>();
 
