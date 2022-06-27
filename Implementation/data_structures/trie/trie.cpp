@@ -4,48 +4,39 @@ namespace trie
 {
     void Trie::Insert(const uint32_t value)
     {
-        // current node index (0th to 27th bit)
-        uint32_t node_index{0};
+        Node* node = root_;
 
         for (int offset = 0; offset < 32; offset += 4)
         {
             // get next 4 bit of value as comparison key
-            const uint32_t comparison_key = (value >> offset) & 0xF;
+            const uint8_t comparison_key = (value >> offset) & 0xF;
 
-            // calculate trie key
-            uint32_t trie_key = (comparison_key << 28) | node_index;
-
-            if (!node_map_.contains(trie_key))
+            if (!node->children.contains(comparison_key))
             {
-                uint32_t next_node_index = node_map_.size() + 1;
+                Node* new_node = new Node();
 
                 // create new node on search path
-                node_map_.insert({trie_key, next_node_index});
+                node->children.insert({comparison_key, new_node});
 
-                node_index = next_node_index;
-            }
-            else
+                node = new_node;
+            } else
             {
                 // go to next node
-                node_index = node_map_.find(trie_key)->second;
+                node = node->children.find(comparison_key)->second;
             }
         }
     }
 
     bool Trie::Find(const uint32_t value) const
     {
-        // current node index (0th to 27th bit)
-        uint32_t node_index{0};
+        Node* node = root_;
 
         for (int offset = 0; offset < 32; offset += 4)
         {
             // get next 4 bit of value as comparison key
-            const uint32_t comparison_key = (value >> offset) & 0xF;
+            const uint8_t comparison_key = (value >> offset) & 0xF;
 
-            // calculate trie key
-            uint32_t trie_key = (comparison_key << 28) | node_index;
-
-            if (!node_map_.contains(trie_key))
+            if (!node->children.contains(comparison_key))
             {
                 // there was no node for this comparison key
                 // -> value doesn't exist
@@ -53,7 +44,7 @@ namespace trie
             }
 
             // go to next node
-            node_index = node_map_.find(trie_key)->second;
+            node = node->children.find(comparison_key)->second;
         }
 
         // compared full value so it exists
@@ -62,10 +53,18 @@ namespace trie
 
     std::vector<uint32_t> Trie::FindRange(const uint32_t from, const uint32_t to) const
     {
-        auto result = std::vector<uint32_t>();
+        return {};
+    }
 
-        // TODO: Range search
+    void Trie::Destruct(Node* node)
+    {
+        for (auto& c: node->children)
+        {
+            Destruct(c.second);
+            // TODO: Remove entire hash map entry?
+            c.second = nullptr;
+        }
 
-        return result;
+        delete node;
     }
 }
