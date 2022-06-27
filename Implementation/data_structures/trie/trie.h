@@ -9,12 +9,13 @@ namespace trie
     class Node
     {
     public:
-        Node() : children{{}}
-        {}
+        Node() : children_{}
+        {
+        }
 
     public:
         // TODO: use 4 bit field?
-        std::unordered_map<uint8_t, Node*> children;
+        std::unordered_map<uint8_t, Node*> children_;
     };
 
     class Trie

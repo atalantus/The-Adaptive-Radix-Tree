@@ -11,18 +11,18 @@ namespace trie
             // get next 4 bit of value as comparison key
             const uint8_t comparison_key = (value >> offset) & 0xF;
 
-            if (!node->children.contains(comparison_key))
+            if (!node->children_.contains(comparison_key))
             {
                 Node* new_node = new Node();
 
                 // create new node on search path
-                node->children.insert({comparison_key, new_node});
+                node->children_.insert({comparison_key, new_node});
 
                 node = new_node;
             } else
             {
                 // go to next node
-                node = node->children.find(comparison_key)->second;
+                node = node->children_.find(comparison_key)->second;
             }
         }
     }
@@ -36,7 +36,7 @@ namespace trie
             // get next 4 bit of value as comparison key
             const uint8_t comparison_key = (value >> offset) & 0xF;
 
-            if (!node->children.contains(comparison_key))
+            if (!node->children_.contains(comparison_key))
             {
                 // there was no node for this comparison key
                 // -> value doesn't exist
@@ -44,7 +44,7 @@ namespace trie
             }
 
             // go to next node
-            node = node->children.find(comparison_key)->second;
+            node = node->children_.find(comparison_key)->second;
         }
 
         // compared full value so it exists
@@ -58,7 +58,7 @@ namespace trie
 
     void Trie::Destruct(Node* node)
     {
-        for (auto& c: node->children)
+        for (auto& c: node->children_)
         {
             Destruct(c.second);
             // TODO: Remove entire hash map entry?

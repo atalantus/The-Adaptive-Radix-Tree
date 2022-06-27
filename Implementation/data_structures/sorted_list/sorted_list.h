@@ -1,24 +1,17 @@
 #pragma once
 
 #include <cstdint>
-#include <unordered_map>
 #include <vector>
+#include <algorithm>
 
 namespace sorted_list
 {
     class SortedList
     {
     public:
-        SortedList(uint32_t size) : sorted_list_(size)
+        SortedList(const uint32_t* numbers, const uint32_t size) : sorted_list_(numbers, numbers + size)
         {
         }
-
-        /**
-         * Inserts a 32 bit value into the sorted_list.
-         *
-         * @param value the value to insert
-         */
-        void Insert(uint32_t value);
 
         /**
          * Checks if a 32 bit value exists in the sorted_list via binary search.
