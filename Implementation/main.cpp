@@ -15,14 +15,23 @@ constexpr char kHelpMsg[] = "This program benchmarks different indexing structur
     "\nThe parameters in detail:\n"
     "\t-h\t\t\t\t: Shows how to use the program (this text).\n"
     "\t-b <insert/search/range_search>\t: Specifies the benchmark to run. You can either benchmark insertion, searching or searching in range.\n"
-    "\t-s <1/2/3>\t\t\t: Specifies the benchmark size. Options are 1 with 65 thousand integers, 2 with 16 million integers and 3 with 256 million integers.\n"
+    "\t-s <1/2>\t\t\t: Specifies the benchmark size. Options are 1 with 65 thousand integers and 2 with 16 million integers.\n"
     "\t-i <number>\t\t\t: Specifies the number of iterations the benchmark is run. Default value is %u. Should be an integer between 1 and 10000 (inclusive).\n";
 
-const std::vector<std::string> kIndexStructures{"ART\t\t", "Trie\t\t", "CTrie\t\t", "Sorted List\t"};
+/**
+ * List of Index Structures each with a name, the number of tabs after the name (used for printing benchmark table)
+ * and it's own Benchmark object.
+ */
+const std::vector<std::tuple<std::string, uint8_t, Benchmark*>> kIndexStructures{
+    {"ART", 2, new ArtBenchmark()},
+    {"Trie", 2, new TrieBenchmark()},
+    {"CTrie", 2, new CTrieBenchmark()},
+    {"Sorted List", 1, new SortedListBenchmark()}
+};
 
 constexpr uint32_t kDefaultIterations{1};
 
-enum class Benchmark
+enum class BenchmarkTypes
 {
     kInsert,
     kSearch,
@@ -30,7 +39,7 @@ enum class Benchmark
 };
 
 void GenerateRandomNumbers(uint32_t*& numbers, uint32_t*& search_numbers,
-                           const Benchmark benchmark, const uint32_t number_elements)
+                           const BenchmarkTypes benchmark, const uint32_t number_elements)
 {
     std::random_device rnd;
     std::mt19937_64 eng(rnd());
@@ -45,7 +54,7 @@ void GenerateRandomNumbers(uint32_t*& numbers, uint32_t*& search_numbers,
     for (uint32_t i = 0; i < number_elements; ++i)
         numbers[i] = numbers_distr(eng);
 
-    if (benchmark == Benchmark::kSearch)
+    if (benchmark == BenchmarkTypes::kSearch)
     {
         std::cout << "Allocating Memory for search_numbers..." << std::endl;
 
@@ -83,7 +92,7 @@ void AggregateBenchmarkResults(auto& total, const std::vector<double>& results, 
     }
 }
 
-auto RunBenchmarkIteration(const Benchmark benchmark, const uint32_t size)
+auto RunBenchmarkIteration(const BenchmarkTypes benchmark, const uint32_t size)
 {
     std::vector<double> structure_times(kIndexStructures.size());
 
@@ -113,107 +122,33 @@ auto RunBenchmarkIteration(const Benchmark benchmark, const uint32_t size)
     double time{0.0};
 
     /**
-     * ART Benchmark
+     * Benchmark Index Structures
      */
-    std::cout << "\nAllocating art..." << std::endl;
 
-    const auto art = new art::Art();
-
-    clock.Start();
-    ArtInsert(art, numbers, number_elements);
-    time = clock.Stop();
-
-    if (benchmark == Benchmark::kSearch)
+    for (uint32_t i = 0; i < kIndexStructures.size(); ++i)
     {
+        const auto& [name, _, structure] = kIndexStructures[i];
+
+        std::cout << "\nAllocating " << name << "..." << std::endl;
+
+        structure->InitializeStructure();
+
         clock.Start();
-        ArtSearch(art, search_numbers, number_elements);
+        structure->Insert(numbers, number_elements);
         time = clock.Stop();
+
+        if (benchmark == BenchmarkTypes::kSearch)
+        {
+            clock.Start();
+            structure->Search(search_numbers, number_elements);
+            time = clock.Stop();
+        }
+
+        std::cout << "Finished " << name << ". Deleting..." << std::endl;
+
+        structure_times[i] = time;
+        structure->DeleteStructure();
     }
-    else if (benchmark == Benchmark::kRangeSearch)
-    {
-    }
-
-    std::cout << "Finished art. Deleting..." << std::endl;
-
-
-    structure_times[0] = time;
-    delete art;
-
-    /**
-     * Trie Benchmark
-     */
-    std::cout << "\nAllocating trie..." << std::endl;
-
-    const auto trie = new trie::Trie();
-
-    clock.Start();
-    TrieInsert(trie, numbers, number_elements);
-    time = clock.Stop();
-
-    if (benchmark == Benchmark::kSearch)
-    {
-        clock.Start();
-        TrieSearch(trie, search_numbers, number_elements);
-        time = clock.Stop();
-    }
-    else if (benchmark == Benchmark::kRangeSearch)
-    {
-    }
-
-    std::cout << "Finished trie. Deleting..." << std::endl;
-
-    structure_times[1] = time;
-    delete trie;
-
-    /**
-     * CTrie Benchmark
-     */
-    std::cout << "\nAllocating ctrie..." << std::endl;
-
-    const auto ctrie = new ctrie::CTrie();
-
-    clock.Start();
-    CTrieInsert(ctrie, numbers, number_elements);
-    time = clock.Stop();
-
-    if (benchmark == Benchmark::kSearch)
-    {
-        clock.Start();
-        CTrieSearch(ctrie, search_numbers, number_elements);
-        time = clock.Stop();
-    }
-    else if (benchmark == Benchmark::kRangeSearch)
-    {
-    }
-
-    std::cout << "Finished ctrie. Deleting..." << std::endl;
-
-    structure_times[2] = time;
-    delete ctrie;
-
-    /**
-     * Sorted List Benchmark
-     */
-    std::cout << "\nAllocating sorted_list..." << std::endl;
-
-    clock.Start();
-    const auto sorted_list = new sorted_list::SortedList(numbers, number_elements);
-    time = clock.Stop();
-
-    if (benchmark == Benchmark::kSearch)
-    {
-        clock.Start();
-        SortedListSearch(sorted_list, search_numbers, number_elements);
-        time = clock.Stop();
-    }
-    else if (benchmark == Benchmark::kRangeSearch)
-    {
-    }
-
-    std::cout << "Finished sorted_list. Deleting..." << std::endl;
-
-    structure_times[3] = time;
-    delete sorted_list;
 
     /**
      * Free Memory
@@ -224,27 +159,27 @@ auto RunBenchmarkIteration(const Benchmark benchmark, const uint32_t size)
 
     switch (benchmark)
     {
-        case Benchmark::kSearch:
+        case BenchmarkTypes::kSearch:
             delete[] search_numbers;
             break;
-        case Benchmark::kRangeSearch:
+        case BenchmarkTypes::kRangeSearch:
             break;
     }
 
     return structure_times;
 }
 
-void RunBenchmark(Benchmark benchmark, uint32_t size, const uint32_t iterations)
+void RunBenchmark(BenchmarkTypes benchmark, uint32_t size, const uint32_t iterations)
 {
     auto benchmark_to_string = [benchmark]()
     {
         switch (benchmark)
         {
-            case Benchmark::kInsert:
+            case BenchmarkTypes::kInsert:
                 return "insert";
-            case Benchmark::kSearch:
+            case BenchmarkTypes::kSearch:
                 return "search";
-            case Benchmark::kRangeSearch:
+            case BenchmarkTypes::kRangeSearch:
                 return "range_search";
         }
     };
@@ -261,7 +196,8 @@ void RunBenchmark(Benchmark benchmark, uint32_t size, const uint32_t iterations)
         AggregateBenchmarkResults(structureTimes, RunBenchmarkIteration(benchmark, size), i);
     }
 
-    std::cout << "\nFinished running '" << benchmark_to_string() << "' benchmark.\n" << std::endl;
+    std::cout << "Finished '" << benchmark_to_string() << "' benchmark with size '" << size << "' and '" << iterations
+        << "' iterations.\n" << std::endl;
 
     std::cout << "=================================================================" << std::endl;
     std::cout << "\t\t\tBENCHMARK RESULTS\t\t\t" << std::endl;
@@ -276,10 +212,20 @@ void RunBenchmark(Benchmark benchmark, uint32_t size, const uint32_t iterations)
     {
         auto& times = structureTimes[i];
 
-        std::cout << std::fixed << kIndexStructures[i] << "|\t"
+        std::cout << std::get<0>(kIndexStructures[i]);
+        for (uint8_t j = 0; j < std::get<1>(kIndexStructures[i]); ++j)
+        {
+            std::cout << "\t";
+        }
+        std::cout << "|\t";
+
+        std::cout << std::fixed
             << std::get<0>(times) << "s\t|\t"
             << std::get<1>(times) << "s\t|\t"
             << std::get<2>(times) << "s\t|\t" << std::endl;
+
+        // Delete Structure Benchmark
+        delete std::get<2>(kIndexStructures[i]);
     }
 }
 
@@ -315,27 +261,27 @@ int main(int argc, char* argv[])
     const std::string size_str{size_arg};
     */
 
-    const std::string benchmark_str{"insert"};
+    const std::string benchmark_str{"search"};
     const std::string size_str{"2"};
 
     /**
      * Benchmark Parameters.
      */
-    Benchmark benchmark;
+    BenchmarkTypes benchmark;
     uint32_t size = 0;
     uint32_t iterations{kDefaultIterations};
 
     if (benchmark_str == "insert")
     {
-        benchmark = Benchmark::kInsert;
+        benchmark = BenchmarkTypes::kInsert;
     }
     else if (benchmark_str == "search")
     {
-        benchmark = Benchmark::kSearch;
+        benchmark = BenchmarkTypes::kSearch;
     }
     else if (benchmark_str == "range_search")
     {
-        benchmark = Benchmark::kRangeSearch;
+        benchmark = BenchmarkTypes::kRangeSearch;
     }
     else
     {
@@ -389,6 +335,9 @@ int main(int argc, char* argv[])
      * Run Benchmark.
      */
     RunBenchmark(benchmark, size, iterations);
+
+    std::cout << "\nPress any key to exit . . .";
+    std::getchar();
 
     return EXIT_SUCCESS;
 }

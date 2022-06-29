@@ -9,6 +9,8 @@ namespace sorted_list
     class SortedList
     {
     public:
+        SortedList() = default;
+
         SortedList(const uint32_t* numbers, const uint32_t size) : sorted_list_(numbers, numbers + size)
         {
         }
