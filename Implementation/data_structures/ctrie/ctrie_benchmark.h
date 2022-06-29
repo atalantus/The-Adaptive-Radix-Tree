@@ -6,10 +6,6 @@
 class CTrieBenchmark : public Benchmark
 {
 public:
-    CTrieBenchmark() : ctrie_{nullptr}
-    {
-    }
-
     ~CTrieBenchmark() override
     {
         delete ctrie_;
@@ -51,5 +47,5 @@ public:
     }
 
 private:
-    ctrie::CTrie* ctrie_;
+    ctrie::CTrie* ctrie_ = nullptr;
 };

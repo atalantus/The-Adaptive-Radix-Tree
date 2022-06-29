@@ -6,10 +6,6 @@
 class TrieBenchmark : public Benchmark
 {
 public:
-    TrieBenchmark() : trie_{nullptr}
-    {
-    }
-
     ~TrieBenchmark() override
     {
         delete trie_;
@@ -57,5 +53,5 @@ public:
     }
 
 private:
-    trie::Trie* trie_;
+    trie::Trie* trie_ = nullptr;
 };

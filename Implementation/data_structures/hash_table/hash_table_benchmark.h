@@ -1,51 +1,48 @@
 #pragma once
 
-#include "art.h"
+#include "hash_table.h"
 #include "../../benchmark.h"
 
-class ArtBenchmark : public Benchmark
+class HashTableBenchmark : public Benchmark
 {
 public:
-    ~ArtBenchmark() override
+    ~HashTableBenchmark() override
     {
-        delete art_;
+        delete hash_table_;
     }
 
     void InitializeStructure() override
     {
-        art_ = new art::Art();
+        hash_table_ = new hash_table::HashTable();
     }
 
     void DeleteStructure() override
     {
-        delete art_;
-        art_ = nullptr;
+        delete hash_table_;
+        hash_table_ = nullptr;
     }
 
     void Insert(const uint32_t* numbers, const uint32_t size) override
     {
-        auto& art = *art_;
+        auto& hash_table = *hash_table_;
 
         for (uint32_t i = 0; i < size; ++i)
-            art.Insert(numbers[i]);
+            hash_table.Insert(numbers[i]);
     }
 
     void Search(const uint32_t* numbers, const uint32_t size) override
     {
-        const auto& art = *art_;
+        const auto& hash_table = *hash_table_;
 
         for (uint32_t i = 0; i < size; ++i)
-            art.Find(numbers[i]);
+            hash_table.Find(numbers[i]);
     }
 
     void RangeSearch(const uint32_t* numbers, const uint32_t size) override
     {
-        const auto& art = *art_;
-
-        for (uint32_t i = 0; i < 2 * size; ++i)
-            art.FindRange(numbers[i], numbers[++i]);
+        return;
     }
 
 private:
-    art::Art* art_ = nullptr;
+    hash_table::HashTable* hash_table_ = nullptr;
 };

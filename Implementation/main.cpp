@@ -26,7 +26,9 @@ const std::vector<std::tuple<std::string, uint8_t, Benchmark*>> kIndexStructures
     {"ART", 2, new ArtBenchmark()},
     {"Trie", 2, new TrieBenchmark()},
     {"CTrie", 2, new CTrieBenchmark()},
-    {"Sorted List", 1, new SortedListBenchmark()}
+    {"Sorted List", 1, new SortedListBenchmark()},
+    {"Hash Table", 1, new HashTableBenchmark()},
+    {"Red-black Tree", 1, new RbTreeBenchmark()}
 };
 
 constexpr uint32_t kDefaultIterations{1};

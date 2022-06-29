@@ -6,10 +6,6 @@
 class SortedListBenchmark : public Benchmark
 {
 public:
-    SortedListBenchmark() : sorted_list_{nullptr}
-    {
-    }
-
     ~SortedListBenchmark() override
     {
         delete sorted_list_;
@@ -48,5 +44,5 @@ public:
     }
 
 private:
-    sorted_list::SortedList* sorted_list_;
+    sorted_list::SortedList* sorted_list_ = nullptr;
 };
