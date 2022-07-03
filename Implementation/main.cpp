@@ -42,6 +42,8 @@ enum class BenchmarkTypes
 };
 
 
+bool is_big_endian = IsBigEndian();
+
 /**
  * Benchmark Parameters.
  */
@@ -63,7 +65,10 @@ void GenerateRandomNumbers(uint32_t*& numbers, uint32_t*& search_numbers, const 
     std::cout << "\nAllocating Memory for numbers..." << std::endl;
 
     for (uint32_t i = 0; i < number_elements; ++i)
-        numbers[i] = numbers_distr(eng);
+    {
+        const uint32_t n = numbers_distr(eng);
+        numbers[i] = is_big_endian ? n : SwapEndianess(n);
+    }
 
     if (benchmark == BenchmarkTypes::kSearch)
     {
@@ -272,8 +277,8 @@ int main(int argc, char* argv[])
     const std::string size_str{size_arg};
     */
 
-    const std::string benchmark_str{"search"};
-    const std::string size_str{"2"};
+    const std::string benchmark_str{"insert"};
+    const std::string size_str{"1"};
 
 
     if (benchmark_str == "insert")
