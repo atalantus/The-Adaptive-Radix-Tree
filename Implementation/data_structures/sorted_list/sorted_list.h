@@ -13,6 +13,7 @@ namespace sorted_list
 
         SortedList(const uint32_t* numbers, const uint32_t size) : sorted_list_(numbers, numbers + size)
         {
+            std::ranges::sort(sorted_list_);
         }
 
         /**

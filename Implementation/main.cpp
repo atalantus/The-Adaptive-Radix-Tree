@@ -222,7 +222,7 @@ void RunBenchmark()
     std::cout << "Index Structure\t|\tMin\t|\tMax\t|\tAvg\t|" << std::endl;
     std::cout << "-----------------------------------------------------------------" << std::endl;
 
-    std::cout.precision(2);
+    std::cout.precision(4);
 
     for (uint32_t i = 0; i < kIndexStructures.size(); ++i)
     {
@@ -266,19 +266,19 @@ int main(int argc, char* argv[])
     char* iterations_arg = GetCmdArg(argv, argv + argc, "-i");
 
     // TODO: Default Values
-    /*
+
     if (benchmark_arg == nullptr || size_arg == nullptr) {
-        fprintf(stderr, usage_msg, argv[0]);
+        fprintf(stderr, kUsageMsg, argv[0]);
         return EXIT_FAILURE;
     }
 
 
     const std::string benchmark_str{benchmark_arg};
     const std::string size_str{size_arg};
-    */
 
-    const std::string benchmark_str{"insert"};
-    const std::string size_str{"1"};
+
+    //const std::string benchmark_str{"insert"};
+    //const std::string size_str{"2"};
 
 
     if (benchmark_str == "insert")
@@ -343,7 +343,7 @@ int main(int argc, char* argv[])
 
     dense = CmdArgExists(argv, argv + argc, "-d");
     // TODO:
-    dense = true;
+    //dense = true;
 
     /**
      * Run Benchmark.
