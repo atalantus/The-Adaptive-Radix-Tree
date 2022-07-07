@@ -11,7 +11,7 @@ public:
         delete mtrie_;
     }
 
-    void MTrieBenchmark() override
+    void InitializeStructure() override
     {
         mtrie_ = new mtrie::MTrie();
     }

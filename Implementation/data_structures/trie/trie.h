@@ -9,13 +9,11 @@ namespace trie
     class Node
     {
     public:
-        Node() : children_{}
+        Node() : children_(256)
         {
         }
 
-    public:
-        // TODO: use 4 bit field?
-        std::unordered_map<uint8_t, Node*> children_;
+        std::vector<Node*> children_;
     };
 
     class Trie
@@ -60,7 +58,7 @@ namespace trie
          *
          * @param node the root node
          */
-        void Destruct(Node* node);
+        void Destruct(const Node* node);
 
     private:
         Node* root_;

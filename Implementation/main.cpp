@@ -26,10 +26,11 @@ constexpr char kHelpMsg[] = "This program benchmarks different indexing structur
 const std::vector<std::tuple<std::string, uint8_t, Benchmark*>> kIndexStructures{
     {"ART", 2, new ArtBenchmark()},
     {"Trie", 2, new TrieBenchmark()},
-    {"CTrie", 2, new CTrieBenchmark()},
-    {"Sorted List", 1, new SortedListBenchmark()},
-    {"Hash Table", 1, new HashTableBenchmark()},
-    {"Red-black Tree", 1, new RbTreeBenchmark()}
+    {"MTrie", 2, new MTrieBenchmark()},
+    //{"CTrie", 2, new CTrieBenchmark()},
+    //{"Sorted List", 1, new SortedListBenchmark()},
+    //{"Hash Table", 1, new HashTableBenchmark()},
+    //{"Red-black Tree", 1, new RbTreeBenchmark()}
 };
 
 constexpr uint32_t kDefaultIterations{1};
@@ -267,7 +268,8 @@ int main(int argc, char* argv[])
 
     // TODO: Default Values
 
-    if (benchmark_arg == nullptr || size_arg == nullptr) {
+    if (benchmark_arg == nullptr || size_arg == nullptr)
+    {
         fprintf(stderr, kUsageMsg, argv[0]);
         return EXIT_FAILURE;
     }

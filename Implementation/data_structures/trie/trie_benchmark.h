@@ -40,8 +40,6 @@ public:
 
     void RangeSearch(const uint32_t* numbers, const uint32_t size) override
     {
-        if (size > 5'000'000) return;
-
         const auto& trie = *trie_;
 
         for (uint32_t i = 0; i < 2 * size; ++i)
