@@ -2,7 +2,7 @@
 
 #include <cstdint>
 #include <vector>
-#include "node/node.h"
+#include "node.h"
 
 namespace art
 {
@@ -38,6 +38,6 @@ namespace art
         std::vector<uint32_t> FindRange(uint32_t from, uint32_t to) const;
 
     private:
-        node::Node root_;
+        Node* root_;
     };
 }
