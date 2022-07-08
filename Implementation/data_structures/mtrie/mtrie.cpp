@@ -6,7 +6,7 @@ namespace mtrie
     {
         Node* node = root_;
 
-        for (int offset = 0; offset < 32; offset += 8)
+        for (uint8_t offset = 0; offset < 32; offset += 8)
         {
             // get next 8 bit of value as comparison key
             const uint8_t comparison_key = (value >> offset) & 0xFF;

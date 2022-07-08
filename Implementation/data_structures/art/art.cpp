@@ -4,6 +4,46 @@ namespace art
 {
     void Art::Insert(const uint32_t value)
     {
+        Node* node = root_;
+
+        for (uint8_t offset = 0; offset < 32; offset += 8)
+        {
+            // get next 8 bit of value as partial key
+            const uint8_t partial_key = (value >> offset) & 0xFF;
+
+            // check if partial key already exists
+            const uintptr_t address_value = node->FindChild(partial_key);
+
+            if (address_value == NULL)
+            {
+                // no child for this partial key -> lazy expansion
+                const uint64_t tagged_pointer_value = static_cast<uint64_t>(value) << 32 | 0x7;
+
+                node->Insert(partial_key, tagged_pointer_value);
+            }
+            else
+            {
+                if (IsLazyExpanded(address_value))
+                {
+                    if (CmpLazyExpansion(address_value, value))
+                    {
+                        // value has already been inserted
+                        return;
+                    }
+                    else
+                    {
+                        // expand keys further until they differ
+                        // -> create and add new child
+                    }
+                }
+                else
+                {
+                    // we have a child node for this partial key
+                    // -> go to next node
+                    node = (Node*)address_value;
+                }
+            }
+        }
     }
 
     bool Art::Find(const uint32_t value) const
@@ -15,23 +55,15 @@ namespace art
             // get next 8 bit of value as partial key
             const uint8_t partial_key = (value >> offset) & 0xFF;
 
-            uint64_t address_value = node->FindChild(partial_key);
+            const uintptr_t address_value = node->FindChild(partial_key);
 
             // check if we have a child
             if (address_value == NULL)
                 return false;
 
             // handle lazy expansion
-            if (address_value & 0x7ULL)
-            {
-                // address_value is actual full key value instead of address
-                // (key value stored at high 32 bits)
-                uint32_t full_key_value = (address_value & (0xFFFFFFFFULL << 32) >> 32);
-                if (full_key_value == value)
-                    return true;
-                // value does not exist
-                return false;
-            }
+            if (IsLazyExpanded(address_value))
+                return CmpLazyExpansion(address_value, value);
 
             // go to next node
             node = (Node*)address_value;

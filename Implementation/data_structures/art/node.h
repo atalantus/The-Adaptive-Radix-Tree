@@ -9,17 +9,17 @@ namespace art
     class Node
     {
     public:
-        explicit Node(const NodeType type) : type_{type}, child_count_{0}, key_data_{nullptr}, pointer_data_(nullptr)
+        Node() : type_{kNode4}, child_count_{0}, data_{new uint8_t[36]}
         {
         }
 
-        explicit Node(const NodeType type, const uint8_t child_count) : type_{type}, child_count_{child_count},
-                                                                        key_data_{nullptr}, pointer_data_(nullptr)
+        ~Node()
         {
+            Destruct();
         }
 
         /**
-         * Finds the child node for a given partial key and returns the nodes address.
+         * Finds the child node for a given partial key and its memory address.
          *
          * Since this ART uses multi-value leaves addresses can also indicate an actual
          * 32 bit value.
@@ -33,19 +33,34 @@ namespace art
          * for an actual address. The low 3 bits being 1 indicates the high 32 bits storing an 32 key
          * value.
          */
-        uint64_t FindChild(const uint8_t partial_key);
+        uint64_t FindChild(uint8_t partial_key);
+
+        /**
+         * Inserts a new partial key, address value pair into the node.
+         */
+        void Insert(uint8_t partial_key, uint64_t address_value);
+
+
+    private:
+        /**
+         * Expands a node to the next bigger node type.
+         */
+        void Expand();
+
+        /**
+         * Recursively deletes the nodes.
+         */
+        void Destruct();
 
         bool IsFull();
         bool IsUnderfull();
 
     private:
+        // this nodes type
         NodeType type_;
         // number of non null children
         uint8_t child_count_;
-        // pointer to key/index data array
-        uint8_t* key_data_;
-        // pointer to child pointer array
-        uint64_t* pointer_data_;
+        uint8_t* data_;
     };
 
     inline bool Node::IsFull()
