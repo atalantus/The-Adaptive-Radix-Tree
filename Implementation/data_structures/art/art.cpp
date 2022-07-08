@@ -15,17 +15,32 @@ namespace art
             // get next 8 bit of value as partial key
             const uint8_t partial_key = (value >> offset) & 0xFF;
 
-            Node* child = node->FindChild(partial_key);
+            uint64_t address_value = node->FindChild(partial_key);
 
-            if (child == nullptr)
+            // check if we have a child
+            if (address_value == NULL)
+                return false;
+
+            // handle lazy expansion
+            if (address_value & 0x7ULL)
             {
+                // address_value is actual full key value instead of address
+                // (key value stored at high 32 bits)
+                uint32_t full_key_value = (address_value & (0xFFFFFFFFULL << 32) >> 32);
+                if (full_key_value == value)
+                    return true;
+                // value does not exist
+                return false;
             }
-            else
-            {
-            }
+
+            // go to next node
+            node = (Node*)address_value;
         }
 
-        return false;
+        // compared full value so it exists
+        // (since this ART is only for storing 32 bit keys without path compression
+        //  or lazy expansion, leaf nodes are not needed)
+        return true;
     }
 
     std::vector<uint32_t> Art::FindRange(const uint32_t from, const uint32_t to) const

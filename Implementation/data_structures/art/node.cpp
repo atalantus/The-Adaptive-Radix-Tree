@@ -1,22 +1,24 @@
 #include "node.h"
 
-// VC++
+// MSVC++ headers
+// might be different for other compilers
+// Note: >= GCC 11 required (https://gcc.gnu.org/bugzilla/show_bug.cgi?id=95483)
 #include <intrin.h>
 #include <immintrin.h>
 
 namespace art
 {
-    Node* Node::FindChild(const uint8_t partial_key)
+    uint64_t Node::FindChild(const uint8_t partial_key)
     {
         switch (type_)
         {
             case kNode4:
                 {
                     for (uint8_t i = 0; i < 4; ++i)
-                        if (data_[i] == partial_key)
-                            return (Node*)data_[i + 4];
+                        if (key_data_[i] == partial_key)
+                            return pointer_data_[i];
 
-                    return nullptr;
+                    return NULL;
                 }
             case kNode16:
                 {
@@ -28,7 +30,7 @@ namespace art
                     // replicate 8 bit partial key to fill 128 bit register
                     const __m128i partial_key_set = _mm_set1_epi8(partial_key);
                     // store child key set in 128 bit register
-                    const __m128i child_key_set = _mm_loadu_epi8(data_);
+                    const __m128i child_key_set = _mm_loadu_epi8(key_data_);
                     // compare partial key set with child key data and store compare bitmask
                     // (stores 1 at bit i if keys at position i were equal otherwise 0)
                     // using AVX-512 this can be done in one instruction:
@@ -40,16 +42,19 @@ namespace art
                         // return Node pointer in pointer array at index equal to trailing zeros in cmp_mask
                         // Note: Would be cool to have an intrinsic for counting trailing zeros in 16 bit integer
                         // but I actually couldn't find one that would have worked. (at least in VC++)
-                        return (Node*)data_[15 + _tzcnt_u32(cmp_mask) + 1];
-                    return nullptr;
+                        return pointer_data_[_tzcnt_u32(cmp_mask)];
+                    return NULL;
                 }
             case kNode48:
                 {
-                    return nullptr;
+                    // index 0xFF indicates that the child does not exist
+                    if (key_data_[partial_key] != 0xFF)
+                        return pointer_data_[key_data_[partial_key]];
+                    return NULL;
                 }
             case kNode256:
                 {
-                    return (Node*)data_[partial_key];
+                    return pointer_data_[partial_key];
                 }
         }
     }

@@ -19,7 +19,8 @@ namespace mtrie
                 node->children_.insert({comparison_key, new_node});
 
                 node = new_node;
-            } else
+            }
+            else
             {
                 // go to next node
                 node = node->children_.find(comparison_key)->second;
@@ -31,20 +32,18 @@ namespace mtrie
     {
         Node* node = root_;
 
-        for (int offset = 0; offset < 32; offset += 8)
+        for (uint8_t offset = 0; offset < 32; offset += 8)
         {
-            // get next 8 bit of value as comparison key
-            const uint8_t comparison_key = (value >> offset) & 0xFF;
+            // get next 8 bit of value as partial key
+            const uint8_t partial_key = (value >> offset) & 0xFF;
 
-            if (!node->children_.contains(comparison_key))
-            {
-                // there was no node for this comparison key
-                // -> value doesn't exist
+            // check if there is a node
+            if (!node->children_.contains(partial_key))
                 return false;
-            }
+
 
             // go to next node
-            node = node->children_.find(comparison_key)->second;
+            node = node->children_.find(partial_key)->second;
         }
 
         // compared full value so it exists
@@ -58,7 +57,7 @@ namespace mtrie
 
     void MTrie::Destruct(Node* node)
     {
-        for (auto& c: node->children_)
+        for (auto& c : node->children_)
         {
             Destruct(c.second);
             c.second = nullptr;
