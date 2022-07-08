@@ -12,9 +12,9 @@ namespace art
             const uint8_t partial_key = (value >> offset) & 0xFF;
 
             // check if partial key already exists
-            const uintptr_t address_value = node->FindChild(partial_key);
+            Node* child_node = node->FindChild(partial_key);
 
-            if (address_value == NULL)
+            if (child_node == nullptr)
             {
                 // no child for this partial key -> lazy expansion
                 const uint64_t tagged_pointer_value = static_cast<uint64_t>(value) << 32 | 0x7;
@@ -23,9 +23,11 @@ namespace art
             }
             else
             {
-                if (IsLazyExpanded(address_value))
+                const auto address_value = reinterpret_cast<uint64_t>(child_node);
+
+                if (Node::IsLazyExpanded(address_value))
                 {
-                    if (CmpLazyExpansion(address_value, value))
+                    if (Node::CmpLazyExpansion(address_value, value))
                     {
                         // value has already been inserted
                         return;
@@ -40,7 +42,7 @@ namespace art
                 {
                     // we have a child node for this partial key
                     // -> go to next node
-                    node = (Node*)address_value;
+                    node = child_node;
                 }
             }
         }
@@ -55,18 +57,20 @@ namespace art
             // get next 8 bit of value as partial key
             const uint8_t partial_key = (value >> offset) & 0xFF;
 
-            const uintptr_t address_value = node->FindChild(partial_key);
+            Node* child_node = node->FindChild(partial_key);
 
             // check if we have a child
-            if (address_value == NULL)
+            if (child_node == nullptr)
                 return false;
 
+            const auto address_value = reinterpret_cast<uint64_t>(child_node);
+
             // handle lazy expansion
-            if (IsLazyExpanded(address_value))
-                return CmpLazyExpansion(address_value, value);
+            if (Node::IsLazyExpanded(address_value))
+                return Node::CmpLazyExpansion(address_value, value);
 
             // go to next node
-            node = (Node*)address_value;
+            node = child_node;
         }
 
         // compared full value so it exists
