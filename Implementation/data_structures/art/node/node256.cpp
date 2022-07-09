@@ -27,8 +27,21 @@ namespace art
 
         for (int i = 0; i < 256; ++i)
         {
-            if (children_[i] == nullptr || Node::IsLazyExpanded(reinterpret_cast<uint64_t>(children_[i]))) continue;
+            if (children_[i] == nullptr || Node::IsLazyExpanded(children_[i])) continue;
             children_[i]->PrintTree(depth + 1);
         }
+    }
+
+    void Node256::Destruct()
+    {
+        // Destruct children
+        for (auto& i: children_)
+        {
+            if (i == nullptr || IsLazyExpanded(i)) continue;
+            i->Destruct();
+        }
+
+        // suicide :/
+        delete this;
     }
 }

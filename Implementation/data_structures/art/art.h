@@ -15,7 +15,7 @@ namespace art
 
         ~Art()
         {
-            delete root_;
+            root_->Destruct();
         }
 
         /**

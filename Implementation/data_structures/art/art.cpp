@@ -49,11 +49,9 @@ namespace art
              * Case 2:  Partial key exists and stores a full key (multi-value leave).
              *          -> Either the full key matches or we expand the multi-value leave.
              */
-            const auto address_value = reinterpret_cast<uint64_t>(child_node_ref);
-
-            if (Node::IsLazyExpanded(address_value))
+            if (Node::IsLazyExpanded(child_node_ref))
             {
-                if (Node::CmpLazyExpansion(address_value, value))
+                if (Node::CmpLazyExpansion(child_node_ref, value))
                     // value has already been inserted
                     return;
 
@@ -64,7 +62,7 @@ namespace art
                 const auto new_child_node = new Node4();
                 child_node_ref = new_child_node;
 
-                ExpandLazyExpansion(value, address_value >> 32, offset + 8, new_child_node);
+                ExpandLazyExpansion(value, reinterpret_cast<uint64_t>(child_node_ref) >> 32, offset + 8, new_child_node);
 
                 return;
             }
@@ -95,11 +93,9 @@ namespace art
                 // since we don't have path compression we know the keys does not exist
                 return false;
 
-            const auto address_value = reinterpret_cast<uint64_t>(child_node);
-
             // handle lazy expansion
-            if (Node::IsLazyExpanded(address_value))
-                return Node::CmpLazyExpansion(address_value, value);
+            if (Node::IsLazyExpanded(child_node))
+                return Node::CmpLazyExpansion(child_node, value);
 
             // go to next node
             node = child_node;
@@ -118,6 +114,11 @@ namespace art
         // TODO: Range search
 
         return result;
+    }
+
+    void Art::PrintTree() const
+    {
+        root_->PrintTree(0);
     }
 
     void Art::ExpandLazyExpansion(const uint32_t value1, const uint32_t value2, const uint8_t depth, Node* node)
@@ -157,10 +158,5 @@ namespace art
         }
 
         __unreachable();
-    }
-
-    void Art::PrintTree() const
-    {
-        root_->PrintTree(0);
     }
 }

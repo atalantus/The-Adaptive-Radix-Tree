@@ -116,7 +116,7 @@ namespace art
     {
         if (child == nullptr)
             return;
-        else if (Node::IsLazyExpanded(reinterpret_cast<uint64_t>(child)))
+        else if (Node::IsLazyExpanded(child))
         {
             auto val = static_cast<uint32_t>(reinterpret_cast<uint64_t>(child) >> 32);
             if (!IsBigEndian()) val = SwapEndianess(val);
@@ -128,19 +128,50 @@ namespace art
             std::cout << ",";
     }
 
-    bool Node::IsLazyExpanded(const uint64_t address_value)
+    bool Node::IsLazyExpanded(Node* node_ptr)
     {
-        return address_value & 0x7ULL;
+        return reinterpret_cast<uint64_t>(node_ptr) & 0x7ULL;
     }
 
-    bool Node::CmpLazyExpansion(const uint64_t address_value, const uint32_t key)
+    bool Node::CmpLazyExpansion(Node* node_ptr, const uint32_t key)
     {
         // address_value is actual full key value instead of address
         // (key value stored at high 32 bits)
-        const uint32_t full_key_value = address_value >> 32;
+        const uint32_t full_key_value = reinterpret_cast<uint64_t>(node_ptr) >> 32;
         if (full_key_value == key)
             return true;
         // full key value is different
         return false;
+    }
+
+    void Node::Destruct()
+    {
+        switch (type_)
+        {
+            case kNode4:
+            {
+                const auto n = static_cast<Node4*>(this);
+                n->Destruct();
+                return;
+            }
+            case kNode16:
+            {
+                const auto n = static_cast<Node16*>(this);
+                n->Destruct();
+                return;
+            }
+            case kNode48:
+            {
+                const auto n = static_cast<Node48*>(this);
+                n->Destruct();
+                return;
+            }
+            case kNode256:
+            {
+                const auto n = static_cast<Node256*>(this);
+                n->Destruct();
+                return;
+            }
+        }
     }
 }

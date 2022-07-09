@@ -90,8 +90,21 @@ namespace art
 
         for (uint8_t i = 0; i < child_count_; ++i)
         {
-            if (Node::IsLazyExpanded(reinterpret_cast<uint64_t>(children_[i]))) continue;
+            if (Node::IsLazyExpanded(children_[i])) continue;
             children_[i]->PrintTree(depth + 1);
         }
+    }
+
+    void Node16::Destruct()
+    {
+        // Destruct children
+        for (int i = 0; i < child_count_; ++i)
+        {
+            if (IsLazyExpanded(children_[i])) continue;
+            children_[i]->Destruct();
+        }
+
+        // suicide :/
+        delete this;
     }
 }

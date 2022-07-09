@@ -55,6 +55,11 @@ namespace art
         bool IsFull() const;
 
         /**
+         * Destroys this node and its children recursively.
+         */
+        void Destruct();
+
+        /**
          * Print Tree in preorder way.
          */
         void PrintTree(int depth);
@@ -65,15 +70,15 @@ namespace art
         static void PrintChild(Node* child, int i, int m);
 
         /**
-         * Returns true if the address value is actually a full key stored using multi-value lazy expansion.
+         * Returns true if the pointer value is actually a full key stored using multi-value lazy expansion.
          */
-        static bool IsLazyExpanded(uint64_t address_value);
+        static bool IsLazyExpanded(Node* node_ptr);
 
         /**
-         * Compares a full key stored via lazy expansion at address_value with key
+         * Compares a full key stored via lazy expansion at a pointer with key
          * and returns true if they are the same.
          */
-        static bool CmpLazyExpansion(uint64_t address_value, uint32_t key);
+        static bool CmpLazyExpansion(Node* node_ptr, uint32_t key);
 
     protected:
         NodeType type_;
@@ -95,6 +100,8 @@ namespace art
 
         Node*& FindChild(uint8_t partial_key);
 
+        void Destruct();
+
         void PrintTree(int depth) const;
 
     private:
@@ -112,6 +119,8 @@ namespace art
         Node* Insert(uint8_t partial_key, Node* child_node);
 
         Node*& FindChild(uint8_t partial_key);
+
+        void Destruct();
 
         void PrintTree(int depth) const;
 
@@ -136,6 +145,8 @@ namespace art
 
         Node*& FindChild(uint8_t partial_key);
 
+        void Destruct();
+
         void PrintTree(int depth) const;
 
     private:
@@ -155,6 +166,8 @@ namespace art
         Node* Insert(uint8_t partial_key, Node* child_node);
 
         Node*& FindChild(uint8_t partial_key);
+
+        void Destruct();
 
         void PrintTree(int depth) const;
 
