@@ -90,7 +90,7 @@ namespace art
         for (uint8_t i = 0; i < child_count_; ++i)
         {
             if (Node::IsLazyExpanded(reinterpret_cast<uint64_t>(children_[i]))) continue;
-            children_[i]->PrintTree(depth+1);
+            children_[i]->PrintTree(depth + 1);
         }
     }
 }

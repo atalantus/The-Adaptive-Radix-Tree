@@ -59,7 +59,7 @@ namespace trie
 
     void Trie::Destruct(const Node* node)
     {
-        for (const auto& c : node->children_)
+        for (const auto& c: node->children_)
         {
             if (c == nullptr) continue;
 

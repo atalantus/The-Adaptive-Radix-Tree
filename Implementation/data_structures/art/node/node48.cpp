@@ -61,7 +61,7 @@ namespace art
             if (keys_[i] != free_marker_)
             {
                 if (Node::IsLazyExpanded(reinterpret_cast<uint64_t>(children_[keys_[i]]))) continue;
-                children_[keys_[i]]->PrintTree(depth+1);
+                children_[keys_[i]]->PrintTree(depth + 1);
             }
         }
     }

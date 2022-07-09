@@ -57,7 +57,7 @@ namespace mtrie
 
     void MTrie::Destruct(Node* node)
     {
-        for (auto& c : node->children_)
+        for (auto& c: node->children_)
         {
             Destruct(c.second);
             c.second = nullptr;

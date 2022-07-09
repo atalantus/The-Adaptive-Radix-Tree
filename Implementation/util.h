@@ -43,6 +43,7 @@ inline uint32_t SwapEndianess(const uint32_t value)
 [[noreturn]] inline __attribute__((always_inline)) void __unreachable() { __builtin_unreachable(); }
 #elif defined(_MSC_VER) // MSVC
 
-[[noreturn]] __forceinline void __unreachable() { __assume(false); }
+[[noreturn]] __forceinline void __unreachable()
+{ __assume(false); }
 
 #endif
