@@ -10,4 +10,4 @@ add_subdirectory(data_structures)
 
 add_executable(${EXECUTABLE_NAME} main.cpp benchmark.h clock.h util.h)
 
-target_link_libraries(${EXECUTABLE_NAME} art trie mtrie ctrie sorted_list hash_table rbtree)
+target_link_libraries(${EXECUTABLE_NAME} art trie mtrie htrie sorted_list hash_table rbtree)

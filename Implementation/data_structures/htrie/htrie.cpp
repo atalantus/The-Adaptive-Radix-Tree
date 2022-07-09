@@ -1,8 +1,8 @@
-#include "ctrie.h"
+#include "htrie.h"
 
-namespace ctrie
+namespace htrie
 {
-    void CTrie::Insert(const uint32_t value)
+    void HTrie::Insert(const uint32_t value)
     {
         // current node index (0th to 27th bit)
         uint32_t node_index{0};
@@ -32,7 +32,7 @@ namespace ctrie
         }
     }
 
-    bool CTrie::Find(const uint32_t value) const
+    bool HTrie::Find(const uint32_t value) const
     {
         // current node index (0th to 27th bit)
         uint32_t node_index{0};
@@ -58,14 +58,5 @@ namespace ctrie
 
         // compared full value so it exists
         return true;
-    }
-
-    std::vector<uint32_t> CTrie::FindRange(const uint32_t from, const uint32_t to) const
-    {
-        auto result = std::vector<uint32_t>();
-
-        // TODO: Range search
-
-        return result;
     }
 }

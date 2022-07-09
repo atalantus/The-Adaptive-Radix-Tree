@@ -1,7 +1,7 @@
 add_subdirectory(art)
 add_subdirectory(trie)
 add_subdirectory(mtrie)
-add_subdirectory(ctrie)
+add_subdirectory(htrie)
 add_subdirectory(sorted_list)
 add_subdirectory(hash_table)
 add_subdirectory(rbtree)
