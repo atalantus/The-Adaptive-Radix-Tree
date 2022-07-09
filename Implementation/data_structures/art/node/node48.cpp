@@ -29,11 +29,40 @@ namespace art
         return this;
     }
 
-    Node* Node48::FindChild(const uint8_t partial_key) const
+    Node*& Node48::FindChild(const uint8_t partial_key)
     {
         if (keys_[partial_key] != free_marker_)
             return children_[keys_[partial_key]];
 
-        return nullptr;
+        return null_node;
+    }
+
+    void Node48::PrintTree(int depth) const
+    {
+        std::cout << "|";
+        for (int i = 0; i < depth; ++i)
+            std::cout << "--";
+        std::cout << " ";
+
+        std::cout << std::hex << std::uppercase << this << " tp:" << +type_ << " cc:" << +child_count_ << " keys{";
+        for (int i = 0; i < 256; ++i)
+        {
+            std::cout << std::dec << i << ":" << std::hex << +keys_[i];
+            if (i < 3)
+                std::cout << ",";
+        }
+        std::cout << "} children{";
+        for (int i = 0; i < 48; ++i)
+            Node::PrintChild(children_[i], i);
+        std::cout << "}" << std::endl;
+
+        for (int i = 0; i < 256; ++i)
+        {
+            if (keys_[i] != free_marker_)
+            {
+                if (Node::IsLazyExpanded(reinterpret_cast<uint64_t>(children_[keys_[i]]))) continue;
+                children_[keys_[i]]->PrintTree(depth+1);
+            }
+        }
     }
 }

@@ -34,12 +34,38 @@ namespace art
         return this;
     }
 
-    Node* Node4::FindChild(const uint8_t partial_key) const
+    Node*& Node4::FindChild(const uint8_t partial_key)
     {
         for (uint8_t i = 0; i < child_count_; ++i)
             if (keys_[i] == partial_key)
                 return children_[i];
 
-        return nullptr;
+        return null_node;
+    }
+
+    void Node4::PrintTree(int depth) const
+    {
+        std::cout << "|";
+        for (int i = 0; i < depth; ++i)
+            std::cout << "--";
+        std::cout << " ";
+
+        std::cout << std::hex << std::uppercase << this << " tp:" << +type_ << " cc:" << +child_count_ << " keys{";
+        for (int i = 0; i < 4; ++i)
+        {
+            std::cout << std::dec << i << ":" << std::hex << +keys_[i];
+            if (i < 3)
+                std::cout << ",";
+        }
+        std::cout << "} children{";
+        for (int i = 0; i < 4; ++i)
+            Node::PrintChild(children_[i], i);
+        std::cout << "}" << std::endl;
+
+        for (uint8_t i = 0; i < child_count_; ++i)
+        {
+            if (Node::IsLazyExpanded(reinterpret_cast<uint64_t>(children_[i]))) continue;
+            children_[i]->PrintTree(depth + 1);
+        }
     }
 }

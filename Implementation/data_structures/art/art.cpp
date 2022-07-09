@@ -1,13 +1,14 @@
 #include "art.h"
 
-#include <cassert>
-
 namespace art
 {
     void Art::Insert(const uint32_t value)
     {
+        std::cout << "==========================================================================================================================================" << std::endl;
+        root_->PrintTree(0);
+
         Node* node = root_;
-        Node** parent_child_ptr = &root_;
+        Node*& node_ref = root_;
 
         for (uint8_t offset = 0; offset < 32; offset += 8)
         {
@@ -15,40 +16,38 @@ namespace art
             uint8_t partial_key = (value >> offset) & 0xFF;
 
             // check if partial key already exists
-            Node* child_node = node->FindChild(partial_key);
+            Node*& child_node_ref = node->FindChild(partial_key);
 
             /**
              * Case 1:  Partial key does not exist in the node.
              *          -> Insert full key lazy expanded via multi-value leaf.
              */
-            if (child_node == nullptr)
+            if (child_node_ref == null_node)
             {
                 const auto tagged_pointer_value = reinterpret_cast<Node*>(
-                    static_cast<uintptr_t>(value) << 32 | 0x7
+                        static_cast<uintptr_t>(value) << 32 | 0x7
                 );
 
-                Node* new_ptr = node->Insert(partial_key, tagged_pointer_value);
+                Node* new_node = node->Insert(partial_key, tagged_pointer_value);
 
-                if (new_ptr != node)
+                if (new_node != node)
                 {
-                    /* TODO: Check Performance?
-                     * Since reassigning this pointer is rare maybe it's more efficient to use simple pointer and search new in case of update?
-                     */
-
-                    // node has changed -> update parent pointer and delete old child
-                    *parent_child_ptr = new_ptr;
-                    delete child_node;
+                    // node has changed
+                    // -> update parent pointer and delete old child
+                    // TODO:
+                    node_ref = new_node;
+                    delete child_node_ref;
                 }
 
                 return;
             }
 
-            const auto address_value = reinterpret_cast<uint64_t>(child_node);
-
             /**
              * Case 2:  Partial key exists and stores a full key (multi-value leave).
              *          -> Either the full key matches or we expand the multi-value leave.
              */
+            const auto address_value = reinterpret_cast<uint64_t>(child_node_ref);
+
             if (Node::IsLazyExpanded(address_value))
             {
                 if (Node::CmpLazyExpansion(address_value, value))
@@ -60,7 +59,7 @@ namespace art
                 // -> create and add new child nodes until keys differ and then insert multi-value leaves
 
                 const auto new_child_node = new Node4();
-                *parent_child_ptr = new_child_node;
+                child_node_ref = new_child_node;
 
                 ExpandLazyExpansion(value, address_value >> 32, offset + 8, new_child_node);
 
@@ -71,10 +70,10 @@ namespace art
              * Case 3:  Partial key exists and stores a pointer to a child node.
              *          -> Insert at child node at next depth.
              */
-            node = child_node;
-            // TODO: Debug this
-            parent_child_ptr = &child_node;
+            node = child_node_ref;
         }
+
+        __unreachable();
     }
 
     bool Art::Find(const uint32_t value) const
@@ -122,11 +121,11 @@ namespace art
     {
         Node* n = node;
 
-        for (uint8_t offset2 = depth; offset2 < 32; ++offset2)
+        for (uint8_t offset = depth; offset < 32; offset += 8)
         {
             // get next 8 bit of values as partial keys
-            const uint8_t partial_key1 = (value2 >> offset2) & 0xFF;
-            const uint8_t partial_key2 = (value2 >> offset2) & 0xFF;
+            const uint8_t partial_key1 = (value1 >> offset) & 0xFF;
+            const uint8_t partial_key2 = (value2 >> offset) & 0xFF;
 
             if (partial_key1 != partial_key2)
             {
@@ -134,15 +133,16 @@ namespace art
                 // -> insert both full keys as multi value leaves
 
                 const auto tagged_pointer_value1 = reinterpret_cast<Node*>(
-                    static_cast<uintptr_t>(value1) << 32 | 0x7
+                        static_cast<uintptr_t>(value1) << 32 | 0x7
                 );
                 const auto tagged_pointer_value2 = reinterpret_cast<Node*>(
-                    static_cast<uintptr_t>(value2) << 32 | 0x7
+                        static_cast<uintptr_t>(value2) << 32 | 0x7
                 );
 
-                node->Insert(partial_key1, tagged_pointer_value1);
-                node->Insert(partial_key2, tagged_pointer_value2);
+                n->Insert(partial_key1, tagged_pointer_value1);
+                n->Insert(partial_key2, tagged_pointer_value2);
 
+                // done
                 return;
             }
 

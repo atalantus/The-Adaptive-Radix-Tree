@@ -2,59 +2,61 @@
 
 namespace art
 {
+    Node* null_node = nullptr;
+
     Node* Node::Insert(const uint8_t partial_key, Node* child_node)
     {
         switch (type_)
         {
             case kNode4:
-                {
-                    const auto n = static_cast<Node4*>(this);
-                    return n->Insert(partial_key, child_node);
-                }
+            {
+                const auto n = static_cast<Node4*>(this);
+                return n->Insert(partial_key, child_node);
+            }
             case kNode16:
-                {
-                    const auto n = static_cast<Node16*>(this);
-                    return n->Insert(partial_key, child_node);
-                }
+            {
+                const auto n = static_cast<Node16*>(this);
+                return n->Insert(partial_key, child_node);
+            }
             case kNode48:
-                {
-                    const auto n = static_cast<Node48*>(this);
-                    return n->Insert(partial_key, child_node);
-                }
+            {
+                const auto n = static_cast<Node48*>(this);
+                return n->Insert(partial_key, child_node);
+            }
             case kNode256:
-                {
-                    const auto n = static_cast<Node256*>(this);
-                    return n->Insert(partial_key, child_node);
-                }
+            {
+                const auto n = static_cast<Node256*>(this);
+                return n->Insert(partial_key, child_node);
+            }
         }
 
         __unreachable();
     }
 
-    Node* Node::FindChild(const uint8_t partial_key)
+    Node*& Node::FindChild(const uint8_t partial_key)
     {
         switch (type_)
         {
             case kNode4:
-                {
-                    const auto n = static_cast<Node4*>(this);
-                    return n->FindChild(partial_key);
-                }
+            {
+                const auto n = static_cast<Node4*>(this);
+                return n->FindChild(partial_key);
+            }
             case kNode16:
-                {
-                    const auto n = static_cast<Node16*>(this);
-                    return n->FindChild(partial_key);
-                }
+            {
+                const auto n = static_cast<Node16*>(this);
+                return n->FindChild(partial_key);
+            }
             case kNode48:
-                {
-                    const auto n = static_cast<Node48*>(this);
-                    return n->FindChild(partial_key);
-                }
+            {
+                const auto n = static_cast<Node48*>(this);
+                return n->FindChild(partial_key);
+            }
             case kNode256:
-                {
-                    const auto n = static_cast<Node256*>(this);
-                    return n->FindChild(partial_key);
-                }
+            {
+                const auto n = static_cast<Node256*>(this);
+                return n->FindChild(partial_key);
+            }
         }
 
         __unreachable();
@@ -64,13 +66,66 @@ namespace art
     {
         switch (type_)
         {
-            case kNode4: return child_count_ == 4;
-            case kNode16: return child_count_ == 16;
-            case kNode48: return child_count_ == 48;
-            case kNode256: return false;
+            case kNode4:
+                return child_count_ == 4;
+            case kNode16:
+                return child_count_ == 16;
+            case kNode48:
+                return child_count_ == 48;
+            case kNode256:
+                return false;
         }
 
         __unreachable();
+    }
+
+    void Node::PrintTree(int depth)
+    {
+        switch (type_)
+        {
+            case kNode4:
+            {
+                const auto n = static_cast<Node4*>(this);
+                n->PrintTree(depth);
+                return;
+            }
+            case kNode16:
+            {
+                const auto n = static_cast<Node16*>(this);
+                n->PrintTree(depth);
+                return;
+            }
+            case kNode48:
+            {
+                const auto n = static_cast<Node48*>(this);
+                n->PrintTree(depth);
+                return;
+            }
+            case kNode256:
+            {
+                const auto n = static_cast<Node256*>(this);
+                n->PrintTree(depth);
+                return;
+            }
+        }
+
+        __unreachable();
+    }
+
+    void Node::PrintChild(Node* child, int i)
+    {
+        if (child == nullptr)
+            std::cout << std::dec << i << ":" << static_cast<uint8_t>(0);
+        else if (Node::IsLazyExpanded(reinterpret_cast<uint64_t>(child)))
+        {
+            auto val = static_cast<uint32_t>(reinterpret_cast<uint64_t>(child) >> 32);
+            if (!IsBigEndian()) val = SwapEndianess(val);
+            std::cout << std::dec << i << ":[" << std::hex << val << "]";
+        }
+        else
+            std::cout << std::dec << i << ":" << std::hex << child;
+        if (i < 3)
+            std::cout << ",";
     }
 
     bool Node::IsLazyExpanded(const uint64_t address_value)

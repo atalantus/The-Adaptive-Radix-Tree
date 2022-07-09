@@ -1,13 +1,23 @@
 #pragma once
 
+#include <iostream>
 #include <cstdint>
 
 #include "node.h"
+#include "node_util.h"
 #include "../../../util.h"
 
 namespace art
 {
-    enum NodeType : uint8_t { kNode4, kNode16, kNode48, kNode256 };
+    class Node;
+
+    // null pointer used to indicate non-existing node
+    extern Node* null_node;
+
+    enum NodeType : uint8_t
+    {
+        kNode4, kNode16, kNode48, kNode256
+    };
 
     class Node
     {
@@ -23,7 +33,7 @@ namespace art
         Node* Insert(uint8_t partial_key, Node* child_node);
 
         /**
-         * Finds the child node for a given partial key and returns a pointer to its memory address.
+         * Finds the child node for a given partial key and returns a reference to the pointer to its memory address.
          *
          * Since this ART uses multi-value leaves addresses can also indicate an actual
          * 32 bit value.
@@ -37,12 +47,22 @@ namespace art
          * for an actual address. The low 3 bits being 1 indicates the high 32 bits storing an 32 key
          * value.
          */
-        Node* FindChild(uint8_t partial_key);
+        Node*& FindChild(uint8_t partial_key);
 
         /**
          * Returns true if the node is full.
          */
         bool IsFull() const;
+
+        /**
+         * Print Tree in preorder way.
+         */
+        void PrintTree(int depth);
+
+        /**
+         * Prints a pointer to a child
+         */
+        static void PrintChild(Node* child, int i);
 
         /**
          * Returns true if the address value is actually a full key stored using multi-value lazy expansion.
@@ -73,7 +93,10 @@ namespace art
 
         Node* Insert(uint8_t partial_key, Node* child_node);
 
-        Node* FindChild(uint8_t partial_key) const;
+        Node*& FindChild(uint8_t partial_key);
+
+        void PrintTree(int depth) const;
+
     private:
         uint8_t keys_[4];
         Node* children_[4];
@@ -88,7 +111,10 @@ namespace art
 
         Node* Insert(uint8_t partial_key, Node* child_node);
 
-        Node* FindChild(uint8_t partial_key) const;
+        Node*& FindChild(uint8_t partial_key);
+
+        void PrintTree(int depth) const;
+
     private:
         uint8_t keys_[16];
         Node* children_[16];
@@ -107,7 +133,10 @@ namespace art
 
         Node* Insert(uint8_t partial_key, Node* child_node);
 
-        Node* FindChild(uint8_t partial_key) const;
+        Node*& FindChild(uint8_t partial_key);
+
+        void PrintTree(int depth) const;
+
     private:
         uint8_t keys_[256];
         Node* children_[48];
@@ -124,7 +153,10 @@ namespace art
 
         Node* Insert(uint8_t partial_key, Node* child_node);
 
-        Node* FindChild(uint8_t partial_key) const;
+        Node*& FindChild(uint8_t partial_key);
+
+        void PrintTree(int depth) const;
+
     private:
         Node* children_[256];
 

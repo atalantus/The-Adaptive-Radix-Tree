@@ -9,28 +9,28 @@
 
 constexpr char kUsageMsg[] = "usage: %s [-h] -b benchmark -s size [-i number_iterations] [-d]\n";
 constexpr char kHelpMsg[] = "This program benchmarks different indexing structures using 32 bit unsigned integers. "
-    "For the specified benchmark and size the benchmark is run number_iterations times for each "
-    "index structure and the min, max and average times are outputted.\n\n"
-    "usage: %s [-h] -b benchmark -s size [-i number_iterations] [-d]\n"
-    "\nThe parameters in detail:\n"
-    "\t-h\t\t\t\t: Shows how to use the program (this text).\n"
-    "\t-b <insert/search/range_search>\t: Specifies the benchmark to run. You can either benchmark insertion, searching or searching in range.\n"
-    "\t-s <1/2>\t\t\t: Specifies the benchmark size. Options are 1 with 65 thousand integers and 2 with 16 million integers.\n"
-    "\t-i <number>\t\t\t: Specifies the number of iterations the benchmark is run. Default value is %u. Should be an integer between 1 and 10000 (inclusive).\n"
-    "\t-d\t\t\t\t: Use a dense set of integers as keys. Otherwise a sparse set will be used.\n";
+                            "For the specified benchmark and size the benchmark is run number_iterations times for each "
+                            "index structure and the min, max and average times are outputted.\n\n"
+                            "usage: %s [-h] -b benchmark -s size [-i number_iterations] [-d]\n"
+                            "\nThe parameters in detail:\n"
+                            "\t-h\t\t\t\t: Shows how to use the program (this text).\n"
+                            "\t-b <insert/search/range_search>\t: Specifies the benchmark to run. You can either benchmark insertion, searching or searching in range.\n"
+                            "\t-s <1/2>\t\t\t: Specifies the benchmark size. Options are 1 with 65 thousand integers and 2 with 16 million integers.\n"
+                            "\t-i <number>\t\t\t: Specifies the number of iterations the benchmark is run. Default value is %u. Should be an integer between 1 and 10000 (inclusive).\n"
+                            "\t-d\t\t\t\t: Use a dense set of integers as keys. Otherwise a sparse set will be used.\n";
 
 /**
  * List of Index Structures each with a name, the number of tabs after the name (used for printing benchmark table)
  * and it's own Benchmark object.
  */
 const std::vector<std::tuple<std::string, uint8_t, Benchmark*>> kIndexStructures{
-    {"ART", 2, new ArtBenchmark()},
-    //{"Trie", 2, new TrieBenchmark()},
-    //{"MTrie", 2, new MTrieBenchmark()},
-    //{"CTrie", 2, new CTrieBenchmark()},
-    //{"Sorted List", 1, new SortedListBenchmark()},
-    //{"Hash Table", 1, new HashTableBenchmark()},
-    //{"Red-black Tree", 1, new RbTreeBenchmark()}
+        {"ART", 2, new ArtBenchmark()},
+        //{"Trie", 2, new TrieBenchmark()},
+        //{"MTrie", 2, new MTrieBenchmark()},
+        //{"CTrie", 2, new CTrieBenchmark()},
+        //{"Sorted List", 1, new SortedListBenchmark()},
+        //{"Hash Table", 1, new HashTableBenchmark()},
+        //{"Red-black Tree", 1, new RbTreeBenchmark()}
 };
 
 constexpr uint32_t kDefaultIterations{1};
@@ -67,7 +67,8 @@ void GenerateRandomNumbers(uint32_t*& numbers, uint32_t*& search_numbers, const 
 
     for (uint32_t i = 0; i < number_elements; ++i)
     {
-        const uint32_t n = /*numbers_distr(eng);*/i;
+        //const uint32_t n = numbers_distr(eng);
+        const uint32_t n = i;
         numbers[i] = is_big_endian ? n : SwapEndianess(n);
     }
 
@@ -204,7 +205,7 @@ void RunBenchmark()
     };
 
     std::cout << "Starting '" << benchmark_to_string() << "' benchmark with size '" << size << "', '" << iterations
-        << "' iterations and '" << (dense ? "dense" : "sparse") << "' keys.\n" << std::endl;
+              << "' iterations and '" << (dense ? "dense" : "sparse") << "' keys.\n" << std::endl;
 
     std::vector<std::tuple<double, double, double, double>> structure_times(kIndexStructures.size());
 
@@ -216,7 +217,7 @@ void RunBenchmark()
     }
 
     std::cout << "Finished '" << benchmark_to_string() << "' benchmark with size '" << size << "', '" << iterations
-        << "' iterations and '" << (dense ? "dense" : "sparse") << "' keys.\n" << std::endl;
+              << "' iterations and '" << (dense ? "dense" : "sparse") << "' keys.\n" << std::endl;
 
     std::cout << "=================================================================" << std::endl;
     std::cout << "\t\t\tBENCHMARK RESULTS\t\t\t" << std::endl;
@@ -239,9 +240,9 @@ void RunBenchmark()
         std::cout << "|\t";
 
         std::cout << std::fixed
-            << std::get<0>(times) << "s\t|\t"
-            << std::get<1>(times) << "s\t|\t"
-            << std::get<2>(times) << "s\t|\t" << std::endl;
+                  << std::get<0>(times) << "s\t|\t"
+                  << std::get<1>(times) << "s\t|\t"
+                  << std::get<2>(times) << "s\t|\t" << std::endl;
 
         // Delete Structure Benchmark
         delete std::get<2>(kIndexStructures[i]);
@@ -306,7 +307,7 @@ int main(int argc, char* argv[])
     else
     {
         std::cerr << "Unknown 'benchmark' argument \"" << benchmark_str <<
-            R"(". Possible options are "insert", "search" and "range_search".)" << std::endl;
+                  R"(". Possible options are "insert", "search" and "range_search".)" << std::endl;
         return EXIT_FAILURE;
     }
 
@@ -317,14 +318,14 @@ int main(int argc, char* argv[])
     catch (std::logic_error&)
     {
         std::cerr << "Invalid 'size' argument \"" << size << R"(". Possible options are "1", "2", "3".)"
-            << std::endl;
+                  << std::endl;
         return EXIT_FAILURE;
     }
 
     if (size < 1 || size > 3)
     {
         std::cerr << "Invalid 'size' argument \"" << size << R"(". Possible options are "1", "2", "3".)"
-            << std::endl;
+                  << std::endl;
         return EXIT_FAILURE;
     }
 
@@ -339,14 +340,14 @@ int main(int argc, char* argv[])
         catch (std::logic_error&)
         {
             std::cerr << "Invalid 'number_iterations' argument \"" << iterations_str
-                << "\". Expected integer between 1 and 10000 (inclusive)." << std::endl;
+                      << "\". Expected integer between 1 and 10000 (inclusive)." << std::endl;
             return EXIT_FAILURE;
         }
 
         if (iterations < 1 || iterations > 10000)
         {
             std::cerr << "Invalid 'number_iterations' argument \"" << iterations_str
-                << "\". Expected integer between 1 and 10000 (inclusive)." << std::endl;
+                      << "\". Expected integer between 1 and 10000 (inclusive)." << std::endl;
             return EXIT_FAILURE;
         }
     }
