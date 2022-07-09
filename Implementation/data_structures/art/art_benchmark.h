@@ -28,6 +28,8 @@ public:
 
         for (uint32_t i = 0; i < size; ++i)
             art.Insert(numbers[i]);
+
+        //art.PrintTree();
     }
 
     void Search(const uint32_t* numbers, const uint32_t size) override

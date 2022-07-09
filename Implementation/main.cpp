@@ -57,6 +57,7 @@ void GenerateRandomNumbers(uint32_t*& numbers, uint32_t*& search_numbers, const 
 {
     std::random_device rnd;
     std::mt19937_64 eng(rnd());
+    //eng.seed(1);
     std::uniform_int_distribution<uint32_t> numbers_distr(0, dense ? number_elements - 1 : 4'294'967'295);
     std::uniform_int_distribution<uint32_t> search_numbers_distr(0, number_elements);
 
@@ -361,7 +362,7 @@ int main(int argc, char* argv[])
     RunBenchmark();
 
     std::cout << "\nPress any key to exit . . .";
-    std::getchar();
+    //std::getchar();
 
     return EXIT_SUCCESS;
 }

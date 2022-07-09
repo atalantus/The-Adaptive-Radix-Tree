@@ -10,7 +10,7 @@ namespace art
                 << "\n=========================================================================================================================================="
                 << std::endl;
         std::cout << "Insert: " << std::hex << SwapEndianess(value) << std::endl;
-         */
+        */
 
         std::reference_wrapper<Node*> node_ref = std::ref(root_);
 
@@ -38,8 +38,8 @@ namespace art
                 {
                     // node has changed
                     // -> update parent pointer and delete old child
+                    delete node_ref.get();
                     node_ref.get() = new_node;
-                    delete child_node_ref;
                 }
 
                 return;
@@ -58,11 +58,12 @@ namespace art
 
                 // there is already the same partial key for a different full key
                 // -> create and add new child nodes until keys differ and then insert multi-value leaves
+                const auto address_value = reinterpret_cast<uint64_t>(child_node_ref);
 
                 const auto new_child_node = new Node4();
                 child_node_ref = new_child_node;
 
-                ExpandLazyExpansion(value, reinterpret_cast<uint64_t>(child_node_ref) >> 32, offset + 8, new_child_node);
+                ExpandLazyExpansion(value, address_value >> 32, offset + 8, new_child_node);
 
                 return;
             }
