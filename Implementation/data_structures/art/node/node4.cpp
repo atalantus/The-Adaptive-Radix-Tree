@@ -59,7 +59,11 @@ namespace art
         }
         std::cout << "} children{";
         for (int i = 0; i < 4; ++i)
+        {
             Node::PrintChild(children_[i], i);
+            if (i < 3)
+                std::cout << ",";
+        }
         std::cout << "}" << std::endl;
 
         for (uint8_t i = 0; i < child_count_; ++i)

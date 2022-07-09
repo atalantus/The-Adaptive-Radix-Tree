@@ -48,12 +48,16 @@ namespace art
         for (int i = 0; i < 256; ++i)
         {
             std::cout << std::dec << i << ":" << std::hex << +keys_[i];
-            if (i < 3)
+            if (i < 255)
                 std::cout << ",";
         }
         std::cout << "} children{";
         for (int i = 0; i < 48; ++i)
+        {
             Node::PrintChild(children_[i], i);
+            if (i < 48)
+                std::cout << ",";
+        }
         std::cout << "}" << std::endl;
 
         for (int i = 0; i < 256; ++i)

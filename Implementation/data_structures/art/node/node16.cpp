@@ -79,12 +79,16 @@ namespace art
         for (int i = 0; i < 16; ++i)
         {
             std::cout << std::dec << i << ":" << std::hex << +keys_[i];
-            if (i < 3)
+            if (i < 15)
                 std::cout << ",";
         }
         std::cout << "} children{";
         for (int i = 0; i < 16; ++i)
+        {
             Node::PrintChild(children_[i], i);
+            if (i < 15)
+                std::cout << ",";
+        }
         std::cout << "}" << std::endl;
 
         for (uint8_t i = 0; i < child_count_; ++i)

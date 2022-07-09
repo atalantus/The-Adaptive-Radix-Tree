@@ -124,8 +124,6 @@ namespace art
         }
         else
             std::cout << std::dec << i << ":" << std::hex << child;
-        if (i < 3)
-            std::cout << ",";
     }
 
     bool Node::IsLazyExpanded(const uint64_t address_value)

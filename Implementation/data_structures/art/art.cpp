@@ -9,8 +9,7 @@ namespace art
                 << std::endl;
         root_->PrintTree(0);
 
-        Node* node = root_;
-        Node*& node_ref = root_;
+        std::reference_wrapper<Node*> node_ref = std::ref(root_);
 
         for (uint8_t offset = 0; offset < 32; offset += 8)
         {
@@ -18,7 +17,7 @@ namespace art
             uint8_t partial_key = (value >> offset) & 0xFF;
 
             // check if partial key already exists
-            Node*& child_node_ref = node->FindChild(partial_key);
+            Node*& child_node_ref = node_ref.get()->FindChild(partial_key);
 
             /**
              * Case 1:  Partial key does not exist in the node.
@@ -30,14 +29,13 @@ namespace art
                         static_cast<uintptr_t>(value) << 32 | 0x7
                 );
 
-                Node* new_node = node->Insert(partial_key, tagged_pointer_value);
+                Node* new_node = node_ref.get()->Insert(partial_key, tagged_pointer_value);
 
-                if (new_node != node)
+                if (new_node != node_ref.get())
                 {
                     // node has changed
                     // -> update parent pointer and delete old child
-                    // TODO:
-                    node_ref = new_node;
+                    node_ref.get() = new_node;
                     delete child_node_ref;
                 }
 
@@ -72,7 +70,7 @@ namespace art
              * Case 3:  Partial key exists and stores a pointer to a child node.
              *          -> Insert at child node at next depth.
              */
-            node = child_node_ref;
+            node_ref = std::ref(child_node_ref);
         }
 
         __unreachable();
