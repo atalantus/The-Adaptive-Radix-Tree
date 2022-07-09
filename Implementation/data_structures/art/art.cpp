@@ -4,10 +4,13 @@ namespace art
 {
     void Art::Insert(const uint32_t value)
     {
-        std::cout
-                << "=========================================================================================================================================="
-                << std::endl;
+        /*
         root_->PrintTree(0);
+        std::cout
+                << "\n=========================================================================================================================================="
+                << std::endl;
+        std::cout << "Insert: " << std::hex << SwapEndianess(value) << std::endl;
+         */
 
         std::reference_wrapper<Node*> node_ref = std::ref(root_);
 
@@ -154,5 +157,10 @@ namespace art
         }
 
         __unreachable();
+    }
+
+    void Art::PrintTree() const
+    {
+        root_->PrintTree(0);
     }
 }

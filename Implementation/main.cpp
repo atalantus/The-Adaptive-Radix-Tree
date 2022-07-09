@@ -67,8 +67,7 @@ void GenerateRandomNumbers(uint32_t*& numbers, uint32_t*& search_numbers, const 
 
     for (uint32_t i = 0; i < number_elements; ++i)
     {
-        //const uint32_t n = numbers_distr(eng);
-        const uint32_t n = i;
+        const uint32_t n = numbers_distr(eng);
         numbers[i] = is_big_endian ? n : SwapEndianess(n);
     }
 

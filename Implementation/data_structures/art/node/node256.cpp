@@ -20,13 +20,9 @@ namespace art
             std::cout << "--";
         std::cout << " ";
 
-        std::cout << std::hex << std::uppercase << this << " tp:" << +type_ << " cc:" << +child_count_ << " children{";
+        std::cout << std::hex << std::uppercase << this << std::dec << " tp:" << +type_ << " cc:" << +child_count_ << " children{";
         for (int i = 0; i < 256; ++i)
-        {
-            Node::PrintChild(children_[i], i);
-            if (i < 255)
-                std::cout << ",";
-        }
+            Node::PrintChild(children_[i], i, 256);
         std::cout << "}" << std::endl;
 
         for (int i = 0; i < 256; ++i)

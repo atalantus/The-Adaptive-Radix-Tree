@@ -62,7 +62,7 @@ namespace art
         /**
          * Prints a pointer to a child
          */
-        static void PrintChild(Node* child, int i);
+        static void PrintChild(Node* child, int i, int m);
 
         /**
          * Returns true if the address value is actually a full key stored using multi-value lazy expansion.
@@ -129,6 +129,7 @@ namespace art
     public:
         Node48() : Node(kNode48), keys_{}, children_{}
         {
+            std::fill_n(keys_, 256, free_marker_);
         }
 
         Node* Insert(uint8_t partial_key, Node* child_node);

@@ -112,10 +112,10 @@ namespace art
         __unreachable();
     }
 
-    void Node::PrintChild(Node* child, int i)
+    void Node::PrintChild(Node* child, int i, int m)
     {
         if (child == nullptr)
-            std::cout << std::dec << i << ":" << static_cast<uint8_t>(0);
+            return;
         else if (Node::IsLazyExpanded(reinterpret_cast<uint64_t>(child)))
         {
             auto val = static_cast<uint32_t>(reinterpret_cast<uint64_t>(child) >> 32);
@@ -124,6 +124,8 @@ namespace art
         }
         else
             std::cout << std::dec << i << ":" << std::hex << child;
+        if (i < m - 1)
+            std::cout << ",";
     }
 
     bool Node::IsLazyExpanded(const uint64_t address_value)

@@ -44,20 +44,17 @@ namespace art
             std::cout << "--";
         std::cout << " ";
 
-        std::cout << std::hex << std::uppercase << this << " tp:" << +type_ << " cc:" << +child_count_ << " keys{";
+        std::cout << std::hex << std::uppercase << this << std::dec << " tp:" << +type_ << " cc:" << +child_count_ << " keys{";
         for (int i = 0; i < 256; ++i)
         {
-            std::cout << std::dec << i << ":" << std::hex << +keys_[i];
+            if (keys_[i] == free_marker_) continue;
+            std::cout << std::hex << i << ":" << std::dec << +keys_[i];
             if (i < 255)
                 std::cout << ",";
         }
         std::cout << "} children{";
         for (int i = 0; i < 48; ++i)
-        {
-            Node::PrintChild(children_[i], i);
-            if (i < 48)
-                std::cout << ",";
-        }
+            Node::PrintChild(children_[i], i, 48);
         std::cout << "}" << std::endl;
 
         for (int i = 0; i < 256; ++i)

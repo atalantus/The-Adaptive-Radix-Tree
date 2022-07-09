@@ -75,20 +75,17 @@ namespace art
             std::cout << "--";
         std::cout << " ";
 
-        std::cout << std::hex << std::uppercase << this << " tp:" << +type_ << " cc:" << +child_count_ << " keys{";
+        std::cout << std::hex << std::uppercase << this << std::dec << " tp:" << +type_ << " cc:" << +child_count_ << " keys{";
         for (int i = 0; i < 16; ++i)
         {
+            if (keys_[i] == 0 && children_[i] == nullptr) continue;
             std::cout << std::dec << i << ":" << std::hex << +keys_[i];
             if (i < 15)
                 std::cout << ",";
         }
         std::cout << "} children{";
         for (int i = 0; i < 16; ++i)
-        {
-            Node::PrintChild(children_[i], i);
-            if (i < 15)
-                std::cout << ",";
-        }
+            Node::PrintChild(children_[i], i, 16);
         std::cout << "}" << std::endl;
 
         for (uint8_t i = 0; i < child_count_; ++i)
