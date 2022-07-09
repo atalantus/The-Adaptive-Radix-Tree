@@ -2,8 +2,10 @@
 
 namespace art
 {
-    void Node256::Insert(uint8_t partial_key, Node* node)
+    Node* Node256::Insert(const uint8_t partial_key, Node* child_node)
     {
+        children_[partial_key] = child_node;
+        return this;
     }
 
     Node* Node256::FindChild(const uint8_t partial_key) const

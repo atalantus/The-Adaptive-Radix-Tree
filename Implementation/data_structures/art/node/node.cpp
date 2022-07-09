@@ -2,33 +2,29 @@
 
 namespace art
 {
-    void Node::Insert(const uint8_t partial_key, Node* node)
+    Node* Node::Insert(const uint8_t partial_key, Node* child_node)
     {
         switch (type_)
         {
             case kNode4:
                 {
                     const auto n = static_cast<Node4*>(this);
-                    n->Insert(partial_key, node);
-                    return;
+                    return n->Insert(partial_key, child_node);
                 }
             case kNode16:
                 {
                     const auto n = static_cast<Node16*>(this);
-                    n->Insert(partial_key, node);
-                    return;
+                    return n->Insert(partial_key, child_node);
                 }
             case kNode48:
                 {
                     const auto n = static_cast<Node48*>(this);
-                    n->Insert(partial_key, node);
-                    return;
+                    return n->Insert(partial_key, child_node);
                 }
             case kNode256:
                 {
                     const auto n = static_cast<Node256*>(this);
-                    n->Insert(partial_key, node);
-                    return;
+                    return n->Insert(partial_key, child_node);
                 }
         }
     }

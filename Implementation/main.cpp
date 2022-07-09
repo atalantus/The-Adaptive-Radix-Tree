@@ -25,8 +25,8 @@ constexpr char kHelpMsg[] = "This program benchmarks different indexing structur
  */
 const std::vector<std::tuple<std::string, uint8_t, Benchmark*>> kIndexStructures{
     {"ART", 2, new ArtBenchmark()},
-    {"Trie", 2, new TrieBenchmark()},
-    {"MTrie", 2, new MTrieBenchmark()},
+    //{"Trie", 2, new TrieBenchmark()},
+    //{"MTrie", 2, new MTrieBenchmark()},
     //{"CTrie", 2, new CTrieBenchmark()},
     //{"Sorted List", 1, new SortedListBenchmark()},
     //{"Hash Table", 1, new HashTableBenchmark()},
@@ -254,6 +254,12 @@ int main(int argc, char* argv[])
         return EXIT_SUCCESS;
     }
 
+    if constexpr (sizeof(intptr_t) != 8)
+    {
+        std::cerr << "Please make sure to compile this program for 64 bit architecture!" << std::endl;
+        return EXIT_FAILURE;
+    }
+
     /*
     if (argc < 5)
     {
@@ -267,20 +273,20 @@ int main(int argc, char* argv[])
     char* iterations_arg = GetCmdArg(argv, argv + argc, "-i");
 
     // TODO: Default Values
-
+    /*
     if (benchmark_arg == nullptr || size_arg == nullptr)
     {
         fprintf(stderr, kUsageMsg, argv[0]);
         return EXIT_FAILURE;
     }
+    */
+
+    //const std::string benchmark_str{benchmark_arg};
+    //const std::string size_str{size_arg};
 
 
-    const std::string benchmark_str{benchmark_arg};
-    const std::string size_str{size_arg};
-
-
-    //const std::string benchmark_str{"insert"};
-    //const std::string size_str{"2"};
+    const std::string benchmark_str{"insert"};
+    const std::string size_str{"1"};
 
 
     if (benchmark_str == "insert")

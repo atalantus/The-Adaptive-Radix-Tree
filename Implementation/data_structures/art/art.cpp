@@ -5,6 +5,7 @@ namespace art
     void Art::Insert(const uint32_t value)
     {
         Node* node = root_;
+        Node** parent_child_ptr = &root_;
 
         for (uint8_t offset = 0; offset < 32; offset += 8)
         {
@@ -16,34 +17,45 @@ namespace art
 
             if (child_node == nullptr)
             {
-                // no child for this partial key -> lazy expansion
-                const uint64_t tagged_pointer_value = static_cast<uint64_t>(value) << 32 | 0x7;
+                // no child for this partial key -> multi-value leave lazy expansion
+                const auto tagged_pointer_value = reinterpret_cast<Node*>(
+                    static_cast<uintptr_t>(value) << 32 | 0x7
+                );
 
-                node->Insert(partial_key, tagged_pointer_value);
+                Node* new_ptr = node->Insert(partial_key, tagged_pointer_value);
+
+                if (new_ptr != node)
+                {
+                    /* TODO: Check Performance?
+                     * Since reassigning this pointer is rare maybe it's more efficient to use simple pointer and search new in case of update?
+                     */
+
+                    // node has changed -> update parent pointer and delete old child
+                    *parent_child_ptr = new_ptr;
+                    delete child_node;
+                }
+
+                return;
+            }
+
+            const auto address_value = reinterpret_cast<uint64_t>(child_node);
+
+            if (Node::IsLazyExpanded(address_value))
+            {
+                if (Node::CmpLazyExpansion(address_value, value))
+                    // value has already been inserted
+                    return;
+
+                // TODO:
+                // expand keys further until they differ
+                // -> create and add new child
             }
             else
             {
-                const auto address_value = reinterpret_cast<uint64_t>(child_node);
-
-                if (Node::IsLazyExpanded(address_value))
-                {
-                    if (Node::CmpLazyExpansion(address_value, value))
-                    {
-                        // value has already been inserted
-                        return;
-                    }
-                    else
-                    {
-                        // expand keys further until they differ
-                        // -> create and add new child
-                    }
-                }
-                else
-                {
-                    // we have a child node for this partial key
-                    // -> go to next node
-                    node = child_node;
-                }
+                // we have a child node for this partial key
+                // -> go to next node
+                node = child_node;
+                parent_child_ptr = &child_node;
             }
         }
     }

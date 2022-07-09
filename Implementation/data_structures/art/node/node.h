@@ -16,12 +16,13 @@ namespace art
         }
 
         /**
-         * Inserts a new partial key, address value pair into the node.
+         * Inserts a new partial key with a pointer to a child node into the node and returns the pointer to it.
+         * The returned pointer might point to a new node if the node was already full.
          */
-        void Insert(uint8_t partial_key, Node* node);
+        Node* Insert(uint8_t partial_key, Node* child_node);
 
         /**
-         * Finds the child node for a given partial key and its memory address.
+         * Finds the child node for a given partial key and returns a pointer to its memory address.
          *
          * Since this ART uses multi-value leaves addresses can also indicate an actual
          * 32 bit value.
@@ -53,7 +54,7 @@ namespace art
          */
         static bool CmpLazyExpansion(uint64_t address_value, uint32_t key);
 
-    private:
+    protected:
         NodeType type_;
         uint8_t child_count_;
     };
@@ -69,7 +70,7 @@ namespace art
         {
         }
 
-        void Insert(uint8_t partial_key, Node* node);
+        Node* Insert(uint8_t partial_key, Node* child_node);
 
         Node* FindChild(uint8_t partial_key) const;
     private:
@@ -84,12 +85,14 @@ namespace art
         {
         }
 
-        void Insert(uint8_t partial_key, Node* node);
+        Node* Insert(uint8_t partial_key, Node* child_node);
 
         Node* FindChild(uint8_t partial_key) const;
     private:
         uint8_t keys_[16];
         Node* children_[16];
+
+        friend class Node4;
     };
 
     class Node48 : public Node
@@ -101,13 +104,14 @@ namespace art
         {
         }
 
-        void Insert(uint8_t partial_key, Node* node);
-
+        Node* Insert(uint8_t partial_key, Node* child_node);
 
         Node* FindChild(uint8_t partial_key) const;
     private:
         uint8_t keys_[256];
         Node* children_[48];
+
+        friend class Node16;
     };
 
     class Node256 : public Node
@@ -117,10 +121,12 @@ namespace art
         {
         }
 
-        void Insert(uint8_t partial_key, Node* node);
+        Node* Insert(uint8_t partial_key, Node* child_node);
 
         Node* FindChild(uint8_t partial_key) const;
     private:
         Node* children_[256];
+
+        friend class Node48;
     };
 }

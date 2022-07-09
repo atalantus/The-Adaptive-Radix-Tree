@@ -9,8 +9,13 @@ namespace art
     class Art
     {
     public:
-        Art() : root_{}
+        Art() : root_{new Node4()}
         {
+        }
+
+        ~Art()
+        {
+            delete root_;
         }
 
         /**
