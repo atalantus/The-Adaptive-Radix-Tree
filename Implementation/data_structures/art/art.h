@@ -42,6 +42,8 @@ namespace art
          */
         std::vector<uint32_t> FindRange(uint32_t from, uint32_t to) const;
 
+    private:
+        void ExpandLazyExpansion(uint32_t value1, uint32_t value2, uint8_t depth, Node* node);
 
     private:
         Node* root_;

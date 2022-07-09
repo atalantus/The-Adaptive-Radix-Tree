@@ -27,6 +27,8 @@ namespace art
                     return n->Insert(partial_key, child_node);
                 }
         }
+
+        __unreachable();
     }
 
     Node* Node::FindChild(const uint8_t partial_key)
@@ -54,6 +56,8 @@ namespace art
                     return n->FindChild(partial_key);
                 }
         }
+
+        __unreachable();
     }
 
     bool Node::IsFull() const
@@ -65,6 +69,8 @@ namespace art
             case kNode48: return child_count_ == 48;
             case kNode256: return false;
         }
+
+        __unreachable();
     }
 
     bool Node::IsLazyExpanded(const uint64_t address_value)
@@ -76,7 +82,7 @@ namespace art
     {
         // address_value is actual full key value instead of address
         // (key value stored at high 32 bits)
-        const uint32_t full_key_value = (address_value & (0xFFFFFFFFULL << 32) >> 32);
+        const uint32_t full_key_value = address_value >> 32;
         if (full_key_value == key)
             return true;
         // full key value is different

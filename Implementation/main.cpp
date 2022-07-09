@@ -67,7 +67,7 @@ void GenerateRandomNumbers(uint32_t*& numbers, uint32_t*& search_numbers, const 
 
     for (uint32_t i = 0; i < number_elements; ++i)
     {
-        const uint32_t n = numbers_distr(eng);
+        const uint32_t n = /*numbers_distr(eng);*/i;
         numbers[i] = is_big_endian ? n : SwapEndianess(n);
     }
 
@@ -199,6 +199,8 @@ void RunBenchmark()
             case BenchmarkTypes::kRangeSearch:
                 return "range_search";
         }
+
+        __unreachable();
     };
 
     std::cout << "Starting '" << benchmark_to_string() << "' benchmark with size '" << size << "', '" << iterations

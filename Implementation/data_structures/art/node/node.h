@@ -3,6 +3,7 @@
 #include <cstdint>
 
 #include "node.h"
+#include "../../../util.h"
 
 namespace art
 {

@@ -17,13 +17,14 @@ namespace ctrie
 
             if (!node_map_.contains(trie_key))
             {
-                uint32_t next_node_index = node_map_.size() + 1;
+                auto next_node_index = static_cast<uint32_t>(node_map_.size() + 1);
 
                 // create new node on search path
                 node_map_.insert({trie_key, next_node_index});
 
                 node_index = next_node_index;
-            } else
+            }
+            else
             {
                 // go to next node
                 node_index = node_map_.find(trie_key)->second;
