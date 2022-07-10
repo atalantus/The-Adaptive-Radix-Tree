@@ -26,7 +26,7 @@ namespace art
 
             /**
              * Case 1:  Partial key does not exist in the node.
-             *          -> Insert full key lazy expanded via multi-value leaf.
+             *          -> Insert full key lazy expanded via combined value/pointer slots.
              */
             if (child_node_ref == null_node)
             {
@@ -48,8 +48,8 @@ namespace art
             }
 
             /**
-             * Case 2:  Partial key exists and stores a full key (multi-value leave).
-             *          -> Either the full key matches or we expand the multi-value leave.
+             * Case 2:  Partial key exists and stores a full key (combined value/pointer slots).
+             *          -> Either the full key matches or we expand the two different keys until they differ.
              */
             if (Node::IsLazyExpanded(child_node_ref))
             {
@@ -59,7 +59,7 @@ namespace art
 
 
                 // there is already the same partial key for a different full key
-                // -> create and add new child nodes until keys differ and then insert multi-value leaves
+                // -> create and add new child nodes until keys differ and then insert them as tagged pointers
                 const auto address_value = reinterpret_cast<uint64_t>(child_node_ref);
 
                 const auto new_child_node = new Node4();

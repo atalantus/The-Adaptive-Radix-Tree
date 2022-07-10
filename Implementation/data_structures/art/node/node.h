@@ -35,7 +35,7 @@ namespace art
         /**
          * Finds the child node for a given partial key and returns a reference to the pointer to its memory address.
          *
-         * Since this ART uses multi-value leaves addresses can also indicate an actual
+         * Since this ART uses combined value/pointer slots pointers can also indicate an actual
          * 32 bit value.
          *
          * The method used for this implementation is pointer tagging.
@@ -70,7 +70,7 @@ namespace art
         static void PrintChild(Node* child, int i, int m);
 
         /**
-         * Returns true if the pointer value is actually a full key stored using multi-value lazy expansion.
+         * Returns true if the pointer value is actually a full key stored using combined value/pointer slots.
          */
         static bool IsLazyExpanded(Node* node_ptr);
 
