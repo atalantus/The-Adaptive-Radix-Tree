@@ -5,6 +5,7 @@ namespace art
     Node* Node256::Insert(const uint8_t partial_key, Node* child_node)
     {
         children_[partial_key] = child_node;
+        ++child_count_;
         return this;
     }
 
@@ -13,12 +14,11 @@ namespace art
         return children_[partial_key];
     }
 
-    void Node256::PrintTree(int depth) const
+    void Node256::PrintTree(const int depth) const
     {
         std::cout << "|";
         for (int i = 0; i < depth; ++i)
-            std::cout << "--";
-        std::cout << " ";
+            std::cout << "-- ";
 
         std::cout << std::hex << std::uppercase << this << std::dec << " tp:" << +type_ << " cc:" << +child_count_ << " children{";
         for (int i = 0; i < 256; ++i)

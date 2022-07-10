@@ -1,5 +1,7 @@
 #include "art.h"
 
+#include <functional>
+
 namespace art
 {
     void Art::Insert(const uint32_t value)

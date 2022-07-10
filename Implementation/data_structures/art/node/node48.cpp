@@ -37,12 +37,11 @@ namespace art
         return null_node;
     }
 
-    void Node48::PrintTree(int depth) const
+    void Node48::PrintTree(const int depth) const
     {
         std::cout << "|";
         for (int i = 0; i < depth; ++i)
-            std::cout << "--";
-        std::cout << " ";
+            std::cout << "-- ";
 
         std::cout << std::hex << std::uppercase << this << std::dec << " tp:" << +type_ << " cc:" << +child_count_ << " keys{";
         for (int i = 0; i < 256; ++i)

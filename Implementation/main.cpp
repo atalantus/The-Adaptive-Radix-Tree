@@ -2,7 +2,7 @@
 #include <iostream>
 #include <random>
 #include <string>
-#include "clock.h"
+#include <chrono>
 #include "benchmark.h"
 #include "data_structures/data_structures.h"
 #include "util.h"
@@ -33,7 +33,7 @@ const std::vector<std::tuple<std::string, uint8_t, Benchmark*>> kIndexStructures
         {"Red-black Tree", 1, new RbTreeBenchmark()}
 };
 
-constexpr uint32_t kDefaultIterations{1};
+constexpr uint32_t kDefaultIterations{2};
 
 enum class BenchmarkTypes
 {
@@ -136,9 +136,6 @@ auto RunBenchmarkIteration()
 
     std::cout << "Finished allocating Memory for Numbers." << std::endl;
 
-    Clock clock;
-    double time{0.0};
-
     /**
      * Benchmark Index Structures
      */
@@ -151,15 +148,15 @@ auto RunBenchmarkIteration()
 
         structure->InitializeStructure();
 
-        clock.Start();
+        auto s1 = std::chrono::system_clock::now();
         structure->Insert(numbers, number_elements);
-        time = clock.Stop();
+        double time = std::chrono::duration<double, std::milli>{std::chrono::high_resolution_clock::now() - s1}.count() / 1000.0;
 
         if (benchmark == BenchmarkTypes::kSearch)
         {
-            clock.Start();
+            s1 = std::chrono::system_clock::now();
             structure->Search(search_numbers, number_elements);
-            time = clock.Stop();
+            time = std::chrono::duration<double, std::milli>{std::chrono::high_resolution_clock::now() - s1}.count() / 1000.0;
         }
 
         std::cout << "Finished " << name << ". Deleting..." << std::endl;

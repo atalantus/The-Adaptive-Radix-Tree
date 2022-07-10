@@ -45,8 +45,9 @@
 
 # IntelliJ
 /out/
+cmake-build-wsl-debug
+cmake-build-wsl-release
 cmake-build-debug-visual-studio
-cmake-build-debug
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/

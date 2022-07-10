@@ -23,9 +23,20 @@ namespace art
         }
 
         // find position to insert new partial key (sorted in ascending order)
-        // TODO: What about fragmentation through deletion.
-        uint8_t pos{0};
-        for (; keys_[pos] < partial_key && pos < child_count_; ++pos);
+
+        /**
+         * x86-64 SIMD using SSE2
+         * See for reference: https://www.intel.com/content/www/us/en/docs/intrinsics-guide/index.html
+         */
+        // flip sign bit for signed SIMD comparison
+        int8_t partial_key_flipped = partial_key ^ 128;
+        // for exact documentation see Node16::FindChild below
+        const __m128i partial_key_set = _mm_set1_epi8(partial_key_flipped);
+        const __m128i child_key_set = _mm_loadu_si128(reinterpret_cast<__m128i*>(keys_));
+        // compare less than
+        const __m128i cmp = _mm_cmplt_epi8(partial_key_set, child_key_set);
+        int cmp_mask = _mm_movemask_epi8(cmp) & (1 << child_count_) - 1;
+        uint32_t pos = cmp_mask ? __ctz(cmp_mask) : child_count_;
 
         // move everything from pos
         memmove(keys_ + pos + 1, keys_ + pos, child_count_ - pos);
@@ -49,12 +60,14 @@ namespace art
         // replicate 8 bit partial key to fill 128 bit register
         const __m128i partial_key_set = _mm_set1_epi8(partial_key);
         // store child key set in 128 bit register
-        const __m128i child_key_set = _mm_loadu_epi8(keys_);
+        // use _mm_loadu_si128 instead of _mm_loadu_epi8 for not needing AVX-512
+        const __m128i child_key_set = _mm_loadu_si128(reinterpret_cast<__m128i*>(keys_));
         // compare partial key set with child key data and store compare bitmask
         // (stores 1 at bit i if keys at position i were equal otherwise 0)
         // using AVX-512 this can be done in one instruction:
         // const __mmask16 cmp_mask = _mm_cmpeq_epi8_mask(partial_key_set, child_key_set);
         const __m128i cmp = _mm_cmpeq_epi8(partial_key_set, child_key_set);
+        // only use mask up to child_count_ (needed when searching 0th partial key since unused key elements are also 0)
         int cmp_mask = _mm_movemask_epi8(cmp) & (1 << child_count_) - 1;
 
         if (cmp_mask)
@@ -68,12 +81,11 @@ namespace art
         return null_node;
     }
 
-    void Node16::PrintTree(int depth) const
+    void Node16::PrintTree(const int depth) const
     {
         std::cout << "|";
         for (int i = 0; i < depth; ++i)
-            std::cout << "--";
-        std::cout << " ";
+            std::cout << "-- ";
 
         std::cout << std::hex << std::uppercase << this << std::dec << " tp:" << +type_ << " cc:" << +child_count_ << " keys{";
         for (int i = 0; i < 16; ++i)
