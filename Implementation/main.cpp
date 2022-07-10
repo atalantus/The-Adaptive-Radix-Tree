@@ -150,13 +150,13 @@ auto RunBenchmarkIteration()
 
         auto s1 = std::chrono::system_clock::now();
         structure->Insert(numbers, number_elements);
-        double time = std::chrono::duration<double, std::milli>{std::chrono::high_resolution_clock::now() - s1}.count() / 1000.0;
+        double time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - s1).count() / 1000.0;
 
         if (benchmark == BenchmarkTypes::kSearch)
         {
             s1 = std::chrono::system_clock::now();
             structure->Search(search_numbers, number_elements);
-            time = std::chrono::duration<double, std::milli>{std::chrono::high_resolution_clock::now() - s1}.count() / 1000.0;
+            time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - s1).count() / 1000.0;
         }
 
         std::cout << "Finished " << name << ". Deleting..." << std::endl;

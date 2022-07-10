@@ -18,8 +18,8 @@
             }
         },
         {
-            "name": "x64-debug",
-            "displayName": "x64 Debug",
+            "name": "msvc-x64-debug",
+            "displayName": "MSVC x64 Debug",
             "inherits": "windows-base",
             "architecture": {
                 "value": "x64",
@@ -30,16 +30,16 @@
             }
         },
         {
-            "name": "x64-release",
-            "displayName": "x64 Release",
-            "inherits": "x64-debug",
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Release"
-            }
+          "name": "msvc-x64-release",
+          "displayName": "MSVC x64 Release",
+          "inherits": "msvc-x64-debug",
+          "cacheVariables": {
+            "CMAKE_BUILD_TYPE": "Release"
+          }
         },
         {
             "name": "gcc Debug",
-            "displayName": "GCC",
+            "displayName": "GCC Debug",
             "description": "Using compilers: C = /usr/bin/gcc, CXX = /usr/bin/gcc",
             "binaryDir": "${sourceDir}/out/build/${presetName}",
             "cacheVariables": {
@@ -51,7 +51,7 @@
         },
         {
             "name": "gcc Release",
-            "displayName": "GCC",
+            "displayName": "GCC Release",
             "description": "Using compilers: C = /usr/bin/gcc, CXX = /usr/bin/gcc",
             "binaryDir": "${sourceDir}/out/build/${presetName}",
             "cacheVariables": {
