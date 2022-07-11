@@ -147,13 +147,13 @@ auto RunBenchmarkIteration()
 
         auto s1 = std::chrono::system_clock::now();
         structure->Insert(numbers, number_elements);
-        double time = static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now() - s1).count()) / 1e6;
+        double time = static_cast<double>(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now() - s1).count()) / 1e9;
 
         if (benchmark == BenchmarkTypes::kSearch)
         {
             s1 = std::chrono::system_clock::now();
             structure->Search(search_numbers, number_elements);
-            time = static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now() - s1).count()) / 1e6;
+            time = static_cast<double>(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now() - s1).count()) / 1e9;
         }
 
         std::cout << "Finished " << name << ". Deleting..." << std::endl;
@@ -290,7 +290,6 @@ int main(int argc, char* argv[])
         fprintf(stderr, kUsageMsg, argv[0]);
         return EXIT_FAILURE;
     }
-    
 
     const std::string benchmark_str{benchmark_arg};
     const std::string size_str{size_arg};
