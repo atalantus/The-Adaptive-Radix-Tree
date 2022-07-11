@@ -33,7 +33,7 @@ const std::vector<std::tuple<std::string, uint8_t, Benchmark*>> kIndexStructures
         {"Red-black Tree", 1, new RbTreeBenchmark()}
 };
 
-constexpr uint32_t kDefaultIterations{2};
+constexpr uint32_t kDefaultIterations{10};
 
 enum class BenchmarkTypes
 {
@@ -124,9 +124,6 @@ auto RunBenchmarkIteration()
         case 2:
             number_elements = 16'000'000;
             break;
-        case 3:
-            number_elements = 256'000'000;
-            break;
     }
 
     uint32_t* numbers = nullptr;
@@ -150,13 +147,13 @@ auto RunBenchmarkIteration()
 
         auto s1 = std::chrono::system_clock::now();
         structure->Insert(numbers, number_elements);
-        double time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - s1).count() / 1000.0;
+        double time = static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now() - s1).count()) / 1e6;
 
         if (benchmark == BenchmarkTypes::kSearch)
         {
             s1 = std::chrono::system_clock::now();
             structure->Search(search_numbers, number_elements);
-            time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - s1).count() / 1000.0;
+            time = static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now() - s1).count()) / 1e6;
         }
 
         std::cout << "Finished " << name << ". Deleting..." << std::endl;
@@ -220,10 +217,22 @@ void RunBenchmark()
     std::cout << "\t\t\tBENCHMARK RESULTS\t\t\t" << std::endl;
     std::cout << "=================================================================" << std::endl;
 
-    std::cout << "Index Structure\t|\tMin\t|\tMax\t|\tAvg\t|" << std::endl;
+    std::cout << "Index Structure\t|\tMin\t|\tMax\t|\tAvg\t|\tM Ops/s\t|" << std::endl;
     std::cout << "-----------------------------------------------------------------" << std::endl;
 
     std::cout.precision(4);
+
+    uint32_t number_elements = 0;
+
+    switch (size)
+    {
+        case 1:
+            number_elements = 65'000;
+            break;
+        case 2:
+            number_elements = 16'000'000;
+            break;
+    }
 
     for (uint32_t i = 0; i < kIndexStructures.size(); ++i)
     {
@@ -239,7 +248,9 @@ void RunBenchmark()
         std::cout << std::fixed
                   << std::get<0>(times) << "s\t|\t"
                   << std::get<1>(times) << "s\t|\t"
-                  << std::get<2>(times) << "s\t|\t" << std::endl;
+                  << std::get<2>(times) << "s\t|\t"
+                  << number_elements / std::get<2>(times) / 1e6 << "\t|\t"
+                  << std::endl;
 
         // Delete Structure Benchmark
         delete std::get<2>(kIndexStructures[i]);
@@ -279,14 +290,14 @@ int main(int argc, char* argv[])
         fprintf(stderr, kUsageMsg, argv[0]);
         return EXIT_FAILURE;
     }
+    
+
+    const std::string benchmark_str{benchmark_arg};
+    const std::string size_str{size_arg};
     */
-
-    //const std::string benchmark_str{benchmark_arg};
-    //const std::string size_str{size_arg};
-
-
+    
     const std::string benchmark_str{"insert"};
-    const std::string size_str{"1"};
+    const std::string size_str{"2"};
 
 
     if (benchmark_str == "insert")

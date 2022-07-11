@@ -1,19 +1,22 @@
 #include "trie.h"
 
+#include <iostream>
+
 namespace trie
 {
     void Trie::Insert(const uint32_t value)
     {
         Node* node = root_;
+        uint8_t offset = 0;
 
-        for (uint8_t offset = 0; offset < 32; offset += 8)
+        for (; offset < 24; offset += 8)
         {
             // get next 8 bit of value as comparison key
-            const uint8_t comparison_key = (value >> offset) & 0xFF;
+            const uint8_t comparison_key = value >> offset & 0xFF;
 
             if (node->children_[comparison_key] == nullptr)
             {
-                Node* new_node = new Node();
+                const auto new_node = new Node();
 
                 // create new node on search path
                 node->children_[comparison_key] = new_node;
@@ -26,16 +29,20 @@ namespace trie
                 node = node->children_[comparison_key];
             }
         }
+
+        // insert last byte
+        node->children_[value >> offset & 0xFF] = reinterpret_cast<Node*>(0xFFFFFFFFFFFFFFFF);
     }
 
     bool Trie::Find(const uint32_t value) const
     {
         Node* node = root_;
+        uint8_t offset = 0;
 
-        for (uint8_t offset = 0; offset < 32; offset += 8)
+        for (; offset < 24; offset += 8)
         {
             // get next 8 bit of value as comparison key
-            const uint8_t comparison_key = (value >> offset) & 0xFF;
+            const uint8_t comparison_key = value >> offset & 0xFF;
 
             if (node->children_[comparison_key] == nullptr)
             {
@@ -48,8 +55,8 @@ namespace trie
             node = node->children_[comparison_key];
         }
 
-        // compared full value so it exists
-        return true;
+        // look if last byte is set
+        return reinterpret_cast<uint64_t>(node->children_[value >> offset & 0xFF]) == 0xFFFFFFFFFFFFFFFF;
     }
 
     std::vector<uint32_t> Trie::FindRange(const uint32_t from, const uint32_t to) const
@@ -61,7 +68,7 @@ namespace trie
     {
         for (const auto& c: node->children_)
         {
-            if (c == nullptr) continue;
+            if (c == nullptr || reinterpret_cast<uint64_t>(c) == 0xFFFFFFFFFFFFFFFF) continue;
 
             Destruct(c);
         }
