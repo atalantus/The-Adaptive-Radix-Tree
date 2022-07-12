@@ -26,11 +26,11 @@ constexpr char kHelpMsg[] = "This program benchmarks different indexing structur
 const std::vector<std::tuple<std::string, uint8_t, Benchmark*>> kIndexStructures{
         {"ART",            2, new ArtBenchmark()},
         {"Trie",           2, new TrieBenchmark()},
-        {"MTrie",          2, new MTrieBenchmark()},
-        {"HTrie",          2, new HTrieBenchmark()},
+        {"M-Trie",          2, new MTrieBenchmark()},
+        {"H-Trie",          2, new HTrieBenchmark()},
         {"Sorted List",    1, new SortedListBenchmark()},
-        {"Hash Table",     1, new HashTableBenchmark()},
-        {"Red-black Tree", 1, new RbTreeBenchmark()}
+        {"Hash-Table",     1, new HashTableBenchmark()},
+        {"RB-Tree", 2, new RbTreeBenchmark()}
 };
 
 constexpr uint32_t kDefaultIterations{10};
@@ -296,7 +296,7 @@ int main(int argc, char* argv[])
     */
     
     const std::string benchmark_str{"insert"};
-    const std::string size_str{"2"};
+    const std::string size_str{"1"};
 
 
     if (benchmark_str == "insert")
@@ -361,7 +361,7 @@ int main(int argc, char* argv[])
 
     dense = CmdArgExists(argv, argv + argc, "-d");
     // TODO:
-    dense = true;
+    dense = false;
 
     /**
      * Run Benchmark.
