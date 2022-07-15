@@ -29,18 +29,14 @@ public:
 
     void Search(const uint32_t* numbers, const uint32_t size) override
     {
-        const auto& sorted_list = *sorted_list_;
-
         for (uint32_t i = 0; i < size; ++i)
-            sorted_list.Find(numbers[i]);
+            sorted_list_->Find(numbers[i]);
     }
 
     void RangeSearch(const uint32_t* numbers, const uint32_t size) override
     {
-        const auto& sorted_list = *sorted_list_;
-
         for (uint32_t i = 0; i < 2 * size; ++i)
-            sorted_list.FindRange(numbers[i], numbers[++i]);
+            sorted_list_->FindRange(numbers[i], numbers[++i]);
     }
 
 private:

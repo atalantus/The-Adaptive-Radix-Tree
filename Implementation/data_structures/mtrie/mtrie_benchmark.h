@@ -24,26 +24,20 @@ public:
 
     void Insert(const uint32_t* numbers, const uint32_t size) override
     {
-        auto& mtrie = *mtrie_;
-
         for (uint32_t i = 0; i < size; ++i)
-            mtrie.Insert(numbers[i]);
+            mtrie_->Insert(numbers[i]);
     }
 
     void Search(const uint32_t* numbers, const uint32_t size) override
     {
-        const auto& mtrie = *mtrie_;
-
         for (uint32_t i = 0; i < size; ++i)
-            mtrie.Find(numbers[i]);
+            mtrie_->Find(numbers[i]);
     }
 
     void RangeSearch(const uint32_t* numbers, const uint32_t size) override
     {
-        const auto& mtrie = *mtrie_;
-
         for (uint32_t i = 0; i < 2 * size; ++i)
-            mtrie.FindRange(numbers[i], numbers[++i]);
+            mtrie_->FindRange(numbers[i], numbers[++i]);
     }
 
 private:

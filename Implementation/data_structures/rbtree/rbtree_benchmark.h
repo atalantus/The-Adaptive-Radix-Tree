@@ -24,23 +24,20 @@ public:
 
     void Insert(const uint32_t* numbers, const uint32_t size) override
     {
-        auto& rbtree = *rbtree_;
-
         for (uint32_t i = 0; i < size; ++i)
-            rbtree.Insert(numbers[i]);
+            rbtree_->Insert(numbers[i]);
     }
 
     void Search(const uint32_t* numbers, const uint32_t size) override
     {
-        const auto& rbtree = *rbtree_;
-
         for (uint32_t i = 0; i < size; ++i)
-            rbtree.Find(numbers[i]);
+            rbtree_->Find(numbers[i]);
     }
 
     void RangeSearch(const uint32_t* numbers, const uint32_t size) override
     {
-        return;
+        for (uint32_t i = 0; i < 2 * size; ++i)
+            rbtree_->FindRange(numbers[i], numbers[++i]);
     }
 
 private:

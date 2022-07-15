@@ -61,6 +61,8 @@ namespace mtrie
          */
         void Destruct(Node* node);
 
+        std::vector<uint32_t> FindRange(Node* node, uint32_t from, uint32_t to, int offset) const;
+
     private:
         Node* root_;
     };

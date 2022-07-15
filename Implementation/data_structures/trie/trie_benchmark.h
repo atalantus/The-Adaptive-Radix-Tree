@@ -32,18 +32,14 @@ public:
 
     void Search(const uint32_t* numbers, const uint32_t size) override
     {
-        const auto& trie = *trie_;
-
         for (uint32_t i = 0; i < size; ++i)
-            trie.Find(numbers[i]);
+            trie_->Find(numbers[i]);
     }
 
     void RangeSearch(const uint32_t* numbers, const uint32_t size) override
     {
-        const auto& trie = *trie_;
-
         for (uint32_t i = 0; i < 2 * size; ++i)
-            trie.FindRange(numbers[i], numbers[++i]);
+            trie_->FindRange(numbers[i], numbers[++i]);
     }
 
 private:

@@ -22,6 +22,9 @@ The implementation is specific for 32 bit keys and uses pointer tagging to store
 
 The implementation is specific for 32 bit keys and uses pointer tagging to store the last byte as a child pointer.
 ### H-Trie
+**A 256-way trie stored in a single hash-table.**
+
+Does not support range queries.
 
 ### Sorted List
 **Stores a specific range of keys in a sorted list.**
@@ -30,6 +33,8 @@ The implementation is specific for 32 bit keys and uses pointer tagging to store
 **Standard Library Hash-Table.**
 
 The implementation uses `std::unordered_set`.
+
+Does not support range queries.
 
 ### RB-Tree
 **Standard Library Red-black Tree.**

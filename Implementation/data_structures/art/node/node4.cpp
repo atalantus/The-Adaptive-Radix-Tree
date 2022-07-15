@@ -18,7 +18,6 @@ namespace art
         }
 
         // find position to insert new partial key (sorted in ascending order)
-        // TODO: What about fragmentation through deletion.
         uint8_t pos{0};
         for (; keys_[pos] < partial_key && pos < child_count_; ++pos);
 

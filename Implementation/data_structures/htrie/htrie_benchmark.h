@@ -24,23 +24,19 @@ public:
 
     void Insert(const uint32_t* numbers, const uint32_t size) override
     {
-        auto& htrie = *htrie_;
-
         for (uint32_t i = 0; i < size; ++i)
-            htrie.Insert(numbers[i]);
+            htrie_->Insert(numbers[i]);
     }
 
     void Search(const uint32_t* numbers, const uint32_t size) override
     {
-        const auto& htrie = *htrie_;
-
         for (uint32_t i = 0; i < size; ++i)
-            htrie.Find(numbers[i]);
+            htrie_->Find(numbers[i]);
     }
 
     void RangeSearch(const uint32_t* numbers, const uint32_t size) override
     {
-        return;
+        // H-Trie doesn't support range queries
     }
 
 private:

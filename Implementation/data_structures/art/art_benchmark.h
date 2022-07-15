@@ -24,28 +24,20 @@ public:
 
     void Insert(const uint32_t* numbers, const uint32_t size) override
     {
-        auto& art = *art_;
-
         for (uint32_t i = 0; i < size; ++i)
-            art.Insert(numbers[i]);
-
-        //art.PrintTree();
+            art_->Insert(numbers[i]);
     }
 
     void Search(const uint32_t* numbers, const uint32_t size) override
     {
-        const auto& art = *art_;
-
         for (uint32_t i = 0; i < size; ++i)
-            art.Find(numbers[i]);
+            art_->Find(numbers[i]);
     }
 
     void RangeSearch(const uint32_t* numbers, const uint32_t size) override
     {
-        const auto& art = *art_;
-
         for (uint32_t i = 0; i < 2 * size; ++i)
-            art.FindRange(numbers[i], numbers[++i]);
+            art_->FindRange(numbers[i], numbers[++i]);
     }
 
 private:

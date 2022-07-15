@@ -30,9 +30,7 @@ namespace art
              */
             if (child_node_ref == null_node)
             {
-                const auto tagged_pointer_value = reinterpret_cast<Node*>(
-                        static_cast<uintptr_t>(value) << 32 | 0x7
-                );
+                const auto tagged_pointer_value = reinterpret_cast<Node*>(static_cast<uint64_t>(value) << 32 | 0x7);
 
                 Node* new_node = node_ref.get()->Insert(partial_key, tagged_pointer_value);
 
@@ -112,11 +110,11 @@ namespace art
 
     std::vector<uint32_t> Art::FindRange(const uint32_t from, const uint32_t to) const
     {
-        auto result = std::vector<uint32_t>();
+        std::vector<uint32_t> res;
 
         // TODO: Range search
 
-        return result;
+        return res;
     }
 
     void Art::PrintTree() const
@@ -139,12 +137,8 @@ namespace art
                 // partial keys differ
                 // -> insert both full keys as multi value leaves
 
-                const auto tagged_pointer_value1 = reinterpret_cast<Node*>(
-                        static_cast<uintptr_t>(value1) << 32 | 0x7
-                );
-                const auto tagged_pointer_value2 = reinterpret_cast<Node*>(
-                        static_cast<uintptr_t>(value2) << 32 | 0x7
-                );
+                const auto tagged_pointer_value1 = reinterpret_cast<Node*>(static_cast<uint64_t>(value1) << 32 | 0x7);
+                const auto tagged_pointer_value2 = reinterpret_cast<Node*>(static_cast<uint64_t>(value2) << 32 | 0x7);
 
                 n->Insert(partial_key1, tagged_pointer_value1);
                 n->Insert(partial_key2, tagged_pointer_value2);

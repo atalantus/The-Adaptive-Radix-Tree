@@ -24,23 +24,19 @@ public:
 
     void Insert(const uint32_t* numbers, const uint32_t size) override
     {
-        auto& hash_table = *hash_table_;
-
         for (uint32_t i = 0; i < size; ++i)
-            hash_table.Insert(numbers[i]);
+            hash_table_->Insert(numbers[i]);
     }
 
     void Search(const uint32_t* numbers, const uint32_t size) override
     {
-        const auto& hash_table = *hash_table_;
-
         for (uint32_t i = 0; i < size; ++i)
-            hash_table.Find(numbers[i]);
+            hash_table_->Find(numbers[i]);
     }
 
     void RangeSearch(const uint32_t* numbers, const uint32_t size) override
     {
-        return;
+        // Hash-Table doesn't support range queries
     }
 
 private:
