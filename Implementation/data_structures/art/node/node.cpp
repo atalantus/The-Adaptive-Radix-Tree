@@ -9,25 +9,25 @@ namespace art
         switch (type_)
         {
             case kNode4:
-            {
-                const auto n = static_cast<Node4*>(this);
-                return n->Insert(partial_key, child_node);
-            }
+                {
+                    const auto n = static_cast<Node4*>(this);
+                    return n->Insert(partial_key, child_node);
+                }
             case kNode16:
-            {
-                const auto n = static_cast<Node16*>(this);
-                return n->Insert(partial_key, child_node);
-            }
+                {
+                    const auto n = static_cast<Node16*>(this);
+                    return n->Insert(partial_key, child_node);
+                }
             case kNode48:
-            {
-                const auto n = static_cast<Node48*>(this);
-                return n->Insert(partial_key, child_node);
-            }
+                {
+                    const auto n = static_cast<Node48*>(this);
+                    return n->Insert(partial_key, child_node);
+                }
             case kNode256:
-            {
-                const auto n = static_cast<Node256*>(this);
-                return n->Insert(partial_key, child_node);
-            }
+                {
+                    const auto n = static_cast<Node256*>(this);
+                    return n->Insert(partial_key, child_node);
+                }
         }
 
         __unreachable();
@@ -38,25 +38,54 @@ namespace art
         switch (type_)
         {
             case kNode4:
-            {
-                const auto n = static_cast<Node4*>(this);
-                return n->FindChild(partial_key);
-            }
+                {
+                    const auto n = static_cast<Node4*>(this);
+                    return n->FindChild(partial_key);
+                }
             case kNode16:
-            {
-                const auto n = static_cast<Node16*>(this);
-                return n->FindChild(partial_key);
-            }
+                {
+                    const auto n = static_cast<Node16*>(this);
+                    return n->FindChild(partial_key);
+                }
             case kNode48:
-            {
-                const auto n = static_cast<Node48*>(this);
-                return n->FindChild(partial_key);
-            }
+                {
+                    const auto n = static_cast<Node48*>(this);
+                    return n->FindChild(partial_key);
+                }
             case kNode256:
-            {
-                const auto n = static_cast<Node256*>(this);
-                return n->FindChild(partial_key);
-            }
+                {
+                    const auto n = static_cast<Node256*>(this);
+                    return n->FindChild(partial_key);
+                }
+        }
+
+        __unreachable();
+    }
+
+    std::vector<uint32_t> Node::FindRange(const uint32_t from, const uint32_t to, const int offset)
+    {
+        switch (type_)
+        {
+            case kNode4:
+                {
+                    const auto n = static_cast<Node4*>(this);
+                    return n->FindRange(from, to, offset);
+                }
+            case kNode16:
+                {
+                    const auto n = static_cast<Node16*>(this);
+                    return n->FindRange(from, to, offset);
+                }
+            case kNode48:
+                {
+                    const auto n = static_cast<Node48*>(this);
+                    return n->FindRange(from, to, offset);
+                }
+            case kNode256:
+                {
+                    const auto n = static_cast<Node256*>(this);
+                    return n->FindRange(from, to, offset);
+                }
         }
 
         __unreachable();
@@ -84,29 +113,29 @@ namespace art
         switch (type_)
         {
             case kNode4:
-            {
-                const auto n = static_cast<Node4*>(this);
-                n->PrintTree(depth);
-                return;
-            }
+                {
+                    const auto n = static_cast<Node4*>(this);
+                    n->PrintTree(depth);
+                    return;
+                }
             case kNode16:
-            {
-                const auto n = static_cast<Node16*>(this);
-                n->PrintTree(depth);
-                return;
-            }
+                {
+                    const auto n = static_cast<Node16*>(this);
+                    n->PrintTree(depth);
+                    return;
+                }
             case kNode48:
-            {
-                const auto n = static_cast<Node48*>(this);
-                n->PrintTree(depth);
-                return;
-            }
+                {
+                    const auto n = static_cast<Node48*>(this);
+                    n->PrintTree(depth);
+                    return;
+                }
             case kNode256:
-            {
-                const auto n = static_cast<Node256*>(this);
-                n->PrintTree(depth);
-                return;
-            }
+                {
+                    const auto n = static_cast<Node256*>(this);
+                    n->PrintTree(depth);
+                    return;
+                }
         }
 
         __unreachable();
@@ -149,29 +178,29 @@ namespace art
         switch (type_)
         {
             case kNode4:
-            {
-                const auto n = static_cast<Node4*>(this);
-                n->Destruct();
-                return;
-            }
+                {
+                    const auto n = static_cast<Node4*>(this);
+                    n->Destruct();
+                    return;
+                }
             case kNode16:
-            {
-                const auto n = static_cast<Node16*>(this);
-                n->Destruct();
-                return;
-            }
+                {
+                    const auto n = static_cast<Node16*>(this);
+                    n->Destruct();
+                    return;
+                }
             case kNode48:
-            {
-                const auto n = static_cast<Node48*>(this);
-                n->Destruct();
-                return;
-            }
+                {
+                    const auto n = static_cast<Node48*>(this);
+                    n->Destruct();
+                    return;
+                }
             case kNode256:
-            {
-                const auto n = static_cast<Node256*>(this);
-                n->Destruct();
-                return;
-            }
+                {
+                    const auto n = static_cast<Node256*>(this);
+                    n->Destruct();
+                    return;
+                }
         }
     }
 }

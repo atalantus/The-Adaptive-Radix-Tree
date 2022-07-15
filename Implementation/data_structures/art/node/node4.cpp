@@ -42,13 +42,37 @@ namespace art
         return null_node;
     }
 
+    std::vector<uint32_t> Node4::FindRange(const uint32_t from, const uint32_t to, const int offset) const
+    {
+        std::vector<uint32_t> res;
+
+        const uint8_t from_key = from >> offset & 0xFF;
+        const uint8_t to_key = to >> offset & 0xFF;
+
+        for (uint8_t i = 0; i < child_count_ && keys_[i] <= to_key; ++i)
+        {
+            if (keys_[i] < from_key) continue;
+
+            if (IsLazyExpanded(children_[i]))
+                res.push_back(reinterpret_cast<uint64_t>(children_[i]) >> 32);
+            else
+            {
+                auto p = children_[i]->FindRange(from, to, offset + 8);
+                res.insert(res.end(), p.begin(), p.end());
+            }
+        }
+
+        return res;
+    }
+
     void Node4::PrintTree(const int depth) const
     {
         std::cout << "|";
         for (int i = 0; i < depth; ++i)
             std::cout << "-- ";
 
-        std::cout << std::hex << std::uppercase << this << std::dec << " tp:" << +type_ << " cc:" << +child_count_ << " keys{";
+        std::cout << std::hex << std::uppercase << this << std::dec << " tp:" << +type_ << " cc:" << +child_count_ <<
+            " keys{";
         for (int i = 0; i < child_count_; ++i)
         {
             std::cout << std::dec << i << ":" << std::hex << +keys_[i];

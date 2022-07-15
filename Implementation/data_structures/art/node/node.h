@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <cstdint>
+#include <vector>
 
 #include "node.h"
 #include "node_util.h"
@@ -16,7 +17,10 @@ namespace art
 
     enum NodeType : uint8_t
     {
-        kNode4, kNode16, kNode48, kNode256
+        kNode4,
+        kNode16,
+        kNode48,
+        kNode256
     };
 
     class Node
@@ -48,6 +52,12 @@ namespace art
          * value.
          */
         Node*& FindChild(uint8_t partial_key);
+
+        /**
+         * Recursively finds all values in a given range (inclusive).
+         * TODO: Implement FindRange without recursion.
+         */
+        std::vector<uint32_t> FindRange(uint32_t from, uint32_t to, int offset);
 
         /**
          * Returns true if the node is full.
@@ -100,6 +110,8 @@ namespace art
 
         Node*& FindChild(uint8_t partial_key);
 
+        std::vector<uint32_t> FindRange(uint32_t from, uint32_t to, int offset) const;
+
         void Destruct();
 
         void PrintTree(int depth) const;
@@ -119,6 +131,8 @@ namespace art
         Node* Insert(uint8_t partial_key, Node* child_node);
 
         Node*& FindChild(uint8_t partial_key);
+
+        std::vector<uint32_t> FindRange(uint32_t from, uint32_t to, int offset);
 
         void Destruct();
 
@@ -145,6 +159,8 @@ namespace art
 
         Node*& FindChild(uint8_t partial_key);
 
+        std::vector<uint32_t> FindRange(uint32_t from, uint32_t to, int offset) const;
+
         void Destruct();
 
         void PrintTree(int depth) const;
@@ -166,6 +182,8 @@ namespace art
         Node* Insert(uint8_t partial_key, Node* child_node);
 
         Node*& FindChild(uint8_t partial_key);
+
+        std::vector<uint32_t> FindRange(uint32_t from, uint32_t to, int offset) const;
 
         void Destruct();
 

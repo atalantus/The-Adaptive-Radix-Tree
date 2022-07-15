@@ -110,11 +110,7 @@ namespace art
 
     std::vector<uint32_t> Art::FindRange(const uint32_t from, const uint32_t to) const
     {
-        std::vector<uint32_t> res;
-
-        // TODO: Range search
-
-        return res;
+        return root_->FindRange(from, to, 0);
     }
 
     void Art::PrintTree() const
