@@ -2,6 +2,11 @@
 
 namespace sorted_list
 {
+    void SortedList::Insert(const uint32_t* numbers, const uint32_t size)
+    {
+        sorted_list_ = std::vector<uint32_t>(numbers, numbers + size);
+    }
+
     bool SortedList::Find(const uint32_t value) const
     {
         return std::ranges::binary_search(sorted_list_, value);

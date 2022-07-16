@@ -92,7 +92,7 @@ namespace mtrie
     {
         for (auto& [_, snd] : node->children_)
         {
-            if (reinterpret_cast<uint64_t>(snd) == 0xFFFFFFFFFFFFFFFF) continue;
+            if (reinterpret_cast<uint64_t>(snd) & 0x7) continue;
 
             Destruct(snd);
             snd = nullptr;

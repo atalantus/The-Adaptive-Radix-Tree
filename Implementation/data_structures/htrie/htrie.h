@@ -12,19 +12,8 @@ namespace htrie
         {
         }
 
-        /**
-         * Inserts a 32 bit value into the trie.
-         *
-         * @param value the value to insert
-         */
         void Insert(uint32_t value);
 
-        /**
-         * Checks if a 32 bit value exists in the trie.
-         *
-         * @param value the value to search for
-         * @return true if the value exists otherwise false
-         */
         bool Find(uint32_t value) const;
 
     private:

@@ -24,7 +24,7 @@ public:
 
     void Insert(const uint32_t* numbers, const uint32_t size) override
     {
-        sorted_list_ = new sorted_list::SortedList(numbers, size);
+        sorted_list_->Insert(numbers, size);
     }
 
     void Search(const uint32_t* numbers, const uint32_t size) override

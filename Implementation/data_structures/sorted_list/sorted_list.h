@@ -11,10 +11,7 @@ namespace sorted_list
     public:
         SortedList() = default;
 
-        SortedList(const uint32_t* numbers, const uint32_t size) : sorted_list_(numbers, numbers + size)
-        {
-            std::ranges::sort(sorted_list_);
-        }
+        void Insert(const uint32_t* numbers, uint32_t size);
 
         bool Find(uint32_t value) const;
 

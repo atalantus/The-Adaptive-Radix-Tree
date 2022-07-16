@@ -95,7 +95,7 @@ namespace trie
     {
         for (const auto& c : node->children_)
         {
-            if (c == nullptr || reinterpret_cast<uint64_t>(c) == 0xFFFFFFFFFFFFFFFF) continue;
+            if (c == nullptr || reinterpret_cast<uint64_t>(c) & 0x7) continue;
 
             Destruct(c);
         }
