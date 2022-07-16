@@ -240,12 +240,12 @@ void RunBenchmark()
     std::cout << "Finished '" << benchmark_to_string() << "' benchmark with size '" << size << "', '" << iterations
         << "' iterations and '" << (dense ? "dense" : "sparse") << "' keys.\n" << std::endl;
 
-    std::cout << "=================================================================" << std::endl;
-    std::cout << "\t\t\tBENCHMARK RESULTS\t\t\t" << std::endl;
-    std::cout << "=================================================================" << std::endl;
+    std::cout << "=================================================================================" << std::endl;
+    std::cout << "\t\t\t\tBENCHMARK RESULTS" << std::endl;
+    std::cout << "=================================================================================" << std::endl;
 
-    std::cout << "Index Structure\t|\tMin\t|\tMax\t|\tAvg\t|\tM Ops/s\t|" << std::endl;
-    std::cout << "-----------------------------------------------------------------" << std::endl;
+    std::cout << "Index Structure\t|      Min\t|      Max\t|      Avg\t|      M Ops/s\t|" << std::endl;
+    std::cout << "---------------------------------------------------------------------------------" << std::endl;
 
     std::cout.precision(4);
 
@@ -258,12 +258,12 @@ void RunBenchmark()
         {
             std::cout << "\t";
         }
-        std::cout << "|\t";
+        std::cout << "|" << GetDoubleOffset(std::get<0>(times));
 
         std::cout << std::fixed
-            << std::get<0>(times) << "s\t|\t"
-            << std::get<1>(times) << "s\t|\t"
-            << std::get<2>(times) << "s\t|\t"
+            << std::get<0>(times) << "s\t|" << GetDoubleOffset(std::get<1>(times))
+            << std::get<1>(times) << "s\t|" << GetDoubleOffset(std::get<2>(times))
+            << std::get<2>(times) << "s\t|" << GetDoubleOffset(number_elements / std::get<2>(times) / 1e6)
             << number_elements / std::get<2>(times) / 1e6 << "\t|\t"
             << std::endl;
 
@@ -310,7 +310,7 @@ int main(int argc, char* argv[])
     const std::string size_str{size_arg};
     */
 
-    const std::string benchmark_str{"search"};
+    const std::string benchmark_str{"range_search"};
     const std::string size_str{"1"};
 
 

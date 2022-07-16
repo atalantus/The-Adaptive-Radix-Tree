@@ -59,7 +59,7 @@ namespace trie
 
     std::vector<uint32_t> Trie::FindRange(const uint32_t from, const uint32_t to) const
     {
-        return std::vector(FindRange(root_, from, to, 0));
+        return FindRange(root_, from, to, 0);
     }
 
     std::vector<uint32_t> Trie::FindRange(Node* node, const uint32_t from, const uint32_t to, const int offset) const
@@ -71,7 +71,7 @@ namespace trie
 
         if (offset == 24)
         {
-            for (uint8_t i = from_key; i <= to_key; ++i)
+            for (uint16_t i = from_key; i <= to_key; ++i)
             {
                 if (node->children_[i] == nullptr) continue;
                 res.push_back(reinterpret_cast<uint64_t>(node->children_[i]) >> 32);
@@ -79,7 +79,7 @@ namespace trie
         }
         else
         {
-            for (uint8_t i = from_key; i <= to_key; ++i)
+            for (uint16_t i = from_key; i <= to_key; ++i)
             {
                 if (node->children_[i] == nullptr) continue;
 

@@ -96,7 +96,7 @@ namespace art
 
         if (!cmp_mask) return res;
 
-        for (uint8_t i = __ctz(cmp_mask); i < child_count_ && keys_[i] <= to_key; ++i)
+        for (uint16_t i = __ctz(cmp_mask); i < child_count_ && keys_[i] <= to_key; ++i)
         {
             if (IsLazyExpanded(children_[i]))
                 res.push_back(reinterpret_cast<uint64_t>(children_[i]) >> 32);

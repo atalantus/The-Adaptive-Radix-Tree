@@ -66,11 +66,11 @@ namespace mtrie
 
         auto it = node->children_.find(from_key);
 
-        if (it == node->children_.end() || (*it).first > to) return res;
+        if (it == node->children_.end() || (*it).first > to_key) return res;
 
         if (offset == 24)
         {
-            for (; it != node->children_.end() && (*it).first <= to; ++it)
+            for (; it != node->children_.end() && (*it).first <= to_key; ++it)
             {
                 if ((*it).second == nullptr) continue;
                 res.push_back(reinterpret_cast<uint64_t>((*it).second) >> 32);
@@ -78,9 +78,9 @@ namespace mtrie
         }
         else
         {
-            for (; it != node->children_.end() && (*it).first <= to; ++it)
+            for (; it != node->children_.end() && (*it).first <= to_key; ++it)
             {
-                auto p = FindRange((*it).second, from, to, offset + 8);
+                auto p = FindRange((*it).second, from, to_key, offset + 8);
                 res.insert(res.end(), p.begin(), p.end());
             }
         }

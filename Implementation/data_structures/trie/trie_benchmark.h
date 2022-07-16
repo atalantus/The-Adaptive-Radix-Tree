@@ -38,8 +38,8 @@ public:
 
     void RangeSearch(const uint32_t* numbers, const uint32_t size) override
     {
-        for (uint32_t i = 0; i < 2 * size; ++i)
-            trie_->FindRange(numbers[i], numbers[++i]);
+        for (uint32_t i = 0; i < 2 * size; i += 2)
+            trie_->FindRange(numbers[i], numbers[i + 1]);
     }
 
 private:

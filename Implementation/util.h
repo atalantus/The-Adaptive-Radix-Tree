@@ -2,6 +2,20 @@
 
 #include <string>
 
+inline std::string GetDoubleOffset(const double n)
+{
+    const int p = static_cast<int>(n);
+    const int digits = p == 0 ? 1 : static_cast<int>(log10(p)) + 1;
+
+    std::string s;
+
+    for (int i = 0; i < 7 - digits; ++i)
+        s.append(" ");
+
+
+    return s;
+}
+
 inline char* GetCmdArg(char** begin, char** end, const std::string& arg)
 {
     char** itr = std::find(begin, end, arg);
@@ -29,9 +43,9 @@ inline bool IsBigEndian()
 inline uint32_t SwapEndianess(const uint32_t value)
 {
     return (value & 0xFF000000) >> 24
-           | (value & 0xFF0000) >> 8
-           | (value & 0xFF00) << 8
-           | ((unsigned) value & 0xFF) << 24;
+        | (value & 0xFF0000) >> 8
+        | (value & 0xFF00) << 8
+        | ((unsigned)value & 0xFF) << 24;
 }
 
 /**
@@ -44,6 +58,8 @@ inline uint32_t SwapEndianess(const uint32_t value)
 #elif defined(_MSC_VER) // MSVC
 
 [[noreturn]] __forceinline void __unreachable()
-{ __assume(false); }
+{
+    __assume(false);
+}
 
 #endif

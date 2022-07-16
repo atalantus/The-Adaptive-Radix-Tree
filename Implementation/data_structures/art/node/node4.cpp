@@ -49,7 +49,7 @@ namespace art
         const uint8_t from_key = from >> offset & 0xFF;
         const uint8_t to_key = to >> offset & 0xFF;
 
-        for (uint8_t i = 0; i < child_count_ && keys_[i] <= to_key; ++i)
+        for (uint16_t i = 0; i < child_count_ && keys_[i] <= to_key; ++i)
         {
             if (keys_[i] < from_key) continue;
 
