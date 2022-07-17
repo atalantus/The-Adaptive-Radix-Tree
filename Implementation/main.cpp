@@ -19,7 +19,7 @@ constexpr char kHelpMsg[] = "This program benchmarks different indexing structur
     "\t-s <1/2/3>\t\t\t: Specifies the benchmark size. Options are 1 with 65 thousand integers, 2 with 16 million integers and 3 with 256 million integers.\n"
     "\t-i <number>\t\t\t: Specifies the number of iterations the benchmark is run. Default value is %u. Should be an integer between 1 and 10000 (inclusive).\n"
     "\t-d\t\t\t\t: Use a dense (from 0 up to number of elements - 1) set of integers as keys. Otherwise a sparse (uniform random 32 bit integer) set will be used.\n"
-    "\t--skip <structure_list>\t\t\t: Specifies index structures to be skipped during this benchmark. Given as comma separated list of names (art, trie, m-trie, h-trie, sorted list, hash-table, rb-tree).\n"
+    "\t--skip <structure_list>\t\t\t: Specifies index structures to be skipped during this benchmark. Given as comma separated list of names (ART, Trie, M-Trie, H-Trie, Sorted List, Hash-Table, RB-Tree).\n"
     "\t-v\t\t\t\t: Enable verbose logging.\n";
 
 /**
@@ -257,7 +257,7 @@ void RunBenchmark()
     const auto time = static_cast<double>(std::chrono::duration_cast<
         std::chrono::seconds>(std::chrono::system_clock::now() - t1).count()) / 60;
     std::cout << "Finished '" << benchmark_to_string() << "' benchmark with size '" << size << "' (" << number_elements << " keys), '" <<
-        iterations << "' iterations and '" << (dense ? "dense" : "sparse") << "' keys in " << std::setprecision(1) << time << " minutes.\n"
+        iterations << "' iterations and '" << (dense ? "dense" : "sparse") << "' keys in " << std::fixed << std::setprecision(1) << time << " minutes.\n"
         << std::endl;
 
     std::cout << "=================================================================================" << std::endl;
@@ -351,8 +351,8 @@ int main(int argc, char* argv[])
         benchmark = BenchmarkTypes::kRangeSearch;
 
         // skip structures not supporting range queries
-        skip.insert("hash-table");
-        skip.insert("h-trie");
+        skip.insert("H-Trie");
+        skip.insert("Hash-Table");
     }
     else
     {
