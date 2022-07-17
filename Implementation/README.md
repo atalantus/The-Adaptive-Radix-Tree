@@ -44,7 +44,7 @@ The implementation uses `std::set`.
 ## Benchmark Results
 The following results were benchmarked on a Intel Core i5-8400 CPU with 2.80GHz base and around 3.80GHz reported frequency during bechmarking with 16GB DDR4-2666MHz RAM.
 
-The code was compiled with MSVC v143.
+The code was compiled with MSVC v143. (There might be some not too insignificant performance differences compared to a GCC -O3 compilation.)
 
 Note that for benchmarks of size 2 with sparse keys the Trie structure is not included due to exessive memory consumption 
 as well as H-Trie and Hash-Table for any range_search benchmark since these two don't really support range queries.
