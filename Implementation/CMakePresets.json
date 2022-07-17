@@ -30,18 +30,19 @@
             }
         },
         {
-          "name": "msvc-x64-release",
-          "displayName": "MSVC x64 Release",
-          "inherits": "msvc-x64-debug",
-          "cacheVariables": {
-            "CMAKE_BUILD_TYPE": "Release"
-          }
+            "name": "msvc-x64-release",
+            "displayName": "MSVC x64 Release",
+            "inherits": "msvc-x64-debug",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
         },
         {
             "name": "gcc Debug",
             "displayName": "GCC Debug",
             "description": "Using compilers: C = /usr/bin/gcc, CXX = /usr/bin/gcc",
             "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "installDir": "${sourceDir}/out/install/${presetName}",
             "cacheVariables": {
                 "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}",
                 "CMAKE_C_COMPILER": "/usr/bin/gcc",
@@ -54,6 +55,7 @@
             "displayName": "GCC Release",
             "description": "Using compilers: C = /usr/bin/gcc, CXX = /usr/bin/gcc",
             "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "installDir": "${sourceDir}/out/install/${presetName}",
             "cacheVariables": {
                 "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}",
                 "CMAKE_C_COMPILER": "/usr/bin/gcc",

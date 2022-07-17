@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <iostream>
+#include <iomanip>
 #include <random>
 #include <string>
 #include <chrono>
@@ -7,17 +8,19 @@
 #include "data_structures/data_structures.h"
 #include "util.h"
 
-constexpr char kUsageMsg[] = "usage: %s [-h] -b benchmark -s size [-i number_iterations] [-d]\n";
+constexpr char kUsageMsg[] = "usage: %s [-h] -b benchmark -s size [-i number_iterations] [-d] [--skip structure_list] [-v] \n";
 constexpr char kHelpMsg[] = "This program benchmarks different indexing structures using 32 bit unsigned integers. "
     "For the specified benchmark and size the benchmark is run number_iterations times for each "
     "index structure and the min, max and average times are outputted.\n\n"
-    "usage: %s [-h] -b benchmark -s size [-i number_iterations] [-d]\n"
+    "usage: %s [-h] -b benchmark -s size [-i number_iterations] [-d] [--skip structure_list] [-v] \n\n"
     "\nThe parameters in detail:\n"
     "\t-h\t\t\t\t: Shows how to use the program (this text).\n"
     "\t-b <insert/search/range_search>\t: Specifies the benchmark to run. You can either benchmark insertion, searching or searching in range.\n"
     "\t-s <1/2/3>\t\t\t: Specifies the benchmark size. Options are 1 with 65 thousand integers, 2 with 16 million integers and 3 with 256 million integers.\n"
     "\t-i <number>\t\t\t: Specifies the number of iterations the benchmark is run. Default value is %u. Should be an integer between 1 and 10000 (inclusive).\n"
-    "\t-d\t\t\t\t: Use a dense (from 0 up to number of elements - 1) set of integers as keys. Otherwise a sparse (uniform random 32 bit integer) set will be used.\n";
+    "\t-d\t\t\t\t: Use a dense (from 0 up to number of elements - 1) set of integers as keys. Otherwise a sparse (uniform random 32 bit integer) set will be used.\n"
+    "\t--skip <structure_list>\t\t\t: Specifies index structures to be skipped during this benchmark. Given as comma separated list of names (art, trie, m-trie, h-trie, sorted list, hash-table, rb-tree).\n"
+    "\t-v\t\t\t\t: Enable verbose logging.\n";
 
 /**
  * List of Index Structures each with a name, the number of tabs after the name (used for printing benchmark table)
@@ -33,7 +36,7 @@ const std::vector<std::tuple<std::string, uint8_t, Benchmark*>> kIndexStructures
     {"RB-Tree", 2, new RbTreeBenchmark()}
 };
 
-constexpr uint32_t kDefaultIterations{3};
+constexpr uint32_t kDefaultIterations{1};
 
 enum class BenchmarkTypes
 {
@@ -52,7 +55,9 @@ BenchmarkTypes benchmark;
 uint32_t size = 0;
 uint32_t number_elements = 0;
 uint32_t iterations{kDefaultIterations};
+std::set<std::string> skip;
 bool dense = false;
+bool verbose = false;
 
 void GenerateRandomNumbers(uint32_t*& numbers, uint32_t*& search_numbers)
 {
@@ -66,7 +71,8 @@ void GenerateRandomNumbers(uint32_t*& numbers, uint32_t*& search_numbers)
     numbers = new uint32_t[number_elements];
     search_numbers = nullptr;
 
-    std::cout << "\nAllocating Memory for numbers..." << std::endl;
+    if (verbose)
+        std::cout << "\nAllocating Memory for numbers..." << std::endl;
 
     for (uint32_t i = 0; i < number_elements; ++i)
     {
@@ -76,7 +82,8 @@ void GenerateRandomNumbers(uint32_t*& numbers, uint32_t*& search_numbers)
 
     if (benchmark == BenchmarkTypes::kSearch)
     {
-        std::cout << "Allocating Memory for search_numbers..." << std::endl;
+        if (verbose)
+            std::cout << "Allocating Memory for search_numbers..." << std::endl;
 
         search_numbers = new uint32_t[number_elements];
 
@@ -85,11 +92,12 @@ void GenerateRandomNumbers(uint32_t*& numbers, uint32_t*& search_numbers)
     }
     else if (benchmark == BenchmarkTypes::kRangeSearch)
     {
-        std::cout << "Allocating Memory for search_numbers..." << std::endl;
+        if (verbose)
+            std::cout << "Allocating Memory for search_numbers..." << std::endl;
 
         search_numbers = new uint32_t[number_elements * 2];
 
-        for (uint32_t i = 0; i < number_elements; ++i)
+        for (uint32_t i = 0; i < number_elements * 2; ++i)
         {
             uint32_t n1 = numbers_distr(eng);
             uint32_t n2 = numbers_distr(eng);
@@ -137,7 +145,8 @@ auto RunBenchmarkIteration()
 
     GenerateRandomNumbers(numbers, search_numbers);
 
-    std::cout << "Finished allocating Memory for Numbers." << std::endl;
+    if (verbose)
+        std::cout << "Finished allocating Memory for Numbers." << std::endl;
 
     /**
      * Benchmark Index Structures
@@ -147,7 +156,10 @@ auto RunBenchmarkIteration()
     {
         const auto& [name, _, structure] = kIndexStructures[i];
 
-        std::cout << "\nAllocating " << name << "..." << std::endl;
+        if (skip.contains(name)) continue;
+
+        if (verbose)
+            std::cout << "\nAllocating " << name << "..." << std::endl;
 
         structure->InitializeStructure();
 
@@ -171,7 +183,8 @@ auto RunBenchmarkIteration()
                 std::chrono::nanoseconds>(std::chrono::system_clock::now() - s1).count()) / 1e9;
         }
 
-        std::cout << "Finished " << name << ". Deleting..." << std::endl;
+        if (verbose)
+            std::cout << "Finished " << name << ". Deleting..." << std::endl;
 
         structure_times[i] = time;
         structure->DeleteStructure();
@@ -180,7 +193,8 @@ auto RunBenchmarkIteration()
     /**
      * Free Memory
      */
-    std::cout << "\nDeleting Memory for numbers...\n" << std::endl;
+    if (verbose)
+        std::cout << "\nDeleting Memory for numbers...\n" << std::endl;
 
     delete[] numbers;
 
@@ -224,6 +238,8 @@ void RunBenchmark()
             number_elements = 256'000'000;
     }
 
+    auto t1 = std::chrono::system_clock::now();
+
     std::cout << "Starting '" << benchmark_to_string() << "' benchmark with size '" << size << "' (" << number_elements
         << " keys), '" << iterations << "' iterations and '" << (dense ? "dense" : "sparse") << "' keys.\n" <<
         std::endl;
@@ -233,12 +249,16 @@ void RunBenchmark()
     // Run Benchmarks
     for (uint32_t i = 0; i < iterations; ++i)
     {
-        std::cout << "Running iteration " << (i + 1) << "/" << iterations << "..." << std::endl;
+        if (verbose)
+            std::cout << "Running iteration " << (i + 1) << "/" << iterations << "..." << std::endl;
         AggregateBenchmarkResults(structure_times, RunBenchmarkIteration(), i);
     }
 
-    std::cout << "Finished '" << benchmark_to_string() << "' benchmark with size '" << size << "', '" << iterations
-        << "' iterations and '" << (dense ? "dense" : "sparse") << "' keys.\n" << std::endl;
+    const auto time = static_cast<double>(std::chrono::duration_cast<
+        std::chrono::seconds>(std::chrono::system_clock::now() - t1).count()) / 60;
+    std::cout << "Finished '" << benchmark_to_string() << "' benchmark with size '" << size << "' (" << number_elements << " keys), '" <<
+        iterations << "' iterations and '" << (dense ? "dense" : "sparse") << "' keys in " << std::setprecision(1) << time << " minutes.\n"
+        << std::endl;
 
     std::cout << "=================================================================================" << std::endl;
     std::cout << "\t\t\t\tBENCHMARK RESULTS" << std::endl;
@@ -251,10 +271,14 @@ void RunBenchmark()
 
     for (uint32_t i = 0; i < kIndexStructures.size(); ++i)
     {
+        const auto& [name, spacing, structure] = kIndexStructures[i];
+
+        if (skip.contains(name)) continue;
+
         auto& times = structure_times[i];
 
-        std::cout << std::get<0>(kIndexStructures[i]);
-        for (uint8_t j = 0; j < std::get<1>(kIndexStructures[i]); ++j)
+        std::cout << name;
+        for (uint8_t j = 0; j < spacing; ++j)
         {
             std::cout << "\t";
         }
@@ -268,7 +292,7 @@ void RunBenchmark()
             << std::endl;
 
         // Delete Structure Benchmark
-        delete std::get<2>(kIndexStructures[i]);
+        delete structure;
     }
 }
 
@@ -297,9 +321,10 @@ int main(int argc, char* argv[])
     char* benchmark_arg = GetCmdArg(argv, argv + argc, "-b");
     char* size_arg = GetCmdArg(argv, argv + argc, "-s");
     char* iterations_arg = GetCmdArg(argv, argv + argc, "-i");
+    char* skip_arg = GetCmdArg(argv, argv + argc, "--skip");
 
     // TODO: Default Values
-    /*
+
     if (benchmark_arg == nullptr || size_arg == nullptr)
     {
         fprintf(stderr, kUsageMsg, argv[0]);
@@ -308,10 +333,9 @@ int main(int argc, char* argv[])
 
     const std::string benchmark_str{benchmark_arg};
     const std::string size_str{size_arg};
-    */
 
-    const std::string benchmark_str{"range_search"};
-    const std::string size_str{"1"};
+    //const std::string benchmark_str{"range_search"};
+    //const std::string size_str{"3"};
 
 
     if (benchmark_str == "insert")
@@ -325,6 +349,10 @@ int main(int argc, char* argv[])
     else if (benchmark_str == "range_search")
     {
         benchmark = BenchmarkTypes::kRangeSearch;
+
+        // skip structures not supporting range queries
+        skip.insert("hash-table");
+        skip.insert("h-trie");
     }
     else
     {
@@ -374,9 +402,25 @@ int main(int argc, char* argv[])
         }
     }
 
+    if (skip_arg != nullptr)
+    {
+        const std::string skip_str{skip_arg};
+
+        size_t last = 0;
+        size_t next;
+        while ((next = skip_str.find(',', last)) != std::string::npos)
+        {
+            skip.insert(skip_str.substr(last, next - last));
+            last = next + 1;
+        }
+        skip.insert(skip_str.substr(last));
+    }
+
     dense = CmdArgExists(argv, argv + argc, "-d");
     // TODO:
-    dense = false;
+    //dense = false;
+
+    verbose = CmdArgExists(argv, argv + argc, "-v");
 
     /**
      * Run Benchmark.

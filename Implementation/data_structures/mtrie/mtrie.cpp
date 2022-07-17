@@ -64,9 +64,9 @@ namespace mtrie
         const uint8_t from_key = from >> offset & 0xFF;
         const uint8_t to_key = to >> offset & 0xFF;
 
-        auto it = node->children_.find(from_key);
+        auto it = node->children_.lower_bound(from_key);
 
-        if (it == node->children_.end() || (*it).first > to_key) return res;
+        if (it == node->children_.end()) return res;
 
         if (offset == 24)
         {

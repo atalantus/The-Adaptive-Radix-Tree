@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <cmath>
 
 inline std::string GetDoubleOffset(const double n)
 {

@@ -40,3 +40,18 @@ Does not support range queries.
 **Standard Library Red-black Tree.**
 
 The implementation uses `std::set`.
+
+## Benchmark Results
+The following results were benchmarked on a Intel Core i5-8400 CPU with 2.80GHz base and around 3.80GHz reported frequency during bechmarking with 16GB DDR4-2666MHz RAM.
+
+### Insert
+```
+```
+
+### Search
+```
+```
+
+### Range Search
+```
+```

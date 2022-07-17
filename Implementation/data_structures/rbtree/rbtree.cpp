@@ -16,9 +16,9 @@ namespace rbtree
     {
         std::vector<uint32_t> res;
 
-        auto it = rbtree_.find(from);
+        auto it = rbtree_.lower_bound(from);
 
-        if (it == rbtree_.end() || *it > to) return res;
+        if (it == rbtree_.end()) return res;
 
         while (it != rbtree_.end() && *it <= to)
         {

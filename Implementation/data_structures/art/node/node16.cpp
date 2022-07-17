@@ -35,7 +35,7 @@ namespace art
         const __m128i child_key_set = _mm_loadu_si128(reinterpret_cast<__m128i*>(keys_));
         // compare less than
         const __m128i cmp = _mm_cmplt_epi8(partial_key_set, child_key_set);
-        const int cmp_mask = _mm_movemask_epi8(cmp) & (1 << child_count_) - 1;
+        const int cmp_mask = _mm_movemask_epi8(cmp) & ((1 << child_count_) - 1);
         const uint32_t pos = cmp_mask ? __ctz(cmp_mask) : child_count_;
 
         // move everything from pos
@@ -68,7 +68,7 @@ namespace art
         // const __mmask16 cmp_mask = _mm_cmpeq_epi8_mask(partial_key_set, child_key_set);
         const __m128i cmp = _mm_cmpeq_epi8(partial_key_set, child_key_set);
         // only use mask up to child_count_ (needed when searching 0th partial key since unused key elements are also 0)
-        const int cmp_mask = _mm_movemask_epi8(cmp) & (1 << child_count_) - 1;
+        const int cmp_mask = _mm_movemask_epi8(cmp) & ((1 << child_count_) - 1);
 
         if (cmp_mask)
             // return Node pointer in pointer array at index equal to trailing zeros in cmp_mask
@@ -92,7 +92,7 @@ namespace art
             _mm_set1_epi8(from_key),
             _mm_loadu_si128(reinterpret_cast<__m128i*>(keys_))
         );
-        const int cmp_mask = _mm_movemask_epi8(cmp) & (1 << child_count_) - 1;
+        const int cmp_mask = _mm_movemask_epi8(cmp) & ((1 << child_count_) - 1);
 
         if (!cmp_mask) return res;
 

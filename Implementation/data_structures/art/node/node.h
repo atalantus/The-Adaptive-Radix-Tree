@@ -55,7 +55,7 @@ namespace art
 
         /**
          * Recursively finds all values in a given range (inclusive).
-         * TODO: Implement FindRange without recursion.
+         * TODO: Implement FindRange without recursion using custom input iterator.
          */
         std::vector<uint32_t> FindRange(uint32_t from, uint32_t to, int offset);
 
