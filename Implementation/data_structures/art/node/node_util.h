@@ -11,7 +11,7 @@
 inline __attribute__((always_inline)) unsigned __ctz(uint16_t val) { return __builtin_ctz(val); }
 #elif defined(_MSC_VER) // MSVC
 
-__forceinline unsigned __ctz(uint16_t val)
+__forceinline unsigned __ctz(const uint16_t val)
 { return _tzcnt_u32(val); }
 
 #endif

@@ -38,8 +38,8 @@
             }
         },
         {
-            "name": "gcc Debug",
-            "displayName": "GCC Debug",
+            "name": "gcc-x64-debug",
+            "displayName": "GCC x64 Debug",
             "description": "Using compilers: C = /usr/bin/gcc, CXX = /usr/bin/gcc",
             "binaryDir": "${sourceDir}/out/build/${presetName}",
             "installDir": "${sourceDir}/out/install/${presetName}",
@@ -51,8 +51,8 @@
             }
         },
         {
-            "name": "gcc Release",
-            "displayName": "GCC Release",
+            "name": "gcc-x64-release",
+            "displayName": "GCC x64 Release",
             "description": "Using compilers: C = /usr/bin/gcc, CXX = /usr/bin/gcc",
             "binaryDir": "${sourceDir}/out/build/${presetName}",
             "installDir": "${sourceDir}/out/install/${presetName}",
