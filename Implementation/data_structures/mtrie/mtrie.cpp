@@ -80,7 +80,7 @@ namespace mtrie
         {
             for (; it != node->children_.end() && (*it).first <= to_key; ++it)
             {
-                auto p = FindRange((*it).second, from, to_key, offset + 8);
+                auto p = FindRange((*it).second, from, to, offset + 8);
                 res.insert(res.end(), p.begin(), p.end());
             }
         }
