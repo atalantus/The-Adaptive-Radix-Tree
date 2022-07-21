@@ -2,7 +2,6 @@
 
 #include <cstdint>
 #include <vector>
-#include <algorithm>
 
 namespace sorted_list
 {
@@ -11,7 +10,7 @@ namespace sorted_list
     public:
         SortedList() = default;
 
-        void Insert(std::vector<uint32_t> numbers);
+        void Insert(const std::vector<uint32_t>& numbers);
 
         bool Find(uint32_t value) const;
 
