@@ -11,7 +11,7 @@ namespace sorted_list
     public:
         SortedList() = default;
 
-        void Insert(const uint32_t* numbers, uint32_t size);
+        void Insert(std::vector<uint32_t> numbers);
 
         bool Find(uint32_t value) const;
 

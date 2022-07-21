@@ -2,9 +2,10 @@
 
 namespace sorted_list
 {
-    void SortedList::Insert(const uint32_t* numbers, const uint32_t size)
+    void SortedList::Insert(const std::vector<uint32_t> numbers)
     {
-        sorted_list_ = std::vector<uint32_t>(numbers, numbers + size);
+        sorted_list_ = std::vector(numbers);
+        std::ranges::sort(sorted_list_);
     }
 
     bool SortedList::Find(const uint32_t value) const
@@ -20,7 +21,8 @@ namespace sorted_list
 
         if (it == sorted_list_.end() || *it > to) return res;
 
-        while (it != sorted_list_.end() && *it <= to) {
+        while (it != sorted_list_.end() && *it <= to)
+        {
             res.push_back(*it);
             ++it;
         }
