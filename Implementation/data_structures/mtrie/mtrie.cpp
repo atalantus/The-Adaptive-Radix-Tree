@@ -49,7 +49,7 @@ namespace mtrie
         }
 
         // look if last byte is tagged pointer
-        return reinterpret_cast<uint64_t>(node->children_[value >> 24]) & 0x7;
+        return node->children_.contains(value >> 24) && reinterpret_cast<uint64_t>(node->children_[value >> 24]) & 0x7;
     }
 
     std::vector<uint32_t> MTrie::FindRange(const uint32_t from, const uint32_t to) const

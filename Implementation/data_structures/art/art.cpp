@@ -6,14 +6,6 @@ namespace art
 {
     void Art::Insert(const uint32_t value)
     {
-        /*
-        root_->PrintTree(0);
-        std::cout
-                << "\n=========================================================================================================================================="
-                << std::endl;
-        std::cout << "Insert: " << std::hex << SwapEndianess(value) << std::endl;
-        */
-
         std::reference_wrapper<Node*> node_ref = std::ref(root_);
 
         for (uint8_t offset = 0; offset < 32; offset += 8)
@@ -54,7 +46,6 @@ namespace art
                 if (Node::CmpLazyExpansion(child_node_ref, value))
                     // value has already been inserted
                     return;
-
 
                 // there is already the same partial key for a different full key
                 // -> create and add new child nodes until keys differ and then insert them as tagged pointers

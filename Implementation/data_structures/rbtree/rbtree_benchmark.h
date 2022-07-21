@@ -22,21 +22,21 @@ public:
         rbtree_ = nullptr;
     }
 
-    void Insert(const uint32_t* numbers, const uint32_t size) override
+    void Insert(const std::vector<uint32_t>& numbers) override
     {
-        for (uint32_t i = 0; i < size; ++i)
+        for (uint32_t i = 0; i < numbers.size(); ++i)
             rbtree_->Insert(numbers[i]);
     }
 
-    void Search(const uint32_t* numbers, const uint32_t size) override
+    void Search(const std::vector<uint32_t>& numbers) override
     {
-        for (uint32_t i = 0; i < size; ++i)
+        for (uint32_t i = 0; i < numbers.size(); ++i)
             rbtree_->Find(numbers[i]);
     }
 
-    void RangeSearch(const uint32_t* numbers, const uint32_t size) override
+    void RangeSearch(const std::vector<uint32_t>& numbers) override
     {
-        for (uint32_t i = 0; i < 2 * size; i += 2)
+        for (uint32_t i = 0; i < numbers.size(); i += 2)
             rbtree_->FindRange(numbers[i], numbers[i + 1]);
     }
 
