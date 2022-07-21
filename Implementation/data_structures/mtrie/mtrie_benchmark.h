@@ -48,8 +48,8 @@ public:
 
             for (size_t j = 0; j < actual.size(); ++j)
                 if (actual[j] != expected[i / 2][j])
-                    std::cerr << "\033[1;31mM-Trie RangeSearch error: expected " << std::hex << expected[i / 2][j] << " got " << actual[j] <<
-                        " at position " << std::dec << j << " of set " << i / 2 << "\033[0m" << std::endl;
+                    std::cerr << "\033[1;31mM-Trie RangeSearch error: expected " << std::hex << expected[i / 2][j] << " got " << actual[j]
+                        << " at position " << std::dec << j << " of set " << i / 2 << "\033[0m" << std::endl;
         }
     }
 

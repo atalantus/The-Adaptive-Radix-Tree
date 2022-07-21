@@ -35,9 +35,7 @@ namespace trie
         std::vector<uint32_t> FindRange(uint32_t from, uint32_t to) const;
 
     private:
-        void Destruct(const Node* node);
-
-        static std::vector<uint32_t> FindRange(Node* node, uint32_t from, uint32_t to, int offset);
+        static void Destruct(const Node* node);
 
         static std::vector<uint32_t> GetRange(Node* node, uint32_t from, uint32_t to, int offset);
 

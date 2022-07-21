@@ -66,8 +66,6 @@ namespace trie
     {
         std::vector<uint32_t> res;
 
-        if (node == nullptr) return res;
-
         const uint8_t from_key = from >> offset & 0xFF;
         const uint8_t to_key = to >> offset & 0xFF;
 
@@ -77,11 +75,7 @@ namespace trie
                 if (node->children_[i] != nullptr)
                     res.push_back(reinterpret_cast<uint64_t>(node->children_[i]) >> 32);
         }
-        else if (from_key == to_key)
-        {
-            return GetRange(node->children_[from_key], from, to, offset - 8);
-        }
-        else
+        else if (from_key != to_key)
         {
             if (node->children_[from_key] != nullptr)
             {
@@ -101,6 +95,11 @@ namespace trie
                 auto p = GetUpperRange(node->children_[to_key], to, offset - 8);
                 res.insert(res.end(), p.begin(), p.end());
             }
+        }
+        else
+        {
+            if (node->children_[from_key] != nullptr)
+                return GetRange(node->children_[from_key], from, to, offset - 8);
         }
 
         return res;
