@@ -31,7 +31,7 @@ public:
     void Search(const std::vector<uint32_t>& numbers) override
     {
         for (uint32_t i = 0; i < numbers.size(); ++i)
-            htrie_->Find(numbers[i])
+            htrie_->Find(numbers[i]);
     }
 
     void RangeSearch(const std::vector<uint32_t>& numbers) override
