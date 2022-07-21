@@ -8,7 +8,7 @@ namespace trie
     {
         Node* node = root_;
 
-        for (uint8_t offset = 0; offset < 24; offset += 8)
+        for (uint8_t offset = 24; offset > 0; offset -= 8)
         {
             // get next 8 bit of value as comparison key
             const uint8_t comparison_key = value >> offset & 0xFF;
@@ -30,14 +30,14 @@ namespace trie
         }
 
         // insert value at last byte using tagged pointer
-        node->children_[value >> 24] = reinterpret_cast<Node*>(static_cast<uint64_t>(value) << 32 | 0x7);
+        node->children_[value & 0xFF] = reinterpret_cast<Node*>(static_cast<uint64_t>(value) << 32 | 0x7);
     }
 
     bool Trie::Find(const uint32_t value) const
     {
         Node* node = root_;
 
-        for (uint8_t offset = 0; offset < 24; offset += 8)
+        for (uint8_t offset = 24; offset > 0; offset -= 8)
         {
             // get next 8 bit of value as comparison key
             const uint8_t comparison_key = value >> offset & 0xFF;
@@ -54,38 +54,138 @@ namespace trie
         }
 
         // look if last byte is tagged pointer
-        return reinterpret_cast<uint64_t>(node->children_[value >> 24]) & 0x7;
+        return reinterpret_cast<uint64_t>(node->children_[value & 0xFF]) & 0x7;
     }
 
     std::vector<uint32_t> Trie::FindRange(const uint32_t from, const uint32_t to) const
     {
-        return FindRange(root_, from, to, 0);
+        return GetRange(root_, from, to, 24);
     }
 
-    std::vector<uint32_t> Trie::FindRange(Node* node, const uint32_t from, const uint32_t to, const int offset) const
+    std::vector<uint32_t> Trie::GetRange(Node* node, const uint32_t from, const uint32_t to, const int offset)
     {
         std::vector<uint32_t> res;
+
+        if (node == nullptr) return res;
 
         const uint8_t from_key = from >> offset & 0xFF;
         const uint8_t to_key = to >> offset & 0xFF;
 
-        if (offset == 24)
+        if (offset == 0)
         {
             for (uint16_t i = from_key; i <= to_key; ++i)
-            {
-                if (node->children_[i] == nullptr) continue;
-                res.push_back(reinterpret_cast<uint64_t>(node->children_[i]) >> 32);
-            }
+                if (node->children_[i] != nullptr)
+                    res.push_back(reinterpret_cast<uint64_t>(node->children_[i]) >> 32);
+        }
+        else if (from_key == to_key)
+        {
+            return GetRange(node->children_[from_key], from, to, offset - 8);
         }
         else
         {
-            for (uint16_t i = from_key; i <= to_key; ++i)
+            if (node->children_[from_key] != nullptr)
             {
-                if (node->children_[i] == nullptr) continue;
-
-                auto p = FindRange(node->children_[i], from, to, offset + 8);
+                auto p = GetLowerRange(node->children_[from_key], from, offset - 8);
                 res.insert(res.end(), p.begin(), p.end());
             }
+
+            for (uint16_t i = from_key + 1; i <= to_key - 1; ++i)
+                if (node->children_[i] != nullptr)
+                {
+                    auto p = GetFullRange(node->children_[i], offset - 8);
+                    res.insert(res.end(), p.begin(), p.end());
+                }
+
+            if (node->children_[to_key] != nullptr)
+            {
+                auto p = GetUpperRange(node->children_[to_key], to, offset - 8);
+                res.insert(res.end(), p.begin(), p.end());
+            }
+        }
+
+        return res;
+    }
+
+    std::vector<uint32_t> Trie::GetLowerRange(Node* node, const uint32_t from, const int offset)
+    {
+        std::vector<uint32_t> res;
+
+        const uint8_t from_key = from >> offset & 0xFF;
+
+        if (offset == 0)
+        {
+            for (uint16_t i = from_key; i < 256; ++i)
+                if (node->children_[i] != nullptr)
+                    res.push_back(reinterpret_cast<uint64_t>(node->children_[i]) >> 32);
+        }
+        else
+        {
+            if (node->children_[from_key] != nullptr)
+            {
+                auto p = GetLowerRange(node->children_[from_key], from, offset - 8);
+                res.insert(res.end(), p.begin(), p.end());
+            }
+
+            for (uint16_t i = from_key + 1; i < 256; ++i)
+                if (node->children_[i] != nullptr)
+                {
+                    auto p = GetFullRange(node->children_[i], offset - 8);
+                    res.insert(res.end(), p.begin(), p.end());
+                }
+        }
+
+        return res;
+    }
+
+    std::vector<uint32_t> Trie::GetUpperRange(Node* node, const uint32_t to, const int offset)
+    {
+        std::vector<uint32_t> res;
+
+        const uint8_t to_key = to >> offset & 0xFF;
+
+        if (offset == 0)
+        {
+            for (uint16_t i = 0; i <= to_key; ++i)
+                if (node->children_[i] != nullptr)
+                    res.push_back(reinterpret_cast<uint64_t>(node->children_[i]) >> 32);
+        }
+        else
+        {
+            for (uint16_t i = 0; i <= to_key - 1; ++i)
+                if (node->children_[i] != nullptr)
+                {
+                    auto p = GetFullRange(node->children_[i], offset - 8);
+                    res.insert(res.end(), p.begin(), p.end());
+                }
+
+            if (node->children_[to_key] != nullptr)
+            {
+                auto p = GetUpperRange(node->children_[to_key], to, offset - 8);
+                res.insert(res.end(), p.begin(), p.end());
+            }
+        }
+
+        return res;
+    }
+
+    std::vector<uint32_t> Trie::GetFullRange(Node* node, const int offset)
+    {
+        std::vector<uint32_t> res;
+
+        if (offset == 0)
+        {
+            for (uint16_t i = 0; i < 256; ++i)
+                if (node->children_[i] != nullptr)
+                    res.push_back(reinterpret_cast<uint64_t>(node->children_[i]) >> 32);
+        }
+        else
+        {
+            for (uint16_t i = 0; i < 256; ++i)
+                if (node->children_[i] != nullptr)
+                {
+                    auto p = GetFullRange(node->children_[i], offset - 8);
+                    res.insert(res.end(), p.begin(), p.end());
+                }
         }
 
         return res;

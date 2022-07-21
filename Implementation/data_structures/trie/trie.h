@@ -28,39 +28,24 @@ namespace trie
             Destruct(root_);
         }
 
-        /**
-         * Inserts a 32 bit value into the trie.
-         *
-         * @param value the value to insert
-         */
         void Insert(uint32_t value);
 
-        /**
-         * Checks if a 32 bit value exists in the trie.
-         *
-         * @param value the value to search for
-         * @return true if the value exists otherwise false
-         */
         bool Find(uint32_t value) const;
 
-        /**
-         * Finds all 32 bit values in the trie within a given range.
-         *
-         * @param from the value to search from (inclusive)
-         * @param to the value to search to (inclusive)
-         * @return vector of values sorted in ascending order
-         */
         std::vector<uint32_t> FindRange(uint32_t from, uint32_t to) const;
 
     private:
-        /**
-         * Recursively deletes the complete trie starting at a given node.
-         *
-         * @param node the root node
-         */
         void Destruct(const Node* node);
 
-        std::vector<uint32_t> FindRange(Node* node, uint32_t from, uint32_t to, int offset) const;
+        static std::vector<uint32_t> FindRange(Node* node, uint32_t from, uint32_t to, int offset);
+
+        static std::vector<uint32_t> GetRange(Node* node, uint32_t from, uint32_t to, int offset);
+
+        static std::vector<uint32_t> GetLowerRange(Node* node, uint32_t from, int offset);
+
+        static std::vector<uint32_t> GetUpperRange(Node* node, uint32_t to, int offset);
+
+        static std::vector<uint32_t> GetFullRange(Node* node, int offset);
 
     private:
         Node* root_;

@@ -88,8 +88,8 @@ namespace art
         const uint8_t from_key = from >> offset & 0xFF;
         const uint8_t to_key = to >> offset & 0xFF;
 
-        const __m128i cmp = _mm_cmpeq_epi8(
-            _mm_set1_epi8(from_key),
+        const __m128i cmp = _mm_cmplt_epi8(
+            _mm_set1_epi8(from_key ^ 128), 
             _mm_loadu_si128(reinterpret_cast<__m128i*>(keys_))
         );
         const int cmp_mask = _mm_movemask_epi8(cmp) & ((1 << child_count_) - 1);

@@ -22,20 +22,20 @@ public:
         sorted_list_ = nullptr;
     }
 
-    void Insert(const std::vector<uint32_t> numbers) override
+    void Insert(const std::vector<uint32_t>& numbers) override
     {
         sorted_list_->Insert(numbers);
     }
 
-    void Search(const std::vector<uint32_t> numbers, std::vector<bool>& expected) override
+    void Search(const std::vector<uint32_t>& numbers, std::vector<bool>& expected) override
     {
         for (uint32_t i = 0; i < numbers.size(); ++i)
             expected.push_back(sorted_list_->Find(numbers[i]));
     }
 
-    void RangeSearch(const std::vector<uint32_t> numbers, std::vector<std::vector<uint32_t>>& expected) override
+    void RangeSearch(const std::vector<uint32_t>& numbers, std::vector<std::vector<uint32_t>>& expected) override
     {
-        for (uint32_t i = 0; i < 2 * numbers.size(); i += 2)
+        for (uint32_t i = 0; i < numbers.size(); i += 2)
             expected.push_back(sorted_list_->FindRange(numbers[i], numbers[i + 1]));
     }
 
