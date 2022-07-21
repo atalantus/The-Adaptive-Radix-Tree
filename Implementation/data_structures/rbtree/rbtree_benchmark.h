@@ -43,13 +43,13 @@ public:
             const auto actual = rbtree_->FindRange(numbers[i], numbers[i + 1]);
 
             if (actual.size() != expected[i / 2].size())
-                std::cerr << "\033[1;31mRB-Tree RangeSearch size error: expected " << expected[i].size() << " got " << actual.size() <<
-                    "\033[0m" << std::endl;
+                std::cerr << "\033[1;31mRB-Tree RangeSearch size error: expected " << expected[i / 2].size() << " got " << actual.size() <<
+                    " at set " << i / 2 << "\033[0m" << std::endl;
 
             for (size_t j = 0; j < actual.size(); ++j)
                 if (actual[j] != expected[i / 2][j])
                     std::cerr << "\033[1;31mRB-Tree RangeSearch error: expected " << std::hex << expected[i / 2][j] << " got " << actual[j] <<
-                        " at position " << std::dec << j << "\033[0m" << std::endl;
+                        " at position " << std::dec << j << " of set " << i / 2 << "\033[0m" << std::endl;
         }
     }
 

@@ -4,7 +4,7 @@
 To run the project compile it on a x86-64 architecture supporting at least SSE2 with either MSVC++ or GCC-11 (or later).
 
 ## Data Structures
-Various data structures for storing 32 bit keys.
+Various data structures for storing unique 32 bit keys.
 
 Note: Since keys are compactly represented as uint32_t types and traversed using bit shifts we actually don't require any key transformations storing keys in Tries even for little-endian architectures.
 

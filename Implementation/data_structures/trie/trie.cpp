@@ -151,7 +151,7 @@ namespace trie
         }
         else
         {
-            for (uint16_t i = 0; i <= to_key - 1; ++i)
+            for (uint16_t i = 0; i < to_key; ++i)
                 if (node->children_[i] != nullptr)
                 {
                     auto p = GetFullRange(node->children_[i], offset - 8);
