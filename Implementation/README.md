@@ -6,9 +6,8 @@ To run the project compile it on a x86-64 architecture supporting at least SSE2 
 ## Data Structures
 Various data structures for storing unique 32 bit keys.
 
-Note: Since keys are compactly represented as uint32_t types and traversed using bit shifts we actually don't require any key transformations storing keys in Tries even for little-endian architectures.
-
-Note: Since keys are compactly represented as uint32_t types and traversed using bit shifts we actually don't require any key transformations storing keys in Tries even for little-endian architectures.
+Note: Since keys are compactly represented as uint32_t types and traversed using bit shifts we actually don't require
+any key transformations storing keys in Tries even for little-endian architectures.
 
 ### ART
 **ART Implementation without path compression.**
@@ -17,6 +16,7 @@ Note: Since keys are compactly represented as uint32_t types and traversed using
 - Without path compression all nodes only store a 2 byte header (1 Byte node type, 1 Byte number of non-null children)
 - SIMD comparison for Node16 (SSE2 x86-64 specific)
 - Combined value/pointer slots using pointer tagging (64 bit architecture specific)
+
 ### Trie
 **A 256-way trie storing children in a 256 sized child pointer array.**
 
@@ -25,6 +25,7 @@ The implementation is specific for 32 bit keys and uses pointer tagging to store
 **A 256-way trie storing children in an ordered map.**
 
 The implementation is specific for 32 bit keys and uses pointer tagging to store the last byte as a child pointer.
+
 ### H-Trie
 **A 256-way trie stored in a single hash-table.**
 
@@ -46,11 +47,12 @@ Does not support range queries.
 The implementation uses `std::set`.
 
 ## Benchmark Results
-The following results were benchmarked on a Intel Core i5-8400 CPU with 2.80GHz base and around 3.80GHz reported frequency during bechmarking with 16GB DDR4-2666MHz RAM.
+The following results were benchmarked on an Intel Core i5-8400 CPU with 2.80GHz base and around 3.80GHz reported frequency during 
+benchmarking with 16GB DDR4-2666MHz RAM.
 
 The code was compiled with MSVC v143. (There might be some not too insignificant performance differences compared to a GCC -O3 compilation.)
 
-Note that for benchmarks of size 2 with sparse keys the Trie structure is not included due to exessive memory consumption 
+Note that for benchmarks of size 2 with sparse keys the Trie structure is not included due to exessive memory consumption
 as well as H-Trie and Hash-Table for any range_search benchmark since these two don't really support range queries.
 
 ### Insert
