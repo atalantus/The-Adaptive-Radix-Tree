@@ -8,17 +8,30 @@
 #include "data_structures/data_structures.h"
 #include "util.h"
 
+constexpr char kUsageMsg[] = "usage: %s [-h] -b benchmark -s size [-i number_iterations] [-d] [--skip structure_list] [-v] \n";
+constexpr char kHelpMsg[] = "This program benchmarks different indexing structures using 32 bit unsigned integers. "
+                            "For the specified benchmark and size the benchmark is run number_iterations times for each "
+                            "index structure and the min, max and average times are outputted.\n\n"
+                            "usage: %s [-h] -b benchmark -s size [-i number_iterations] [-d] [--skip structure_list] [-v] \n\n"
+                            "\nThe parameters in detail:\n"
+                            "\t-h\t\t\t\t: Shows how to use the program (this text).\n"
+                            "\t-b <insert/search/range_search>\t: Specifies the benchmark to run. You can either benchmark insertion, searching or searching in range.\n"
+                            "\t-s <1/2/3>\t\t\t: Specifies the benchmark size. Options are 1 with 65 thousand integers, 2 with 16 million integers and 3 with 256 million integers.\n"
+                            "\t-i <number>\t\t\t: Specifies the number of iterations the benchmark is run. Default value is %u. Should be an integer between 1 and 10000 (inclusive).\n"
+                            "\t-d\t\t\t\t: Use a dense (from 0 up to number of elements - 1) set of integers as keys. Otherwise a sparse (uniform random 32 bit integer) set will be used.\n"
+                            "\t--skip <structure_list>\t\t\t: Specifies index structures to be skipped during this benchmark. Given as comma separated list of names (ART, Trie, M-Trie, H-Trie, Sorted List, Hash-Table, RB-Tree).\n"
+                            "\t-v\t\t\t\t: Enable verbose logging.\n";
+
 /**
- * List of Index Structures each with a name, the number of tabs after the name (used for printing benchmark table),
- * a boolean representing if the structure is a trie (used for key transformation) and it's own Benchmark object.
+ * List of Index Structures each with a name, the number of tabs after the name (used for printing benchmark table)
+ * and it's own Benchmark object.
  */
 const std::vector<std::tuple<std::string, uint8_t, Benchmark*>> kIndexStructures{
-    // Do Sorted List first as it's results will be used to test the other structures
-    {"Sorted List", 1, new SortedListBenchmark()},
-    //{"ART", 2, new ArtBenchmark()},
+    {"ART", 2, new ArtBenchmark()},
     {"Trie", 2, new TrieBenchmark()},
-    //{"M-Trie", 2, new MTrieBenchmark()},
-    //{"H-Trie", 2, new HTrieBenchmark()},
+    {"M-Trie", 2, new MTrieBenchmark()},
+    {"H-Trie", 2, new HTrieBenchmark()},
+    {"Sorted List", 1, new SortedListBenchmark()},
     {"Hash-Table", 1, new HashTableBenchmark()},
     {"RB-Tree", 2, new RbTreeBenchmark()}
 };
