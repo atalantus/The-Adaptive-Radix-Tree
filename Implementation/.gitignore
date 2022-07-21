@@ -45,7 +45,6 @@
 
 # IntelliJ
 /out/
-cmake-build-debug
 cmake-build-wsl-debug
 cmake-build-wsl-debug-coverage
 cmake-build-wsl-release
