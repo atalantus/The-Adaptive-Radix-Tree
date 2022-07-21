@@ -30,7 +30,7 @@ const std::vector<std::tuple<std::string, uint8_t, Benchmark*>> kIndexStructures
     {"ART", 2, new ArtBenchmark()},
     {"Trie", 2, new TrieBenchmark()},
     {"M-Trie", 2, new MTrieBenchmark()},
-    {"H-Trie", 2, new HTrieBenchmark()},
+    //{"H-Trie", 2, new HTrieBenchmark()},
     {"Sorted List", 1, new SortedListBenchmark()},
     {"Hash-Table", 1, new HashTableBenchmark()},
     {"RB-Tree", 2, new RbTreeBenchmark()}
