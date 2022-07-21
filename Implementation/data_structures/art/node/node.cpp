@@ -141,14 +141,14 @@ namespace art
         __unreachable();
     }
 
-    void Node::PrintChild(Node* child, int i, int m)
+    void Node::PrintChild(Node* child, const int i, const int m)
     {
         if (child == nullptr)
             return;
-        else if (Node::IsLazyExpanded(child))
+
+        if (IsLazyExpanded(child))
         {
-            auto val = static_cast<uint32_t>(reinterpret_cast<uint64_t>(child) >> 32);
-            if (!IsBigEndian()) val = SwapEndianess(val);
+            const auto val = static_cast<uint32_t>(reinterpret_cast<uint64_t>(child) >> 32);
             std::cout << std::dec << i << ":[" << std::hex << val << "]";
         }
         else

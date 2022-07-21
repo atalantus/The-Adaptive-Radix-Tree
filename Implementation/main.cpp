@@ -12,15 +12,15 @@
  * List of Index Structures each with a name, the number of tabs after the name (used for printing benchmark table),
  * a boolean representing if the structure is a trie (used for key transformation) and it's own Benchmark object.
  */
-const std::vector<std::tuple<std::string, uint8_t, bool, Benchmark*>> kIndexStructures{
+const std::vector<std::tuple<std::string, uint8_t, Benchmark*>> kIndexStructures{
     // Do Sorted List first as it's results will be used to test the other structures
-    {"Sorted List", 1, false, new SortedListBenchmark()},
-    {"ART", 2, true, new ArtBenchmark()},
-    {"Trie", 2, true, new TrieBenchmark()},
-    {"M-Trie", 2, true, new MTrieBenchmark()},
-    //{"H-Trie", 2, true, new HTrieBenchmark()},
-    {"Hash-Table", 1, false, new HashTableBenchmark()},
-    {"RB-Tree", 2, false, new RbTreeBenchmark()}
+    {"Sorted List", 1, new SortedListBenchmark()},
+    //{"ART", 2, new ArtBenchmark()},
+    {"Trie", 2, new TrieBenchmark()},
+    //{"M-Trie", 2, new MTrieBenchmark()},
+    //{"H-Trie", 2, new HTrieBenchmark()},
+    {"Hash-Table", 1, new HashTableBenchmark()},
+    {"RB-Tree", 2, new RbTreeBenchmark()}
 };
 
 enum class BenchmarkTypes
@@ -29,8 +29,6 @@ enum class BenchmarkTypes
     kSearch,
     kRangeSearch
 };
-
-bool is_big_endian = IsBigEndian();
 
 /**
  * Benchmark Parameters.
@@ -43,7 +41,7 @@ std::set<std::string> skip;
 bool dense = false;
 bool verbose = false;
 
-void GenerateRandomNumbers(std::vector<uint32_t> numbers, std::vector<uint32_t> search_numbers)
+void GenerateRandomNumbers(std::vector<uint32_t>& numbers, std::vector<uint32_t>& search_numbers)
 {
     std::random_device rnd;
     std::mt19937_64 eng(rnd());
@@ -58,7 +56,9 @@ void GenerateRandomNumbers(std::vector<uint32_t> numbers, std::vector<uint32_t> 
         std::cout << "\nAllocating Memory for numbers..." << std::endl;
 
     for (uint32_t i = 0; i < number_elements; ++i)
+    {
         numbers.push_back(numbers_distr(eng));
+    }
 
     if (benchmark == BenchmarkTypes::kSearch)
     {
@@ -68,11 +68,13 @@ void GenerateRandomNumbers(std::vector<uint32_t> numbers, std::vector<uint32_t> 
         search_numbers.reserve(number_elements);
 
         for (uint32_t i = 0; i < number_elements; ++i)
+        {
             // ensure that at least half of all lookups will be positive
             if (i < number_elements / 2)
                 search_numbers.push_back(numbers[search_numbers_distr(eng)]);
             else
                 search_numbers.push_back(numbers_distr(eng));
+        }
     }
     else if (benchmark == BenchmarkTypes::kRangeSearch)
     {
@@ -81,7 +83,7 @@ void GenerateRandomNumbers(std::vector<uint32_t> numbers, std::vector<uint32_t> 
 
         search_numbers.reserve(2ULL * number_elements);
 
-        for (uint32_t i = 0; i < number_elements * 2; ++i)
+        for (uint64_t i = 0; i < 2ULL * number_elements; i += 2)
         {
             uint32_t n1 = numbers_distr(eng);
             uint32_t n2 = numbers_distr(eng);
@@ -111,7 +113,7 @@ auto RunBenchmarkIteration()
 
     for (uint32_t i = 0; i < kIndexStructures.size(); ++i)
     {
-        const auto& [name, _, isTrie, structure] = kIndexStructures[i];
+        const auto& [name, _, structure] = kIndexStructures[i];
 
         if (skip.contains(name)) continue;
 
@@ -120,12 +122,12 @@ auto RunBenchmarkIteration()
 
         structure->InitializeStructure();
 
-        structure->Insert(numbers, number_elements);
+        structure->Insert(numbers);
 
         if (benchmark == BenchmarkTypes::kSearch)
-            structure->Search(search_numbers, number_elements, expected_search);
+            structure->Search(search_numbers, expected_search);
         else if (benchmark == BenchmarkTypes::kRangeSearch)
-            structure->RangeSearch(search_numbers, number_elements, expected_range_search);
+            structure->RangeSearch(search_numbers, expected_range_search);
 
         if (verbose)
             std::cout << "Finished " << name << ". Deleting..." << std::endl;

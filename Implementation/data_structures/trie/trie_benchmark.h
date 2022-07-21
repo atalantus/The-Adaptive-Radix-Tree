@@ -22,35 +22,36 @@ public:
         trie_ = nullptr;
     }
 
-    void Insert(const std::vector<uint32_t> numbers) override
+    void Insert(const std::vector<uint32_t>& numbers) override
     {
-        auto& trie = *trie_;
-
         for (uint32_t i = 0; i < numbers.size(); ++i)
-            trie.Insert(numbers[i]);
+            trie_->Insert(numbers[i]);
     }
 
-    void Search(const std::vector<uint32_t> numbers, std::vector<bool>& expected) override
+    void Search(const std::vector<uint32_t>& numbers, std::vector<bool>& expected) override
     {
-        for (uint32_t i = 0; i < numbers.size(); ++i) {
+        for (uint32_t i = 0; i < numbers.size(); ++i)
+        {
             if (trie_->Find(numbers[i]) != expected[i])
-                 std::cout << "Trie Search error: expected " << expected[i] << " got " << !expected[i] << " number " << numbers[i] <<
-                    std::endl;
+                std::cerr << "\033[1;31mTrie Search error: expected " << expected[i] << " got " << !expected[i] << " number " << std::hex
+                    << numbers[i] << "\033[0m" << std::endl;
         }
     }
 
-    void RangeSearch(const std::vector<uint32_t> numbers, std::vector<std::vector<uint32_t>>& expected) override
+    void RangeSearch(const std::vector<uint32_t>& numbers, std::vector<std::vector<uint32_t>>& expected) override
     {
-        for (uint32_t i = 0; i < 2 * numbers.size(); i += 2) {
+        for (uint32_t i = 0; i < numbers.size(); i += 2)
+        {
             const auto actual = trie_->FindRange(numbers[i], numbers[i + 1]);
 
             if (actual.size() != expected[i / 2].size())
-                std::cout << "Trie RangeSearch size error: expected " << expected[i].size() << " got " << actual.size() << std::endl;
+                std::cerr << "\033[1;31mTrie RangeSearch size error: expected " << expected[i].size() << " got " << actual.size() <<
+                    "\033[0m" << std::endl;
 
             for (size_t j = 0; j < actual.size(); ++j)
                 if (actual[j] != expected[i / 2][j])
-                    std::cout << "Trie RangeSearch error: expected " << expected[i / 2][j] << " got " << actual[j] << " at position " << j <<
-                        std::endl;
+                    std::cerr << "\033[1;31mTrie RangeSearch error: expected " << std::hex << expected[i / 2][j] << " got " << actual[j] <<
+                        " at position " << std::dec << j << "\033[0m" << std::endl;
         }
     }
 
