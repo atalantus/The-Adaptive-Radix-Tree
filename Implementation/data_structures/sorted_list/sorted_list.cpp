@@ -1,11 +1,17 @@
 #include "sorted_list.h"
 
+#include <algorithm>
+
 namespace sorted_list
 {
-    void SortedList::Insert(const std::vector<uint32_t> numbers)
+    void SortedList::Insert(const std::vector<uint32_t>& numbers)
     {
         sorted_list_ = std::vector(numbers);
+        // sort vector
         std::ranges::sort(sorted_list_);
+        // remove duplicates
+        auto rng = std::ranges::unique(sorted_list_);
+        sorted_list_.erase(rng.begin(), rng.end());
     }
 
     bool SortedList::Find(const uint32_t value) const
