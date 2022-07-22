@@ -175,7 +175,7 @@ void RunBenchmark()
     {
         const auto seed = RunBenchmarkIteration();
 
-        std::cout << "Running iteration " << (i + 1) << "/" << iterations << " with seed " << seed << "..." << std::endl;
+        std::cout << "Finished iteration " << (i + 1) << "/" << iterations << " with seed " << seed << std::endl;
     }
 
     std::cout << "\nFinished '" << benchmark_to_string() << "' benchmark with size '" << size << "' (" << number_elements << " keys), '" <<
