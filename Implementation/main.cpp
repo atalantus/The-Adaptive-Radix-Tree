@@ -27,14 +27,13 @@ constexpr char kHelpMsg[] = "This program benchmarks different indexing structur
  * and it's own Benchmark object.
  */
 const std::vector<std::tuple<std::string, uint8_t, Benchmark*>> kIndexStructures{
-    // Do Sorted List first as it's results will be used to test the other structures
-    {"ART", 2, new ArtBenchmark()},
-    {"Trie", 2, new TrieBenchmark()},
-    {"M-Trie", 2, new MTrieBenchmark()},
-    //{"H-Trie", 2, new HTrieBenchmark()},
-    {"Sorted List", 1, new SortedListBenchmark()},
-    {"Hash-Table", 1, new HashTableBenchmark()},
-    {"RB-Tree", 2, new RbTreeBenchmark()}
+        {"ART", 2, new ArtBenchmark()},
+        {"Trie", 2, new TrieBenchmark()},
+        {"M-Trie", 2, new MTrieBenchmark()},
+        //{"H-Trie", 2, new HTrieBenchmark()},
+        {"Sorted List", 1, new SortedListBenchmark()},
+        {"Hash-Table", 1, new HashTableBenchmark()},
+        {"RB-Tree", 2, new RbTreeBenchmark()}
 };
 
 constexpr uint32_t kDefaultIterations{1};
