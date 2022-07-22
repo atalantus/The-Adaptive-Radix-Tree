@@ -136,8 +136,6 @@ auto RunBenchmarkIteration()
 
     std::vector<uint32_t> numbers;
     std::vector<uint32_t> search_numbers;
-    std::vector<bool> expected_search;
-    std::vector<std::vector<uint32_t>> expected_range_search;
 
     GenerateRandomNumbers(numbers, search_numbers);
 
@@ -159,16 +157,30 @@ auto RunBenchmarkIteration()
 
         structure->InitializeStructure();
 
+        auto s1 = std::chrono::system_clock::now();
         structure->Insert(numbers);
+        double time = static_cast<double>(std::chrono::duration_cast<
+                std::chrono::nanoseconds>(std::chrono::system_clock::now() - s1).count()) / 1e9;
 
         if (benchmark == BenchmarkTypes::kSearch)
+        {
+            s1 = std::chrono::system_clock::now();
             structure->Search(search_numbers);
+            time = static_cast<double>(std::chrono::duration_cast<
+                    std::chrono::nanoseconds>(std::chrono::system_clock::now() - s1).count()) / 1e9;
+        }
         else if (benchmark == BenchmarkTypes::kRangeSearch)
+        {
+            s1 = std::chrono::system_clock::now();
             structure->RangeSearch(search_numbers);
+            time = static_cast<double>(std::chrono::duration_cast<
+                    std::chrono::nanoseconds>(std::chrono::system_clock::now() - s1).count()) / 1e9;
+        }
 
         if (verbose)
             std::cout << "Finished " << name << ". Deleting..." << std::endl;
 
+        structure_times[i] = time;
         structure->DeleteStructure();
     }
 
@@ -201,67 +213,199 @@ void RunBenchmark()
             number_elements = 16'000'000;
             break;
         case 3:
-            number_elements = 250;
+            number_elements = 256'000'000;
     }
 
+    auto t1 = std::chrono::system_clock::now();
+
     std::cout << "Starting '" << benchmark_to_string() << "' benchmark with size '" << size << "' (" << number_elements
-        << " keys), '" << iterations << "' iterations and '" << (dense ? "dense" : "sparse") << "' keys.\n" <<
-        std::endl;
+              << " keys), '" << iterations << "' iterations and '" << (dense ? "dense" : "sparse") << "' keys.\n" <<
+              std::endl;
+
+    std::vector<std::tuple<double, double, double, double>> structure_times(kIndexStructures.size());
 
     // Run Benchmarks
     for (uint32_t i = 0; i < iterations; ++i)
     {
         if (verbose)
             std::cout << "Running iteration " << (i + 1) << "/" << iterations << "..." << std::endl;
-        RunBenchmarkIteration();
+        AggregateBenchmarkResults(structure_times, RunBenchmarkIteration(), i);
     }
 
-    std::cout << "Finished '" << benchmark_to_string() << "' benchmark with size '" << size << "' (" << number_elements << " keys), '" <<
-        iterations << "' iterations and '" << (dense ? "dense" : "sparse") << "' keys.\n" << std::endl;
+    const auto time = static_cast<double>(std::chrono::duration_cast<
+            std::chrono::seconds>(std::chrono::system_clock::now() - t1).count()) / 60;
+    std::cout << "Finished '" << benchmark_to_string() << "' benchmark with size '" << size << "' (" << number_elements
+              << " keys), '" <<
+              iterations << "' iterations and '" << (dense ? "dense" : "sparse") << "' keys in " << std::fixed
+              << std::setprecision(1) << time << " minutes.\n"
+              << std::endl;
+
+    std::cout << "=================================================================================" << std::endl;
+    std::cout << "\t\t\t\tBENCHMARK RESULTS" << std::endl;
+    std::cout << "=================================================================================" << std::endl;
+
+    std::cout << "Index Structure\t|      Min\t|      Max\t|      Avg\t|      M Ops/s\t|" << std::endl;
+    std::cout << "---------------------------------------------------------------------------------" << std::endl;
+
+    std::cout.precision(4);
+
+    for (uint32_t i = 0; i < kIndexStructures.size(); ++i)
+    {
+        const auto& [name, spacing, structure] = kIndexStructures[i];
+
+        if (skip.contains(name)) continue;
+
+        auto& times = structure_times[i];
+
+        std::cout << name;
+        for (uint8_t j = 0; j < spacing; ++j)
+        {
+            std::cout << "\t";
+        }
+        std::cout << "|" << GetDoubleOffset(std::get<0>(times));
+
+        std::cout << std::fixed
+                  << std::get<0>(times) << "s\t|" << GetDoubleOffset(std::get<1>(times))
+                  << std::get<1>(times) << "s\t|" << GetDoubleOffset(std::get<2>(times))
+                  << std::get<2>(times) << "s\t|" << GetDoubleOffset(number_elements / std::get<2>(times) / 1e6)
+                  << number_elements / std::get<2>(times) / 1e6 << "\t|\t"
+                  << std::endl;
+
+        // Delete Structure Benchmark
+        delete structure;
+    }
 }
 
 int main(int argc, char* argv[])
 {
+    if (CmdArgExists(argv, argv + argc, "-h"))
+    {
+        printf(kHelpMsg, argv[0], kDefaultIterations);
+        return EXIT_SUCCESS;
+    }
+
     if constexpr (sizeof(intptr_t) != 8)
     {
         std::cerr << "Please make sure to compile this program for 64 bit architecture!" << std::endl;
         return EXIT_FAILURE;
     }
 
-    size = 1;
-    iterations = 1;
-    dense = false;
-    verbose = true;
-
-    /**
-     * Run Search Test.
-     */
-    benchmark = BenchmarkTypes::kSearch;
-    RunBenchmark();
-
-    /**
-     * Run Mini RangeSearch Test.
-     */
-    benchmark = BenchmarkTypes::kRangeSearch;
-    skip.insert("H-Trie");
-    skip.insert("Hash-Table");
-    size = 3;
-    RunBenchmark();
-
-    /**
-     * Run RangeSearch Test.
-     */
-    benchmark = BenchmarkTypes::kRangeSearch;
-    size = 1;
-    RunBenchmark();
-
-    for (uint32_t i = 0; i < kIndexStructures.size(); ++i)
+    /*
+    if (argc < 5)
     {
-        const auto& [name, spacing, structure] = kIndexStructures[i];
-
-        // Delete Structure Benchmark
-        delete structure;
+        fprintf(stderr, usage_msg, argv[0]);
+        return EXIT_FAILURE;
     }
+    */
+
+    char* benchmark_arg = GetCmdArg(argv, argv + argc, "-b");
+    char* size_arg = GetCmdArg(argv, argv + argc, "-s");
+    char* iterations_arg = GetCmdArg(argv, argv + argc, "-i");
+    char* skip_arg = GetCmdArg(argv, argv + argc, "--skip");
+
+    // TODO: Default Values
+
+    if (benchmark_arg == nullptr || size_arg == nullptr)
+    {
+        fprintf(stderr, kUsageMsg, argv[0]);
+        return EXIT_FAILURE;
+    }
+
+    const std::string benchmark_str{benchmark_arg};
+    const std::string size_str{size_arg};
+
+    //const std::string benchmark_str{"range_search"};
+    //const std::string size_str{"3"};
+
+
+    if (benchmark_str == "insert")
+    {
+        benchmark = BenchmarkTypes::kInsert;
+    }
+    else if (benchmark_str == "search")
+    {
+        benchmark = BenchmarkTypes::kSearch;
+    }
+    else if (benchmark_str == "range_search")
+    {
+        benchmark = BenchmarkTypes::kRangeSearch;
+
+        // skip structures not supporting range queries
+        skip.insert("H-Trie");
+        skip.insert("Hash-Table");
+    }
+    else
+    {
+        std::cerr << "Unknown 'benchmark' argument \"" << benchmark_str <<
+                  R"(". Possible options are "insert", "search" and "range_search".)" << std::endl;
+        return EXIT_FAILURE;
+    }
+
+    try
+    {
+        size = std::stoul(size_str);
+    }
+    catch (std::logic_error&)
+    {
+        std::cerr << "Invalid 'size' argument \"" << size << R"(". Possible options are "1", "2", "3".)"
+                  << std::endl;
+        return EXIT_FAILURE;
+    }
+
+    if (size < 1 || size > 3)
+    {
+        std::cerr << "Invalid 'size' argument \"" << size << R"(". Possible options are "1", "2", "3".)"
+                  << std::endl;
+        return EXIT_FAILURE;
+    }
+
+    if (iterations_arg != nullptr)
+    {
+        const std::string iterations_str{iterations_arg};
+
+        try
+        {
+            iterations = std::stoul(iterations_str);
+        }
+        catch (std::logic_error&)
+        {
+            std::cerr << "Invalid 'number_iterations' argument \"" << iterations_str
+                      << "\". Expected integer between 1 and 10000 (inclusive)." << std::endl;
+            return EXIT_FAILURE;
+        }
+
+        if (iterations < 1 || iterations > 10000)
+        {
+            std::cerr << "Invalid 'number_iterations' argument \"" << iterations_str
+                      << "\". Expected integer between 1 and 10000 (inclusive)." << std::endl;
+            return EXIT_FAILURE;
+        }
+    }
+
+    if (skip_arg != nullptr)
+    {
+        const std::string skip_str{skip_arg};
+
+        size_t last = 0;
+        size_t next;
+        while ((next = skip_str.find(',', last)) != std::string::npos)
+        {
+            skip.insert(skip_str.substr(last, next - last));
+            last = next + 1;
+        }
+        skip.insert(skip_str.substr(last));
+    }
+
+    dense = CmdArgExists(argv, argv + argc, "-d");
+    // TODO:
+    //dense = false;
+
+    verbose = CmdArgExists(argv, argv + argc, "-v");
+
+    /**
+     * Run Benchmark.
+     */
+    RunBenchmark();
 
     return EXIT_SUCCESS;
 }
