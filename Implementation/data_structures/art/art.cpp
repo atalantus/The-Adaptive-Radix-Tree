@@ -6,11 +6,6 @@ namespace art
 {
     void Art::Insert(const uint32_t value)
     {
-        /*
-        if (value == 0x51af1d67)
-            std::cout << "b";
-        */
-
         std::reference_wrapper<Node*> node_ref = std::ref(root_);
 
         for (int offset = 24; offset >= 0; offset -= 8)
