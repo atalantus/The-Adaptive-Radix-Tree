@@ -28,16 +28,13 @@ public:
             hash_table_->Insert(numbers[i]);
     }
 
-    void Search(const std::vector<uint32_t>& numbers, std::vector<bool>& expected) override
+    void Search(const std::vector<uint32_t>& numbers) override
     {
-        for (uint32_t i = 0; i < numbers.size(); ++i) {
-            if (hash_table_->Find(numbers[i]) != expected[i])
-                std::cerr << "\033[1;31mHash-Table Search error: expected " << expected[i] << " got " << !expected[i] << " number " << std::hex
-                    << numbers[i] << "\033[0m" << std::endl;
-        }
+        for (uint32_t i = 0; i < numbers.size(); ++i) 
+            hash_table_->Find(numbers[i]);
     }
 
-    void RangeSearch(const std::vector<uint32_t>& numbers, std::vector<std::vector<uint32_t>>& expected) override
+    void RangeSearch(const std::vector<uint32_t>& numbers) override
     {
         // Hash-Table doesn't support range queries
     }

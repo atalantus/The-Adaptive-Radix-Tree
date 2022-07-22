@@ -96,10 +96,9 @@ namespace trie
                 res.insert(res.end(), p.begin(), p.end());
             }
         }
-        else
+        else if (node->children_[from_key] != nullptr)
         {
-            if (node->children_[from_key] != nullptr)
-                return GetRange(node->children_[from_key], from, to, offset - 8);
+            return GetRange(node->children_[from_key], from, to, offset - 8);
         }
 
         return res;
