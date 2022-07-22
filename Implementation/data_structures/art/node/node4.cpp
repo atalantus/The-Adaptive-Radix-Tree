@@ -42,22 +42,154 @@ namespace art
         return null_node;
     }
 
-    std::vector<uint32_t> Node4::FindRange(const uint32_t from, const uint32_t to, const int offset) const
+    std::vector<uint32_t> Node4::GetRange(const uint32_t from, const uint32_t to, const int offset) const
     {
         std::vector<uint32_t> res;
 
         const uint8_t from_key = from >> offset & 0xFF;
         const uint8_t to_key = to >> offset & 0xFF;
 
-        for (uint16_t i = 0; i < child_count_ && keys_[i] <= to_key; ++i)
-        {
-            if (keys_[i] < from_key) continue;
+        uint8_t i = 0;
+        for (; i < child_count_ && keys_[i] < from_key; ++i);
 
+        if (i == child_count_ || keys_[i] > to_key) return res;
+
+        if (from_key != to_key)
+        {
+            if (keys_[i] == from_key)
+            {
+                if (!IsLazyExpanded(children_[i]))
+                {
+                    auto p = children_[i]->GetLowerRange(from, offset - 8);
+                    res.insert(res.end(), p.begin(), p.end());
+                    ++i;
+                }
+                else if (CmpLazyExpansion(children_[i], from) <= 0) {
+                    res.push_back(reinterpret_cast<uint64_t>(children_[i]) >> 32);
+                    ++i;
+                }
+            }
+
+            for (; i < child_count_ && keys_[i] < to_key; ++i)
+            {
+                if (!IsLazyExpanded(children_[i]))
+                {
+                    auto p = children_[i]->GetFullRange();
+                    res.insert(res.end(), p.begin(), p.end());
+                }
+                else
+                    res.push_back(reinterpret_cast<uint64_t>(children_[i]) >> 32);
+            }
+
+            if (i < child_count_ && keys_[i] == to_key)
+            {
+                if (!IsLazyExpanded(children_[i]))
+                {
+                    auto p = children_[i]->GetUpperRange(to, offset - 8);
+                    res.insert(res.end(), p.begin(), p.end());
+                }
+                else if (CmpLazyExpansion(children_[i], to) >= 0)
+                    res.push_back(reinterpret_cast<uint64_t>(children_[i]) >> 32);
+            }
+        }
+        else
+        {
+            if (!IsLazyExpanded(children_[i]))
+                return children_[i]->GetRange(from, to, offset - 8);
+
+            if (CmpLazyExpansion(children_[i], from) <= 0 && CmpLazyExpansion(children_[i], to) >= 0)
+                res.push_back(reinterpret_cast<uint64_t>(children_[i]) >> 32);
+        }
+
+        return res;
+    }
+
+    std::vector<uint32_t> Node4::GetLowerRange(const uint32_t from, const int offset) const
+    {
+        std::vector<uint32_t> res;
+
+        const uint8_t from_key = from >> offset & 0xFF;
+
+        uint8_t i = 0;
+        for (; i < child_count_ && keys_[i] < from_key; ++i);
+
+        if (i == child_count_) return res;
+
+        if (keys_[i] == from_key)
+        {
+            if (!IsLazyExpanded(children_[i]))
+            {
+                auto p = children_[i]->GetLowerRange(from, offset - 8);
+                res.insert(res.end(), p.begin(), p.end());
+                ++i;
+            }
+            else if (CmpLazyExpansion(children_[i], from) <= 0)
+            {
+                res.push_back(reinterpret_cast<uint64_t>(children_[i]) >> 32);
+                ++i;
+            }
+        }
+
+        for (; i < child_count_; ++i)
+        {
+            if (!IsLazyExpanded(children_[i]))
+            {
+                auto p = children_[i]->GetFullRange();
+                res.insert(res.end(), p.begin(), p.end());
+            }
+            else
+                res.push_back(reinterpret_cast<uint64_t>(children_[i]) >> 32);
+        }
+
+        return res;
+    }
+
+    std::vector<uint32_t> Node4::GetUpperRange(const uint32_t to, const int offset) const
+    {
+        std::vector<uint32_t> res;
+
+        const uint8_t to_key = to >> offset & 0xFF;
+
+        uint8_t i = 0;
+
+        if (i == child_count_ || keys_[i] > to_key) return res;
+
+        for (; i < child_count_ && keys_[i] < to_key; ++i)
+        {
+            if (!IsLazyExpanded(children_[i]))
+            {
+                auto p = children_[i]->GetFullRange();
+                res.insert(res.end(), p.begin(), p.end());
+            }
+            else
+                res.push_back(reinterpret_cast<uint64_t>(children_[i]) >> 32);
+        }
+
+        if (i < child_count_ && keys_[i] == to_key)
+        {
+            if (!IsLazyExpanded(children_[i]))
+            {
+                auto p = children_[i]->GetUpperRange(to, offset - 8);
+                res.insert(res.end(), p.begin(), p.end());
+            }
+            else if (CmpLazyExpansion(children_[i], to) >= 0)
+                res.push_back(reinterpret_cast<uint64_t>(children_[i]) >> 32);
+        }
+
+        return res;
+    }
+
+    std::vector<uint32_t> Node4::GetFullRange() const
+    {
+        std::vector<uint32_t> res;
+
+        for (uint8_t i = 0; i < child_count_; ++i)
+        {
             if (IsLazyExpanded(children_[i]))
                 res.push_back(reinterpret_cast<uint64_t>(children_[i]) >> 32);
             else
             {
-                auto p = children_[i]->FindRange(from, to, offset + 8);
+                auto p = children_[i]->GetFullRange();
                 res.insert(res.end(), p.begin(), p.end());
             }
         }

@@ -62,29 +62,116 @@ namespace art
         __unreachable();
     }
 
-    std::vector<uint32_t> Node::FindRange(const uint32_t from, const uint32_t to, const int offset)
+    std::vector<uint32_t> Node::GetRange(const uint32_t from, const uint32_t to, const int offset)
     {
         switch (type_)
         {
             case kNode4:
                 {
                     const auto n = static_cast<Node4*>(this);
-                    return n->FindRange(from, to, offset);
+                    return n->GetRange(from, to, offset);
                 }
             case kNode16:
                 {
                     const auto n = static_cast<Node16*>(this);
-                    return n->FindRange(from, to, offset);
+                    return n->GetRange(from, to, offset);
                 }
             case kNode48:
                 {
                     const auto n = static_cast<Node48*>(this);
-                    return n->FindRange(from, to, offset);
+                    return n->GetRange(from, to, offset);
                 }
             case kNode256:
                 {
                     const auto n = static_cast<Node256*>(this);
-                    return n->FindRange(from, to, offset);
+                    return n->GetRange(from, to, offset);
+                }
+        }
+
+        __unreachable();
+    }
+
+    std::vector<uint32_t> Node::GetLowerRange(const uint32_t from, const int offset)
+    {
+        switch (type_)
+        {
+            case kNode4:
+                {
+                    const auto n = static_cast<Node4*>(this);
+                    return n->GetLowerRange(from, offset);
+                }
+            case kNode16:
+                {
+                    const auto n = static_cast<Node16*>(this);
+                    return n->GetLowerRange(from, offset);
+                }
+            case kNode48:
+                {
+                    const auto n = static_cast<Node48*>(this);
+                    return n->GetLowerRange(from, offset);
+                }
+            case kNode256:
+                {
+                    const auto n = static_cast<Node256*>(this);
+                    return n->GetLowerRange(from, offset);
+                }
+        }
+
+        __unreachable();
+    }
+
+    std::vector<uint32_t> Node::GetUpperRange(const uint32_t to, const int offset)
+    {
+        switch (type_)
+        {
+            case kNode4:
+                {
+                    const auto n = static_cast<Node4*>(this);
+                    return n->GetUpperRange(to, offset);
+                }
+            case kNode16:
+                {
+                    const auto n = static_cast<Node16*>(this);
+                    return n->GetUpperRange(to, offset);
+                }
+            case kNode48:
+                {
+                    const auto n = static_cast<Node48*>(this);
+                    return n->GetUpperRange(to, offset);
+                }
+            case kNode256:
+                {
+                    const auto n = static_cast<Node256*>(this);
+                    return n->GetUpperRange(to, offset);
+                }
+        }
+
+        __unreachable();
+    }
+
+    std::vector<uint32_t> Node::GetFullRange()
+    {
+        switch (type_)
+        {
+            case kNode4:
+                {
+                    const auto n = static_cast<Node4*>(this);
+                    return n->GetFullRange();
+                }
+            case kNode16:
+                {
+                    const auto n = static_cast<Node16*>(this);
+                    return n->GetFullRange();
+                }
+            case kNode48:
+                {
+                    const auto n = static_cast<Node48*>(this);
+                    return n->GetFullRange();
+                }
+            case kNode256:
+                {
+                    const auto n = static_cast<Node256*>(this);
+                    return n->GetFullRange();
                 }
         }
 
@@ -108,7 +195,7 @@ namespace art
         __unreachable();
     }
 
-    void Node::PrintTree(int depth)
+    void Node::PrintTree(const int depth)
     {
         switch (type_)
         {
@@ -162,15 +249,16 @@ namespace art
         return reinterpret_cast<uint64_t>(node_ptr) & 0x7ULL;
     }
 
-    bool Node::CmpLazyExpansion(Node* node_ptr, const uint32_t key)
+    int Node::CmpLazyExpansion(Node* node_ptr, const uint32_t key)
     {
         // address_value is actual full key value instead of address
         // (key value stored at high 32 bits)
         const uint32_t full_key_value = reinterpret_cast<uint64_t>(node_ptr) >> 32;
-        if (full_key_value == key)
-            return true;
-        // full key value is different
-        return false;
+        if (key < full_key_value)
+            return -1;
+        if (key > full_key_value)
+            return 1;
+        return 0;
     }
 
     void Node::Destruct()
