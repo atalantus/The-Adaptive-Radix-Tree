@@ -31,7 +31,9 @@ public:
     void Search(const std::vector<uint32_t>& numbers, std::vector<bool>& expected) override
     {
         for (uint32_t i = 0; i < numbers.size(); ++i)
-            mtrie_->Find(numbers[i]);
+            if (mtrie_->Find(numbers[i]) != expected[i])
+                std::cerr << "\033[1;31mM-Trie Search error: expected " << expected[i] << " got " << !expected[i] << " number " << std::hex
+                    << numbers[i] << "\033[0m" << std::endl;
     }
 
     void RangeSearch(const std::vector<uint32_t>& numbers, std::vector<std::vector<uint32_t>>& expected) override
