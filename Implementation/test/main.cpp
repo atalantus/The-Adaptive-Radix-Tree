@@ -40,11 +40,11 @@ std::set<std::string> skip;
 bool dense = false;
 bool verbose = false;
 
-void GenerateRandomNumbers(std::vector<uint32_t>& numbers, std::vector<uint32_t>& search_numbers)
+auto GenerateRandomNumbers(std::vector<uint32_t>& numbers, std::vector<uint32_t>& search_numbers)
 {
     std::random_device rnd;
-    std::mt19937_64 eng(rnd());
-    eng.seed(1337);
+    const auto seed = rnd();
+    std::mt19937_64 eng(seed);
     const uint32_t s = dense ? number_elements - 1 : 4'294'967'295;
     std::uniform_int_distribution<uint32_t> numbers_distr(0, s);
     std::uniform_int_distribution<uint32_t> search_numbers_distr(0, number_elements - 1);
@@ -90,18 +90,18 @@ void GenerateRandomNumbers(std::vector<uint32_t>& numbers, std::vector<uint32_t>
             search_numbers.push_back(std::max(n1, n2));
         }
     }
+
+    return seed;
 }
 
 auto RunBenchmarkIteration()
 {
-    std::vector<double> structure_times(kIndexStructures.size());
-
     std::vector<uint32_t> numbers;
     std::vector<uint32_t> search_numbers;
     std::vector<bool> expected_search;
     std::vector<std::vector<uint32_t>> expected_range_search;
 
-    GenerateRandomNumbers(numbers, search_numbers);
+    const auto seed = GenerateRandomNumbers(numbers, search_numbers);
 
     if (verbose)
         std::cout << "Finished allocating Memory for Numbers." << std::endl;
@@ -134,7 +134,7 @@ auto RunBenchmarkIteration()
         structure->DeleteStructure();
     }
 
-    return structure_times;
+    return seed;
 }
 
 void RunBenchmark()
@@ -163,7 +163,7 @@ void RunBenchmark()
             number_elements = 16'000'000;
             break;
         case 3:
-            number_elements = 250;
+            number_elements = 10'000;
     }
 
     std::cout << "Starting '" << benchmark_to_string() << "' benchmark with size '" << size << "' (" << number_elements
@@ -173,12 +173,12 @@ void RunBenchmark()
     // Run Benchmarks
     for (uint32_t i = 0; i < iterations; ++i)
     {
-        if (verbose)
-            std::cout << "Running iteration " << (i + 1) << "/" << iterations << "..." << std::endl;
-        RunBenchmarkIteration();
+        const auto seed = RunBenchmarkIteration();
+
+        std::cout << "Running iteration " << (i + 1) << "/" << iterations << " with seed " << seed << "..." << std::endl;
     }
 
-    std::cout << "Finished '" << benchmark_to_string() << "' benchmark with size '" << size << "' (" << number_elements << " keys), '" <<
+    std::cout << "\nFinished '" << benchmark_to_string() << "' benchmark with size '" << size << "' (" << number_elements << " keys), '" <<
         iterations << "' iterations and '" << (dense ? "dense" : "sparse") << "' keys.\n" << std::endl;
 }
 
@@ -190,31 +190,39 @@ int main(int argc, char* argv[])
         return EXIT_FAILURE;
     }
 
-    size = 1;
-    iterations = 1;
-    dense = false;
-    verbose = true;
+    iterations = 2;
+    verbose = false;
 
     /**
-     * Run Search Test.
+     * Run Search Tests.
      */
     benchmark = BenchmarkTypes::kSearch;
+
+    // Search Test 1
+    size = 1;
+    dense = false;
+    RunBenchmark();
+
+    // Search Test 2
+    size = 2;
+    dense = true;
     RunBenchmark();
 
     /**
-     * Run Mini RangeSearch Test.
+     * Run RangeSearch Tests.
      */
     benchmark = BenchmarkTypes::kRangeSearch;
     skip.insert("H-Trie");
     skip.insert("Hash-Table");
-    size = 3;
+
+    // RangeSearch Test 1
+    size = 1;
+    dense = false;
     RunBenchmark();
 
-    /**
-     * Run RangeSearch Test.
-     */
-    benchmark = BenchmarkTypes::kRangeSearch;
+    // RangeSearch Test 2
     size = 1;
+    dense = true;
     RunBenchmark();
 
     for (uint32_t i = 0; i < kIndexStructures.size(); ++i)

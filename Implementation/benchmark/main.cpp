@@ -36,7 +36,7 @@ const std::vector<std::tuple<std::string, uint8_t, Benchmark*>> kIndexStructures
         {"RB-Tree", 2, new RbTreeBenchmark()}
 };
 
-constexpr uint32_t kDefaultIterations{1};
+constexpr uint32_t kDefaultIterations{3};
 
 enum class BenchmarkTypes
 {
@@ -60,7 +60,6 @@ void GenerateRandomNumbers(std::vector<uint32_t>& numbers, std::vector<uint32_t>
 {
     std::random_device rnd;
     std::mt19937_64 eng(rnd());
-    //eng.seed(1337);
     const uint32_t s = dense ? number_elements - 1 : 4'294'967'295;
     std::uniform_int_distribution<uint32_t> numbers_distr(0, s);
     std::uniform_int_distribution<uint32_t> search_numbers_distr(0, number_elements - 1);
@@ -289,20 +288,10 @@ int main(int argc, char* argv[])
         return EXIT_FAILURE;
     }
 
-    /*
-    if (argc < 5)
-    {
-        fprintf(stderr, usage_msg, argv[0]);
-        return EXIT_FAILURE;
-    }
-    */
-
     char* benchmark_arg = GetCmdArg(argv, argv + argc, "-b");
     char* size_arg = GetCmdArg(argv, argv + argc, "-s");
     char* iterations_arg = GetCmdArg(argv, argv + argc, "-i");
     char* skip_arg = GetCmdArg(argv, argv + argc, "--skip");
-
-    // TODO: Default Values
 
     if (benchmark_arg == nullptr || size_arg == nullptr)
     {
@@ -312,10 +301,6 @@ int main(int argc, char* argv[])
 
     const std::string benchmark_str{benchmark_arg};
     const std::string size_str{size_arg};
-
-    //const std::string benchmark_str{"range_search"};
-    //const std::string size_str{"3"};
-
 
     if (benchmark_str == "insert")
     {
@@ -396,8 +381,6 @@ int main(int argc, char* argv[])
     }
 
     dense = CmdArgExists(argv, argv + argc, "-d");
-    // TODO:
-    //dense = false;
 
     verbose = CmdArgExists(argv, argv + argc, "-v");
 
