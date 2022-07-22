@@ -12,7 +12,7 @@ inline __attribute__((always_inline)) __m128i _mm_cmplt_epu8(__m128i a, __m128i 
 #elif defined(_MSC_VER) // MSVC
 
 __forceinline __m128i _mm_cmplt_epu8(const __m128i a, const __m128i b)
-{ return _mm_xor_si128(_mm_cmpeq_epi8(_mm_max_epu8(b, a), b), _mm_set1_epi8(-1)); }
+{ return _mm_xor_si128(_mm_cmpeq_epi8(_mm_max_epu8(a, b), a), _mm_set1_epi8(-1)); }
 
 #endif
 

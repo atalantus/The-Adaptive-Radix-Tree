@@ -64,7 +64,8 @@ namespace art
                     res.insert(res.end(), p.begin(), p.end());
                     ++i;
                 }
-                else if (CmpLazyExpansion(children_[i], from) <= 0) {
+                else if (CmpLazyExpansion(children_[i], from) <= 0)
+                {
                     res.push_back(reinterpret_cast<uint64_t>(children_[i]) >> 32);
                     ++i;
                 }

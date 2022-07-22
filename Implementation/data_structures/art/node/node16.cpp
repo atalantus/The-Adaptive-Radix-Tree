@@ -34,12 +34,11 @@ namespace art
         const __m128i partial_key_set = _mm_set1_epi8(partial_key);
         const __m128i child_key_set = _mm_loadu_si128(reinterpret_cast<__m128i*>(keys_));
         // compare less than for unsigned (!) 8 bit integers
-        // _mm_cmplt_epi8 compares signed integers so have to do a little trick
-        // and compare equality against each minimum of both sets' values
-        const __m128i cmp = _mm_cmpeq_epi8(_mm_min_epu8(child_key_set, partial_key_set), child_key_set);
+        // custom implementation (see node_util.h)
+        const __m128i cmp = _mm_cmplt_epu8(partial_key_set, child_key_set);
         const int bitfield = _mm_movemask_epi8(cmp);
         // flip mask
-        const int cmp_mask = ~(bitfield & ((1 << child_count_) - 1));
+        const int cmp_mask = bitfield & ((1 << child_count_) - 1);
         const uint32_t pos = cmp_mask ? __ctz(cmp_mask) : child_count_;
 
         // move everything from pos
@@ -94,12 +93,10 @@ namespace art
 
         const __m128i partial_key_set = _mm_set1_epi8(from_key);
         const __m128i child_key_set = _mm_loadu_si128(reinterpret_cast<__m128i*>(keys_));
-        const __m128i cmp = _mm_cmpeq_epi8(_mm_min_epu8(child_key_set, partial_key_set), child_key_set);
-        const int cmp_mask = ~(_mm_movemask_epi8(cmp) & (1 << child_count_) - 1);
+        const __m128i cmp = _mm_cmplt_epu8(partial_key_set, child_key_set);
+        const int cmp_mask = _mm_movemask_epi8(cmp) & (1 << child_count_) - 1;
 
-        if (!cmp_mask) return res;
-
-        uint16_t i = __ctz(cmp_mask);
+        uint16_t i = cmp_mask ? __ctz(cmp_mask) : 0;
 
         if (keys_[i] > to_key) return res;
 
@@ -162,13 +159,11 @@ namespace art
 
         const __m128i partial_key_set = _mm_set1_epi8(from_key);
         const __m128i child_key_set = _mm_loadu_si128(reinterpret_cast<__m128i*>(keys_));
-        const __m128i cmp = _mm_cmpeq_epi8(_mm_min_epu8(child_key_set, partial_key_set), child_key_set);
+        const __m128i cmp = _mm_cmplt_epu8(partial_key_set, child_key_set);
         const int bitfield = _mm_movemask_epi8(cmp);
-        const int cmp_mask = ~(bitfield & (1 << child_count_) - 1);
+        const int cmp_mask = bitfield & (1 << child_count_) - 1;
 
-        if (!cmp_mask) return res;
-
-        uint16_t i = __ctz(cmp_mask);
+        uint16_t i = cmp_mask ? __ctz(cmp_mask) : 0;
 
         if (keys_[i] == from_key)
         {
