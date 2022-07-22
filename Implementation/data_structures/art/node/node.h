@@ -55,9 +55,24 @@ namespace art
 
         /**
          * Recursively finds all values in a given range (inclusive).
-         * TODO: Implement FindRange without recursion using custom input iterator.
+         * TODO: Implement GetRange without recursion using custom input iterator.
          */
-        std::vector<uint32_t> FindRange(uint32_t from, uint32_t to, int offset);
+        std::vector<uint32_t> GetRange(uint32_t from, uint32_t to, int offset);
+
+        /**
+         * Recursively finds all values higher than a given value (inclusive).
+         */
+        std::vector<uint32_t> GetLowerRange(uint32_t from, int offset);
+
+        /**
+         * Recursively finds all values lower than a given value (inclusive).
+         */
+        std::vector<uint32_t> GetUpperRange(uint32_t to, int offset);
+
+        /**
+         * Finds all values.
+         */
+        std::vector<uint32_t> GetFullRange();
 
         /**
          * Returns true if the node is full.
@@ -86,9 +101,9 @@ namespace art
 
         /**
          * Compares a full key stored via lazy expansion at a pointer with key
-         * and returns true if they are the same.
+         * and returns -1 if the value is less than the stored key, 1 if it's higher and 0 if they're equal.
          */
-        static bool CmpLazyExpansion(Node* node_ptr, uint32_t key);
+        static int CmpLazyExpansion(Node* node_ptr, uint32_t key);
 
     protected:
         NodeType type_;
@@ -110,7 +125,13 @@ namespace art
 
         Node*& FindChild(uint8_t partial_key);
 
-        std::vector<uint32_t> FindRange(uint32_t from, uint32_t to, int offset) const;
+        std::vector<uint32_t> GetRange(uint32_t from, uint32_t to, int offset) const;
+
+        std::vector<uint32_t> GetLowerRange(uint32_t from, int offset) const;
+
+        std::vector<uint32_t> GetUpperRange(uint32_t to, int offset) const;
+
+        std::vector<uint32_t> GetFullRange() const;
 
         void Destruct();
 
@@ -132,7 +153,13 @@ namespace art
 
         Node*& FindChild(uint8_t partial_key);
 
-        std::vector<uint32_t> FindRange(uint32_t from, uint32_t to, int offset);
+        std::vector<uint32_t> GetRange(uint32_t from, uint32_t to, int offset);
+
+        std::vector<uint32_t> GetLowerRange(uint32_t from, int offset);
+
+        std::vector<uint32_t> GetUpperRange(uint32_t to, int offset) const;
+
+        std::vector<uint32_t> GetFullRange() const;
 
         void Destruct();
 
@@ -159,7 +186,13 @@ namespace art
 
         Node*& FindChild(uint8_t partial_key);
 
-        std::vector<uint32_t> FindRange(uint32_t from, uint32_t to, int offset) const;
+        std::vector<uint32_t> GetRange(uint32_t from, uint32_t to, int offset) const;
+
+        std::vector<uint32_t> GetLowerRange(uint32_t from, int offset) const;
+
+        std::vector<uint32_t> GetUpperRange(uint32_t to, int offset) const;
+
+        std::vector<uint32_t> GetFullRange() const;
 
         void Destruct();
 
@@ -183,7 +216,13 @@ namespace art
 
         Node*& FindChild(uint8_t partial_key);
 
-        std::vector<uint32_t> FindRange(uint32_t from, uint32_t to, int offset) const;
+        std::vector<uint32_t> GetRange(uint32_t from, uint32_t to, int offset) const;
+
+        std::vector<uint32_t> GetLowerRange(uint32_t from, int offset) const;
+
+        std::vector<uint32_t> GetUpperRange(uint32_t to, int offset) const;
+
+        std::vector<uint32_t> GetFullRange() const;
 
         void Destruct();
 

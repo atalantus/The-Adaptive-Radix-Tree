@@ -6,12 +6,17 @@ namespace art
 {
     void Art::Insert(const uint32_t value)
     {
+        /*
+        if (value == 0x51af1d67)
+            std::cout << "b";
+        */
+
         std::reference_wrapper<Node*> node_ref = std::ref(root_);
 
-        for (uint8_t offset = 0; offset < 32; offset += 8)
+        for (int offset = 24; offset >= 0; offset -= 8)
         {
             // get next 8 bit of value as partial key
-            uint8_t partial_key = (value >> offset) & 0xFF;
+            uint8_t partial_key = value >> offset & 0xFF;
 
             // check if partial key already exists
             Node*& child_node_ref = node_ref.get()->FindChild(partial_key);
@@ -43,7 +48,7 @@ namespace art
              */
             if (Node::IsLazyExpanded(child_node_ref))
             {
-                if (Node::CmpLazyExpansion(child_node_ref, value))
+                if (Node::CmpLazyExpansion(child_node_ref, value) == 0)
                     // value has already been inserted
                     return;
 
@@ -54,7 +59,7 @@ namespace art
                 const auto new_child_node = new Node4();
                 child_node_ref = new_child_node;
 
-                ExpandLazyExpansion(value, address_value >> 32, offset + 8, new_child_node);
+                ExpandLazyExpansion(value, address_value >> 32, offset - 8, new_child_node);
 
                 return;
             }
@@ -73,10 +78,10 @@ namespace art
     {
         Node* node = root_;
 
-        for (uint8_t offset = 0; offset < 32; offset += 8)
+        for (int offset = 24; offset >= 0; offset -= 8)
         {
             // get next 8 bit of value as partial key
-            const uint8_t partial_key = (value >> offset) & 0xFF;
+            const uint8_t partial_key = value >> offset & 0xFF;
 
             Node* child_node = node->FindChild(partial_key);
 
@@ -87,7 +92,7 @@ namespace art
 
             // handle lazy expansion
             if (Node::IsLazyExpanded(child_node))
-                return Node::CmpLazyExpansion(child_node, value);
+                return Node::CmpLazyExpansion(child_node, value) == 0;
 
             // go to next node
             node = child_node;
@@ -101,7 +106,7 @@ namespace art
 
     std::vector<uint32_t> Art::FindRange(const uint32_t from, const uint32_t to) const
     {
-        return root_->FindRange(from, to, 0);
+        return root_->GetRange(from, to, 24);
     }
 
     void Art::PrintTree() const
@@ -109,15 +114,15 @@ namespace art
         root_->PrintTree(0);
     }
 
-    void Art::ExpandLazyExpansion(const uint32_t value1, const uint32_t value2, const uint8_t depth, Node* node)
+    void Art::ExpandLazyExpansion(const uint32_t value1, const uint32_t value2, const int depth, Node* node)
     {
         Node* n = node;
 
-        for (uint8_t offset = depth; offset < 32; offset += 8)
+        for (int offset = depth; offset >= 0; offset -= 8)
         {
             // get next 8 bit of values as partial keys
-            const uint8_t partial_key1 = (value1 >> offset) & 0xFF;
-            const uint8_t partial_key2 = (value2 >> offset) & 0xFF;
+            const uint8_t partial_key1 = value1 >> offset & 0xFF;
+            const uint8_t partial_key2 = value2 >> offset & 0xFF;
 
             if (partial_key1 != partial_key2)
             {
