@@ -2,7 +2,7 @@
 
 # Execute a set of different benchmarks for size 2
 
-DIR_PATH="./out/build/gcc-x64-release"
+DIR_PATH="../out/build/gcc-x64-release"
 
 # Insert
 $DIR_PATH/Benchmark -b insert -s 2 -i 5 -d

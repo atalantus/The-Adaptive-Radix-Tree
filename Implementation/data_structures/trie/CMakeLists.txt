@@ -1,1 +1,1 @@
-add_library(trie trie.h trie.cpp trie_benchmark.h)
+add_library(trie STATIC trie.h trie.cpp)

@@ -5,8 +5,8 @@
 #include <string>
 #include <chrono>
 #include "benchmark.h"
-#include "data_structures/data_structures.h"
-#include "util.h"
+#include "data_structures.h"
+#include "benchmark_util.h"
 
 constexpr char kUsageMsg[] = "usage: %s [-h] -b benchmark -s size [-i number_iterations] [-d] [--skip structure_list] [-v] \n";
 constexpr char kHelpMsg[] = "This program benchmarks different indexing structures using 32 bit unsigned integers. "

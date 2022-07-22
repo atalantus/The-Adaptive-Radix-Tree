@@ -1,7 +1,7 @@
 #pragma once
 
-#include "hash_table.h"
-#include "../../benchmark.h"
+#include "../../data_structures/hash_table/hash_table.h"
+#include "../benchmark.h"
 
 class HashTableBenchmark : public Benchmark
 {
@@ -28,13 +28,16 @@ public:
             hash_table_->Insert(numbers[i]);
     }
 
-    void Search(const std::vector<uint32_t>& numbers) override
+    void Search(const std::vector<uint32_t>& numbers, std::vector<bool>& expected) override
     {
-        for (uint32_t i = 0; i < numbers.size(); ++i)
-            hash_table_->Find(numbers[i]);
+        for (uint32_t i = 0; i < numbers.size(); ++i) {
+            if (hash_table_->Find(numbers[i]) != expected[i])
+                std::cerr << "\033[1;31mHash-Table Search error: expected " << expected[i] << " got " << !expected[i] << " number " << std::hex
+                    << numbers[i] << "\033[0m" << std::endl;
+        }
     }
 
-    void RangeSearch(const std::vector<uint32_t>& numbers) override
+    void RangeSearch(const std::vector<uint32_t>& numbers, std::vector<std::vector<uint32_t>>& expected) override
     {
         // Hash-Table doesn't support range queries
     }

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "rbtree.h"
-#include "../../benchmark.h"
+#include "../../data_structures/rbtree/rbtree.h"
+#include "../benchmark.h"
 
 class RbTreeBenchmark : public Benchmark
 {

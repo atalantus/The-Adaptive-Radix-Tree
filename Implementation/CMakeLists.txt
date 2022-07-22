@@ -13,10 +13,10 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /O2 /Ob3")
 endif()
 
-set(EXECUTABLE_NAME Benchmark)
-
 add_subdirectory(data_structures)
 
-add_executable(${EXECUTABLE_NAME} main.cpp benchmark.h util.h)
+add_executable("Benchmark" "benchmark/main.cpp")
+add_executable("Test" "test/main.cpp")
 
-target_link_libraries(${EXECUTABLE_NAME} art trie mtrie htrie sorted_list hash_table rbtree)
+target_link_libraries("Benchmark" data_structures)
+target_link_libraries("Test" data_structures)

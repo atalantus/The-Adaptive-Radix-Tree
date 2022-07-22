@@ -1,1 +1,1 @@
-add_library(rbtree rbtree.h rbtree.cpp rbtree_benchmark.h)
+add_library(rbtree STATIC rbtree.h rbtree.cpp)

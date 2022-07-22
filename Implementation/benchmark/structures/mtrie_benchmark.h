@@ -1,7 +1,7 @@
 #pragma once
 
-#include "mtrie.h"
-#include "../../benchmark.h"
+#include "../../data_structures/mtrie/mtrie.h"
+#include "../benchmark.h"
 
 class MTrieBenchmark : public Benchmark
 {

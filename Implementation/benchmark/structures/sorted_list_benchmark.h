@@ -1,7 +1,7 @@
 #pragma once
 
-#include "sorted_list.h"
-#include "../../benchmark.h"
+#include "../../data_structures/sorted_list/sorted_list.h"
+#include "../benchmark.h"
 
 class SortedListBenchmark : public Benchmark
 {

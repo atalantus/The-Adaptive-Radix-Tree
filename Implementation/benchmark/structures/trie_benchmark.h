@@ -1,45 +1,45 @@
 #pragma once
 
-#include "art.h"
-#include "../../benchmark.h"
+#include "../../data_structures/trie/trie.h"
+#include "../benchmark.h"
 
-class ArtBenchmark : public Benchmark
+class TrieBenchmark : public Benchmark
 {
 public:
-    ~ArtBenchmark() override
+    ~TrieBenchmark() override
     {
-        delete art_;
+        delete trie_;
     }
 
     void InitializeStructure() override
     {
-        art_ = new art::Art();
+        trie_ = new trie::Trie();
     }
 
     void DeleteStructure() override
     {
-        delete art_;
-        art_ = nullptr;
+        delete trie_;
+        trie_ = nullptr;
     }
 
     void Insert(const std::vector<uint32_t>& numbers) override
     {
         for (uint32_t i = 0; i < numbers.size(); ++i)
-            art_->Insert(numbers[i]);
+            trie_->Insert(numbers[i]);
     }
 
     void Search(const std::vector<uint32_t>& numbers) override
     {
         for (uint32_t i = 0; i < numbers.size(); ++i)
-            art_->Find(numbers[i]);
+            trie_->Find(numbers[i]);
     }
 
     void RangeSearch(const std::vector<uint32_t>& numbers) override
     {
         for (uint32_t i = 0; i < numbers.size(); i += 2)
-            art_->FindRange(numbers[i], numbers[i + 1]);
+            trie_->FindRange(numbers[i], numbers[i + 1]);
     }
 
 private:
-    art::Art* art_ = nullptr;
+    trie::Trie* trie_ = nullptr;
 };

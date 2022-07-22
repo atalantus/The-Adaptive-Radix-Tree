@@ -3,6 +3,17 @@
 ## Usage
 To run the project compile it on a x86-64 architecture supporting at least SSE2 with either MSVC++ or GCC-11 (or later).
 
+# Project Structure
+
+## Benchmark
+Includes various performance benchmarks for the data structures.
+
+## Test
+Includes testing to verify the data structures are implemented correctly.
+
+## Bin
+Includes different Shell scripts to automatically run different sets of benchmarks.
+
 ## Data Structures
 Various data structures for storing unique 32 bit keys.
 
@@ -46,9 +57,8 @@ Does not support range queries.
 
 The implementation uses `std::set`.
 
-## Benchmark Results
-The following results were benchmarked on an Intel Core i5-8400 CPU with 2.80GHz base and around 3.80GHz reported frequency during 
-benchmarking with 16GB DDR4-2666MHz RAM.
+# Benchmark Results
+The following results were benchmarked on an Intel Core i5-8400 CPU with around 3.70GHz speed during benchmarking with 16GB DDR4-2666MHz RAM.
 
 The code was compiled with MSVC v143. (There might be some not too insignificant performance differences compared to a GCC -O3 compilation.)
 

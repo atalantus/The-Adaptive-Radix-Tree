@@ -1,1 +1,1 @@
-add_library(mtrie mtrie.h mtrie.cpp mtrie_benchmark.h)
+add_library(mtrie STATIC mtrie.h mtrie.cpp)

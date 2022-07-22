@@ -1,1 +1,1 @@
-add_library(htrie htrie.h htrie.cpp htrie_benchmark.h)
+add_library(htrie STATIC htrie.h htrie.cpp)
