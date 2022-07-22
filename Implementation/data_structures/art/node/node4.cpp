@@ -62,13 +62,10 @@ namespace art
                 {
                     auto p = children_[i]->GetLowerRange(from, offset - 8);
                     res.insert(res.end(), p.begin(), p.end());
-                    ++i;
                 }
                 else if (CmpLazyExpansion(children_[i], from) <= 0)
-                {
                     res.push_back(reinterpret_cast<uint64_t>(children_[i]) >> 32);
-                    ++i;
-                }
+                ++i;
             }
 
             for (; i < child_count_ && keys_[i] < to_key; ++i)
@@ -122,13 +119,10 @@ namespace art
             {
                 auto p = children_[i]->GetLowerRange(from, offset - 8);
                 res.insert(res.end(), p.begin(), p.end());
-                ++i;
             }
             else if (CmpLazyExpansion(children_[i], from) <= 0)
-            {
                 res.push_back(reinterpret_cast<uint64_t>(children_[i]) >> 32);
-                ++i;
-            }
+            ++i;
         }
 
         for (; i < child_count_; ++i)

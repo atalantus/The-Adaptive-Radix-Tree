@@ -93,8 +93,13 @@ namespace art
 
         const __m128i partial_key_set = _mm_set1_epi8(from_key);
         const __m128i child_key_set = _mm_loadu_si128(reinterpret_cast<__m128i*>(keys_));
-        const __m128i cmp = _mm_cmplt_epu8(partial_key_set, child_key_set);
-        const int cmp_mask = _mm_movemask_epi8(cmp) & (1 << child_count_) - 1;
+        // compare custom less-equal
+        const __m128i cmp = _mm_cmple_epu8(partial_key_set, child_key_set);
+        const int bitfield = _mm_movemask_epi8(cmp);
+
+        if (!bitfield) return res;
+
+        const int cmp_mask = bitfield & (1 << child_count_) - 1;
 
         uint16_t i = cmp_mask ? __ctz(cmp_mask) : 0;
 
@@ -108,13 +113,10 @@ namespace art
                 {
                     auto p = children_[i]->GetLowerRange(from, offset - 8);
                     res.insert(res.end(), p.begin(), p.end());
-                    ++i;
                 }
                 else if (CmpLazyExpansion(children_[i], from) <= 0)
-                {
                     res.push_back(reinterpret_cast<uint64_t>(children_[i]) >> 32);
-                    ++i;
-                }
+                ++i;
             }
 
             for (; i < child_count_ && keys_[i] < to_key; ++i)
@@ -159,8 +161,12 @@ namespace art
 
         const __m128i partial_key_set = _mm_set1_epi8(from_key);
         const __m128i child_key_set = _mm_loadu_si128(reinterpret_cast<__m128i*>(keys_));
-        const __m128i cmp = _mm_cmplt_epu8(partial_key_set, child_key_set);
+        // compare custom less-equal
+        const __m128i cmp = _mm_cmple_epu8(partial_key_set, child_key_set);
         const int bitfield = _mm_movemask_epi8(cmp);
+
+        if (!bitfield) return res;
+
         const int cmp_mask = bitfield & (1 << child_count_) - 1;
 
         uint16_t i = cmp_mask ? __ctz(cmp_mask) : 0;
@@ -171,13 +177,10 @@ namespace art
             {
                 auto p = children_[i]->GetLowerRange(from, offset - 8);
                 res.insert(res.end(), p.begin(), p.end());
-                ++i;
             }
             else if (CmpLazyExpansion(children_[i], from) <= 0)
-            {
                 res.push_back(reinterpret_cast<uint64_t>(children_[i]) >> 32);
-                ++i;
-            }
+            ++i;
         }
 
         for (; i < child_count_; ++i)
