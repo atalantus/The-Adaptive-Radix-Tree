@@ -33,7 +33,7 @@ public:
             sorted_list_->Find(numbers[i]);
     }
 
-    void RangeSearch(const std::vector<uint32_t>& numbers, std::vector<std::vector<uint32_t>>& expected) override
+    void RangeSearch(const std::vector<uint32_t>& numbers) override
     {
         for (uint32_t i = 0; i < numbers.size(); i += 2)
             sorted_list_->FindRange(numbers[i], numbers[i + 1]);
