@@ -16,11 +16,11 @@ const std::vector<std::tuple<std::string, uint8_t, Benchmark*>> kIndexStructures
     // Do Sorted List first as it's results will be used to test the other structures
     {"Sorted List", 1, new SortedListBenchmark()},
     {"ART", 2, new ArtBenchmark()},
-    //{"Trie", 2, new TrieBenchmark()},
-    //{"M-Trie", 2, new MTrieBenchmark()},
+    {"Trie", 2, new TrieBenchmark()},
+    {"M-Trie", 2, new MTrieBenchmark()},
     //{"H-Trie", 2, new HTrieBenchmark()},
-    //{"Hash-Table", 1, new HashTableBenchmark()},
-    //{"RB-Tree", 2, new RbTreeBenchmark()}
+    {"Hash-Table", 1, new HashTableBenchmark()},
+    {"RB-Tree", 2, new RbTreeBenchmark()}
 };
 
 enum class BenchmarkTypes
@@ -185,24 +185,6 @@ void RunBenchmark()
 
 int main(int argc, char* argv[])
 {
-    uint8_t key = 0x49;
-    uint8_t keys[16];
-    keys[0] = 0x48;
-    keys[1] = 0x61;
-    keys[2] = 0x96;
-    keys[3] = 0xcb;
-    keys[4] = 0xf3;
-    for (int i = 5; i < 16; ++i)
-        keys[i] = 0;
-
-    const __m128i partial_key_set = _mm_set1_epi8(key);
-    const __m128i child_key_set = _mm_loadu_si128(reinterpret_cast<__m128i*>(keys));
-    const __m128i cmp = _mm_cmplt_epu8(partial_key_set, child_key_set);
-    const __m128i cmp2 = _mm_cmple_epu8(partial_key_set, child_key_set);
-    const int bitfield = _mm_movemask_epi8(cmp);
-    const int cmp_mask = bitfield & (1 << 5) - 1;
-    uint16_t i = cmp_mask ? __ctz(cmp_mask) : 0;
-
     if constexpr (sizeof(intptr_t) != 8)
     {
         std::cerr << "Please make sure to compile this program for 64 bit architecture!" << std::endl;

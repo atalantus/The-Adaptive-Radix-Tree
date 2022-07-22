@@ -46,9 +46,19 @@ public:
                 std::cerr << "\033[1;31mRB-Tree RangeSearch size error: expected " << expected[i / 2].size() << " got " << actual.size() <<
                     " at set " << i / 2 << "\033[0m" << std::endl;
 
-            for (size_t j = 0; j < actual.size(); ++j)
+            size_t j = 0;
+            for (; j < std::min(actual.size(), expected[i / 2].size()); ++j)
                 if (actual[j] != expected[i / 2][j])
-                    std::cerr << "\033[1;31mRB-Tree RangeSearch error: expected " << std::hex << expected[i / 2][j] << " got " << actual[j] <<
+                    std::cerr << "\033[1;31mRB-Tree RangeSearch error: expected " << std::hex << expected[i / 2][j] << " got " << actual[j]
+                        << " at position " << std::dec << j << " of set " << i / 2 << "\033[0m" << std::endl;
+
+            if (actual.size() > expected[i / 2].size())
+                for (; j < actual.size(); ++j)
+                    std::cerr << "\033[1;31mRB-Tree RangeSearch error: actual left over " << std::hex << actual[j] <<
+                        " at position " << std::dec << j << " of set " << i / 2 << "\033[0m" << std::endl;
+            else if (actual.size() < expected[i / 2].size())
+                for (; j < expected[i / 2].size(); ++j)
+                    std::cerr << "\033[1;31mRB-Tree RangeSearch error: expected left over " << std::hex << expected[i / 2][j] <<
                         " at position " << std::dec << j << " of set " << i / 2 << "\033[0m" << std::endl;
         }
     }
