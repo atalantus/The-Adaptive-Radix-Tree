@@ -1,31 +1,97 @@
 % 1. INTRODUCTION
 
-@incollection{harizopoulos2018oltp,
-  title={OLTP through the looking glass, and what we found there},
-  author={Harizopoulos, Stavros and Abadi, Daniel J and Madden, Samuel and Stonebraker, Michael},
-  booktitle={Making Databases Work: the Pragmatic Wisdom of Michael Stonebraker},
-  pages={409--439},
-  year={2018}
+@inproceedings{10.1145/1376616.1376713,
+author = {Harizopoulos, Stavros and Abadi, Daniel J. and Madden, Samuel and Stonebraker, Michael},
+title = {OLTP through the Looking Glass, and What We Found There},
+year = {2008},
+isbn = {9781605581026},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/1376616.1376713},
+doi = {10.1145/1376616.1376713},
+abstract = {Online Transaction Processing (OLTP) databases include a suite of features - disk-resident B-trees and heap files, locking-based concurrency control, support for multi-threading - that were optimized for computer technology of the late 1970's. Advances in modern processors, memories, and networks mean that today's computers are vastly different from those of 30 years ago, such that many OLTP databases will now fit in main memory, and most OLTP transactions can be processed in milliseconds or less. Yet database architecture has changed little.Based on this observation, we look at some interesting variants of conventional database systems that one might build that exploit recent hardware trends, and speculate on their performance through a detailed instruction-level breakdown of the major components involved in a transaction processing database system (Shore) running a subset of TPC-C. Rather than simply profiling Shore, we progressively modified it so that after every feature removal or optimization, we had a (faster) working system that fully ran our workload. Overall, we identify overheads and optimizations that explain a total difference of about a factor of 20x in raw performance. We also show that there is no single "high pole in the tent" in modern (memory resident) database systems, but that substantial time is spent in logging, latching, locking, B-tree, and buffer management operations.},
+booktitle = {Proceedings of the 2008 ACM SIGMOD International Conference on Management of Data},
+pages = {981–992},
+numpages = {12},
+keywords = {oltp, main memory transaction processing, dbms architecture, online transaction processing},
+location = {Vancouver, Canada},
+series = {SIGMOD '08}
 }
 
-@article{zhang2015memory,
-  title={In-memory big data management and processing: A survey},
+@article{7097722,
   author={Zhang, Hao and Chen, Gang and Ooi, Beng Chin and Tan, Kian-Lee and Zhang, Meihui},
-  journal={IEEE Transactions on Knowledge and Data Engineering},
+  journal={IEEE Transactions on Knowledge and Data Engineering}, 
+  title={In-Memory Big Data Management and Processing: A Survey}, 
+  year={2015},
   volume={27},
   number={7},
-  pages={1920--1948},
-  year={2015},
-  publisher={IEEE}
+  pages={1920-1948},
+  doi={10.1109/TKDE.2015.2427795}}
+
+@techreport{lehman1985study,
+  title={A study of index structures for main memory database management systems},
+  author={Lehman, Tobin J and Carey, Michael J},
+  year={1985},
+  institution={University of Wisconsin-Madison Department of Computer Sciences}
 }
 
-@inproceedings{leis2013adaptive,
-  title={The adaptive radix tree: ARTful indexing for main-memory databases},
-  author={Leis, Viktor and Kemper, Alfons and Neumann, Thomas},
-  booktitle={2013 IEEE 29th International Conference on Data Engineering (ICDE)},
-  pages={38--49},
-  year={2013},
-  organization={IEEE}
+@article{rao1998cache,
+  title={Cache conscious indexing for decision-support in main memory},
+  author={Rao, Jun and Ross, Kenneth A},
+  year={1998},
+  doi={10.7916/D8T441ZB}
+}
+
+@inproceedings{10.1145/1565694.1565705,
+author = {Schlegel, Benjamin and Gemulla, Rainer and Lehner, Wolfgang},
+title = {K-Ary Search on Modern Processors},
+year = {2009},
+isbn = {9781605587011},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/1565694.1565705},
+doi = {10.1145/1565694.1565705},
+abstract = {This paper presents novel tree-based search algorithms that exploit the SIMD instructions found in virtually all modern processors. The algorithms are a natural extension of binary search: While binary search performs one comparison at each iteration, thereby cutting the search space in two halves, our algorithms perform k comparisons at a time and thus cut the search space into k pieces. On traditional processors, this so-called k-ary search procedure is not beneficial because the cost increase per iteration offsets the cost reduction due to the reduced number of iterations. On modern processors, however, multiple scalar operations can be executed simultaneously, which makes k-ary search attractive. In this paper, we provide two different search algorithms that differ in terms of efficiency and memory access patterns. Both algorithms are first described in a platform independent way and then evaluated on various state-of-the-art processors. Our experiments suggest that k-ary search provides significant performance improvements (factor two and more) on most platforms.},
+booktitle = {Proceedings of the Fifth International Workshop on Data Management on New Hardware},
+pages = {52–60},
+numpages = {9},
+location = {Providence, Rhode Island},
+series = {DaMoN '09}
+}
+
+@inproceedings{10.1145/1807167.1807206,
+author = {Kim, Changkyu and Chhugani, Jatin and Satish, Nadathur and Sedlar, Eric and Nguyen, Anthony D. and Kaldewey, Tim and Lee, Victor W. and Brandt, Scott A. and Dubey, Pradeep},
+title = {FAST: Fast Architecture Sensitive Tree Search on Modern CPUs and GPUs},
+year = {2010},
+isbn = {9781450300322},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/1807167.1807206},
+doi = {10.1145/1807167.1807206},
+abstract = {In-memory tree structured index search is a fundamental database operation. Modern processors provide tremendous computing power by integrating multiple cores, each with wide vector units. There has been much work to exploit modern processor architectures for database primitives like scan, sort, join and aggregation. However, unlike other primitives, tree search presents significant challenges due to irregular and unpredictable data accesses in tree traversal.In this paper, we present FAST, an extremely fast architecture sensitive layout of the index tree. FAST is a binary tree logically organized to optimize for architecture features like page size, cache line size, and SIMD width of the underlying hardware. FAST eliminates impact of memory latency, and exploits thread-level and datalevel parallelism on both CPUs and GPUs to achieve 50 million (CPU) and 85 million (GPU) queries per second, 5X (CPU) and 1.7X (GPU) faster than the best previously reported performance on the same architectures. FAST supports efficient bulk updates by rebuilding index trees in less than 0.1 seconds for datasets as large as 64Mkeys and naturally integrates compression techniques, overcoming the memory bandwidth bottleneck and achieving a 6X performance improvement over uncompressed index search for large keys on CPUs.},
+booktitle = {Proceedings of the 2010 ACM SIGMOD International Conference on Management of Data},
+pages = {339–350},
+numpages = {12},
+keywords = {compression, cpu, gpu, data-level parallelism, tree search, thread-level parallelism},
+location = {Indianapolis, Indiana, USA},
+series = {SIGMOD '10}
+}
+
+@inproceedings{10.1145/342009.335449,
+author = {Rao, Jun and Ross, Kenneth A.},
+title = {Making B+- Trees Cache Conscious in Main Memory},
+year = {2000},
+isbn = {1581132174},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/342009.335449},
+doi = {10.1145/342009.335449},
+abstract = {Previous research has shown that cache behavior is important for main memory index structures. Cache conscious index structures such as Cache Sensitive Search Trees (CSS-Trees) perform lookups much faster than binary search and T-Trees. However, CSS-Trees are designed for decision support workloads with relatively static data. Although B+-Trees are more cache conscious than binary search and T-Trees, their utilization of a cache line is low since half of the space is used to store child pointers. Nevertheless, for applications that require incremental updates, traditional B+-Trees perform well.Our goal is to make B+-Trees as cache conscious as CSS-Trees without increasing their update cost too much. We propose a new indexing technique called “Cache Sensitive B+-Trees” (CSB+-Trees). It is a variant of B+-Trees that stores all the child nodes of any given node contiguously, and keeps only the address of the first child in each node. The rest of the children can be found by adding an offset to that address. Since only one child pointer is stored explicitly, the utilization of a cache line is high. CSB+-Trees support incremental updates in a way similar to B+-Trees.We also introduce two variants of CSB+-Trees. Segmented CSB+-Trees divide the child nodes into segments. Nodes within the same segment are stored contiguously and only pointers to the beginning of each segment are stored explicitly in each node. Segmented CSB+-Trees can reduce the copying cost when there is a split since only one segment needs to be moved. Full CSB+-Trees preallocate space for the full node group and thus reduce the split cost. Our performance studies show that CSB+-Trees are useful for a wide range of applications.},
+booktitle = {Proceedings of the 2000 ACM SIGMOD International Conference on Management of Data},
+pages = {475–486},
+numpages = {12},
+location = {Dallas, Texas, USA},
+series = {SIGMOD '00}
 }
 
 @online{baskins2004judy,
@@ -38,69 +104,136 @@
 
 % 2. ADAPTIVE RADIX TREE
 
+@inproceedings{6544812,
+  author={Leis, Viktor and Kemper, Alfons and Neumann, Thomas},
+  booktitle={2013 IEEE 29th International Conference on Data Engineering (ICDE)}, 
+  title={The adaptive radix tree: ARTful indexing for main-memory databases}, 
+  year={2013},
+  volume={},
+  number={},
+  pages={38-49},
+  doi={10.1109/ICDE.2013.6544812}}
+
 % 3. KEY TRANSFORMATIONS FOR BINARY COMPARISON
 
 % 4. EVALUATION
 
 % 5. RELATED WORK
 
-@inproceedings{alvarez2015comparison,
-  title={A comparison of adaptive radix trees and hash tables},
+@inproceedings{7113370,
   author={Alvarez, Victor and Richter, Stefan and Chen, Xiao and Dittrich, Jens},
-  booktitle={2015 IEEE 31st International Conference on Data Engineering},
-  pages={1227--1238},
+  booktitle={2015 IEEE 31st International Conference on Data Engineering}, 
+  title={A comparison of adaptive radix trees and hash tables}, 
   year={2015},
-  organization={IEEE}
+  volume={},
+  number={},
+  pages={1227-1238},
+  doi={10.1109/ICDE.2015.7113370}}
+
+@article{PAGH2004122,
+title = {Cuckoo hashing},
+journal = {Journal of Algorithms},
+volume = {51},
+number = {2},
+pages = {122-144},
+year = {2004},
+issn = {0196-6774},
+doi = {https://doi.org/10.1016/j.jalgor.2003.12.002},
+url = {https://www.sciencedirect.com/science/article/pii/S0196677403001925},
+author = {Rasmus Pagh and Flemming Friche Rodler},
+keywords = {Data structures, Dictionaries, Information retrieval, Searching, Hashing, Experiments},
+abstract = {We present a simple dictionary with worst case constant lookup time, equaling the theoretical performance of the classic dynamic perfect hashing scheme of Dietzfelbinger et al. [SIAM J. Comput. 23 (4) (1994) 738–761]. The space usage is similar to that of binary search trees. Besides being conceptually much simpler than previous dynamic dictionaries with worst case constant lookup time, our data structure is interesting in that it does not use perfect hashing, but rather a variant of open addressing where keys can be moved back in their probe sequences. An implementation inspired by our algorithm, but using weaker hash functions, is found to be quite practical. It is competitive with the best known dictionaries having an average case (but no nontrivial worst case) guarantee on lookup time.}
 }
 
-@inproceedings{wang2018building,
-  title={Building a bw-tree takes more than just buzz words},
-  author={Wang, Ziqi and Pavlo, Andrew and Lim, Hyeontaek and Leis, Viktor and Zhang, Huanchen and Kaminsky, Michael and Andersen, David G},
-  booktitle={Proceedings of the 2018 International Conference on Management of Data},
-  pages={473--488},
-  year={2018}
+
+@inproceedings{10.1145/3183713.3196895,
+author = {Wang, Ziqi and Pavlo, Andrew and Lim, Hyeontaek and Leis, Viktor and Zhang, Huanchen and Kaminsky, Michael and Andersen, David G.},
+title = {Building a Bw-Tree Takes More Than Just Buzz Words},
+year = {2018},
+isbn = {9781450347037},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3183713.3196895},
+doi = {10.1145/3183713.3196895},
+abstract = {In 2013, Microsoft Research proposed the Bw-Tree (humorously termed the "Buzz Word Tree''), a lock-free index that provides high throughput for transactional database workloads in SQL Server's Hekaton engine. The Buzz Word Tree avoids locks by appending delta record to tree nodes and using an indirection layer that allows it to atomically update physical pointers using compare-and-swap (CaS). Correctly implementing this techniques requires careful attention to detail. Unfortunately, the Bw-Tree papers from Microsoft are missing important details and the source code has not been released.This paper has two contributions: First, it is the missing guide for how to build a lock-free Bw-Tree. We clarify missing points in Microsoft's original design documents and then present techniques to improve the index's performance. Although our focus here is on the Bw-Tree, many of our methods apply more broadly to designing and implementing future lock-free in-memory data structures. Our experimental evaluation shows that our optimized variant achieves 1.1--2.5\texttimes{} better performance than the original Microsoft proposal for highly concurrent workloads. Second, our evaluation shows that despite our improvements, the Bw-Tree still does not perform as well as other concurrent data structures that use locks.},
+booktitle = {Proceedings of the 2018 International Conference on Management of Data},
+pages = {473–488},
+numpages = {16},
+keywords = {bw-tree, multicore, main memory oltp, database index, lock-free},
+location = {Houston, TX, USA},
+series = {SIGMOD '18}
 }
 
-@inproceedings{leis2016art,
-  title={The ART of practical synchronization},
-  author={Leis, Viktor and Scheibner, Florian and Kemper, Alfons and Neumann, Thomas},
-  booktitle={Proceedings of the 12th International Workshop on Data Management on New Hardware},
-  pages={1--8},
-  year={2016}
+@inproceedings{10.1145/2933349.2933352,
+author = {Leis, Viktor and Scheibner, Florian and Kemper, Alfons and Neumann, Thomas},
+title = {The ART of Practical Synchronization},
+year = {2016},
+isbn = {9781450343190},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/2933349.2933352},
+doi = {10.1145/2933349.2933352},
+abstract = {The performance of transactional database systems is critically dependent on the efficient synchronization of in-memory data structures. The traditional approach, fine-grained locking, does not scale on modern hardware. Lock-free data structures, in contrast, scale very well but are extremely difficult to implement and often require additional indirections. In this work, we argue for a middle ground, i.e., synchronization protocols that use locking, but only sparingly. We synchronize the Adaptive Radix Tree (ART) using two such protocols, Optimistic Lock Coupling and Read-Optimized Write EXclusion (ROWEX). Both perform and scale very well while being much easier to implement than lock-free techniques.},
+booktitle = {Proceedings of the 12th International Workshop on Data Management on New Hardware},
+articleno = {3},
+numpages = {8},
+location = {San Francisco, California},
+series = {DaMoN '16}
 }
 
-@inproceedings{binna2018hot,
-  title={HOT: A height optimized trie index for main-memory database systems},
-  author={Binna, Robert and Zangerle, Eva and Pichl, Martin and Specht, G{\"u}nther and Leis, Viktor},
-  booktitle={Proceedings of the 2018 International Conference on Management of Data},
-  pages={521--534},
-  year={2018}
+@inproceedings{10.1145/3183713.3196896,
+author = {Binna, Robert and Zangerle, Eva and Pichl, Martin and Specht, G\"{u}nther and Leis, Viktor},
+title = {HOT: A Height Optimized Trie Index for Main-Memory Database Systems},
+year = {2018},
+isbn = {9781450347037},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3183713.3196896},
+doi = {10.1145/3183713.3196896},
+abstract = {We present the Height Optimized Trie (HOT), a fast and space-efficient in-memory index structure. The core algorithmic idea of HOT is to dynamically vary the number of bits considered at each node, which enables a consistently high fanout and thereby good cache efficiency. The layout of each node is carefully engineered for compactness and fast search using SIMD instructions. Our experimental results, which use a wide variety of workloads and data sets, show that HOT outperforms other state-of-the-art index structures for string keys both in terms of search performance and memory footprint, while being competitive for integer keys. We believe that these properties make HOT highly useful as a general-purpose index structure for main-memory databases.},
+booktitle = {Proceedings of the 2018 International Conference on Management of Data},
+pages = {521–534},
+numpages = {14},
+keywords = {index, height optimized trie, simd, main memory},
+location = {Houston, TX, USA},
+series = {SIGMOD '18}
 }
 
-@inproceedings{fent2020start,
-  title={START—Self-Tuning Adaptive Radix Tree},
+@inproceedings{9094133,
   author={Fent, Philipp and Jungmair, Michael and Kipf, Andreas and Neumann, Thomas},
-  booktitle={2020 IEEE 36th International Conference on Data Engineering Workshops (ICDEW)},
-  pages={147--153},
+  booktitle={2020 IEEE 36th International Conference on Data Engineering Workshops (ICDEW)}, 
+  title={START — Self-Tuning Adaptive Radix Tree}, 
   year={2020},
-  organization={IEEE}
-}
+  volume={},
+  number={},
+  pages={147-153},
+  doi={10.1109/ICDEW49219.2020.00015}}
 
 % 6. CONCLUSION AND FUTURE WORK
 
-@inproceedings{kemper2011hyper,
-  title={HyPer: A hybrid OLTP\&OLAP main memory database system based on virtual memory snapshots},
+@inproceedings{5767867,
   author={Kemper, Alfons and Neumann, Thomas},
-  booktitle={2011 IEEE 27th International Conference on Data Engineering},
-  pages={195--206},
+  booktitle={2011 IEEE 27th International Conference on Data Engineering}, 
+  title={HyPer: A hybrid OLTP&OLAP main memory database system based on virtual memory snapshots}, 
   year={2011},
-  organization={IEEE}
-}
+  volume={},
+  number={},
+  pages={195-206},
+  doi={10.1109/ICDE.2011.5767867}}
 
-@inproceedings{raasveldt2019duckdb,
-  title={DuckDB: an embeddable analytical database},
-  author={Raasveldt, Mark and M{\"u}hleisen, Hannes},
-  booktitle={Proceedings of the 2019 International Conference on Management of Data},
-  pages={1981--1984},
-  year={2019}
+@inproceedings{10.1145/3299869.3320212,
+author = {Raasveldt, Mark and M\"{u}hleisen, Hannes},
+title = {DuckDB: An Embeddable Analytical Database},
+year = {2019},
+isbn = {9781450356435},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3299869.3320212},
+doi = {10.1145/3299869.3320212},
+abstract = {The immense popularity of SQLite shows that there is a need for unobtrusive in-process data management solutions. However, there is no such system yet geared towards analytical workloads. We demonstrate DuckDB, a novel data management system designed to execute analytical SQL queries while embedded in another process. In our demonstration, we pit DuckDB against other data management solutions to showcase its performance in the embedded analytics scenario. DuckDB is available as Open Source software under a permissive license.},
+booktitle = {Proceedings of the 2019 International Conference on Management of Data},
+pages = {1981–1984},
+numpages = {4},
+location = {Amsterdam, Netherlands},
+series = {SIGMOD '19}
 }

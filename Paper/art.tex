@@ -2,7 +2,7 @@
 
 \begin{document}
 
-\title{State of the ART: An Index Structure for Main Memory Databases}
+\title{The State of the ART: An Index Structure for Main Memory Databases}
 
 \author{Jonas Fritsch}
 \affiliation{
@@ -29,10 +29,37 @@ The architecture of DBMS has constantly been evolving due to advances in hardwar
 Over the last few decades, main memory capacities increased from several megabytes up to thousands 
 of gigabytes, such that nowadays, databases can fit entirely into main memory. This change significantly 
 impacted the general architecture of DBMS, which resulted in performance improvements 
-by several factors \cite{harizopoulos2018oltp}, \cite{zhang2015memory}.
+by several factors \cite{10.1145/1376616.1376713}, \cite{7097722}.
 
-The design of index structures used to query a set of data more efficiently was heavily influenced by 
-the main performance bottleneck of disk I/O in traditional disk-based DBMS.
+The design of index structures used to query a set of data more efficiently was heavily influenced 
+by the main performance bottleneck of disk I/O in traditional disk-based DBMS. 
+Original index structures like the B-Tree designed to minimize disk accesses perform poorly 
+in an in-memory environment. 
+
+The T-Tree \cite{lehman1985study} was one of the first index structures proposed for main memory DBMS. 
+However, over the last 35 years, the hardware landscape changed dramatically, causing T-Trees 
+and all other index structures not explicitly designed with caching effects in mind to be rendered 
+inefficient. Further focus on developing cache-sensitive index structures resulted in many 
+different search tree variants.
+
+Cache-sensitive search trees (CSS-Trees) \cite{rao1998cache}, while utilizing cache lines efficiently, 
+introduce a significant overhead for updates as the tree is compactly stored in an array. 
+Similarly, the more recent k-ary search tree \cite{10.1145/1565694.1565705} and the Fast Architecture 
+Sensitive Tree (FAST) \cite{10.1145/1807167.1807206} both utilize Single Instruction Multiple Data (SIMD) 
+instructions for data-level parallelism (DLP) to increase performance. However, as static data 
+structures, they do not support incremental updates. A way to circumvent this limitation is to 
+use a delta mechanism where another data structure stores differences and is periodically merged 
+into the static structure. This comes at an additional performance cost. The cache-conscious 
+B\textsuperscript{+}-Tree (CSB\textsuperscript{+}) \cite{10.1145/342009.335449} introduced as a variant of 
+B\textsuperscript{+}-Trees improves cache utilization by reducing the need to store all different 
+child pointers in each node.
+
+Hash-Tables have been a popular indexing choice for main memory databases as they provide 
+optimal $O(1)$ - as opposed to $O(log n)$ for search trees - single-lookup and update 
+time on average. Many different hashing schemes and hash functions have been developed 
+over time, but Hash-Tables generally do not support any range-based queries due to the nature 
+of hash functions. Additionally, Hash-Tables can require complete re-hashing with $O(n)$ complexity 
+upon reaching its load balance.
 
 \section{Adaptive Radix Tree}
 Lorem ipsum.
