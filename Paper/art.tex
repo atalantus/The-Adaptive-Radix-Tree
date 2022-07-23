@@ -11,19 +11,34 @@
 \email{fritsch@in.tum.de}
 
 \begin{abstract}
-    Lorem ipsum.
+    With recent trends in hardware, main memory capacities have grown to an extent where most traditional DBMS 
+    can fit entirely into main memory. These changes introduced a new shift of the performance bottleneck 
+    from disk-based I/O to Main-Memory access.
+    
+    While previous Index-Structure like the B-Tree were optimized for minimizing disk access, the 
+    adaptive radix tree (ART) is a trie-based index structure designed explicitly for in-memory usage. 
+    It utilizes newer architecture features like SIMD and caching effectively and compresses its structure 
+    dynamically, both horizontal and vertical. With these measures, ART achieves a performance that beats 
+    other state-of-the-art order-preserving index structures in both insertion and single-lookup time.
 \end{abstract}
 
 \maketitle
 
 \section{Introduction}
-Lorem ipsum. \cite{baskins2004judy}
+The architecture of DBMS has constantly been evolving due to advances in hardware. 
+Over the last few decades, main memory capacities increased from several megabytes up to thousands 
+of gigabytes, such that nowadays, databases can fit entirely into main memory. This change significantly 
+impacted the general architecture of DBMS, which resulted in performance improvements 
+by several factors \cite{harizopoulos2018oltp}, \cite{zhang2015memory}.
+
+The design of index structures used to query a set of data more efficiently was heavily influenced by 
+the main performance bottleneck of disk I/O in traditional disk-based DBMS.
 
 \section{Adaptive Radix Tree}
 Lorem ipsum.
 
-\section{Key Transformations for Binary Comparison}
-Lorem ipsum. \cite{leis2013adaptive}
+\section{Constructing Binary-Comparable Keys}
+Lorem ipsum.
 
 \section{Evaluation}
 Lorem ipsum.
