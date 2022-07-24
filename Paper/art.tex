@@ -38,7 +38,7 @@ in an in-memory environment.
 The T-Tree \cite{lehman1985study} was one of the first index structures proposed for main memory DBMS. 
 However, over the last 35 years, the hardware landscape changed dramatically, causing T-Trees 
 and all other index structures not explicitly designed with caching effects in mind to be rendered 
-inefficient. Further focus on developing cache-sensitive index structures resulted in many 
+inefficient \cite{rao1998cache}. Further focus on developing cache-sensitive index structures resulted in many 
 different search tree variants.
 
 Cache-sensitive search trees (CSS-Trees) \cite{rao1998cache}, while utilizing cache lines efficiently, 
@@ -106,6 +106,12 @@ fairly low memory consumption as well as a small tree height.
     Source: \cite{6544812}}
     \label{fig:trie}
 \end{figure}
+
+The key idea in lowering memory consumption while maintaining a high span for tries is to adaptively use nodes 
+with different fanouts based on the number of actual children. One of the first data structures to utilize such 
+adaptive nodes was the Judy Array \cite{baskins2004judy} which was invented by Doug Baskins and developed at 
+Hewlett-Packard research labs as a general associative array. However, due to its patent and overall complexity, 
+it hasn't yet been researched as well.
 
 \section{Adaptive Radix Tree}
 Lorem ipsum.
