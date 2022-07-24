@@ -35,7 +35,6 @@ The design of index structures used to query a set of data more efficiently was 
 by the main performance bottleneck of disk I/O in traditional disk-based DBMS. 
 Original index structures like the B-Tree designed to minimize disk accesses perform poorly 
 in an in-memory environment. 
-
 The T-Tree \cite{lehman1985study} was one of the first index structures proposed for main memory DBMS. 
 However, over the last 35 years, the hardware landscape changed dramatically, causing T-Trees 
 and all other index structures not explicitly designed with caching effects in mind to be rendered 
@@ -55,11 +54,58 @@ B\textsuperscript{+}-Trees improves cache utilization by reducing the need to st
 child pointers in each node.
 
 Hash-Tables have been a popular indexing choice for main memory databases as they provide 
-optimal $O(1)$ - as opposed to $O(log n)$ for search trees - single-lookup and update 
+optimal $O(1)$ - as opposed to $O(\log n)$ for search trees - single-lookup and update 
 time on average. Many different hashing schemes and hash functions have been developed 
-over time, but Hash-Tables generally do not support any range-based queries due to the nature 
-of hash functions. Additionally, Hash-Tables can require complete re-hashing with $O(n)$ complexity 
+over time, but hash-tables generally do not support any range-based queries due to the nature 
+of hash functions. Additionally, hash-tables can require complete re-hashing with $O(n)$ complexity 
 upon reaching its load balance.
+
+Another possible data structure used for indexing is a trie, also called prefix tree. Tries are search trees 
+with the difference that keys are inserted in pieces (partial keys). This means that two keys sharing a common
+prefix will have the same path from the root until their next partial key differs. A radix tree is a variant of
+a trie that further compactifies its structure by compressing nodes for partial keys that only have one child, as 
+shown in Figure \ref{fig:trie}.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\textwidth]{images/01-trie-radix-tree-example.PNG}
+    \caption{A trie with span 8 (1 byte per character) storing the keys HELLO, HAT and HAVE on the left and its radix tree variant on the right. Nodes marking the end of a word are outlined.}
+    \label{fig:trie}
+\end{figure}
+
+Tries have the following interesting properties:
+\begin{itemize}
+    \item Tree height and complexity do not depend on the number of keys $n$ stored but rather
+    the key length $k$. As we will see later in Section 4, this means that its performance is mainly impacted not by
+    the amount of keys present as in other search trees but by the skewness of these keys.
+    \item Tries require no rebalancing.
+    \item All insertion orders result in the same tree.
+    \item Keys are stored in lexicographic order.
+    \item Keys are stored implicitly along paths.
+\end{itemize}
+
+The span of a trie is the number of bits making one partial key. The fanout of a node is the number of children 
+a node can have maximum. The most efficient implementation for a trie of span $s$ is to have a fanout of $2^s$ on 
+each node. This means that when storing the children in a pointer array of size $2^s$, the partial key can be used 
+directly as index into this array to find the next child without having to make any comparisons.
+With this, the height of a given trie storing keys of $k$ bits is bound by $\lceil k/s\rceil$ and increasing 
+the span results in a lower trie height which is desirable as the height dictates the time complexity of almost 
+all operations.
+
+On the other hand, increasing the span results in an exponentially higher fanout, thus requiring more space as even 
+if few children exist, the array will be filled with null pointers wasting memory. 
+For this reason, having a very high span is generally impractical. The Generalized Prefix Tree (GPT) \cite{mci/Boehm2011} 
+has a span of 4, and the radix tree implementation used in the Linux kernel uses 6 bits \cite{corbet2006lrt}. 
+The Adaptive Radix Tree (ART) \cite{6544812}, as depicted in Figure 2, while using a span of 8, manages to have both 
+fairly low memory consumption as well as a small tree height.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.4\textwidth]{images/02-trie-memory-consumption.png}
+    \caption{Comparison of tree height versus space consumption for different radix tree spans $s$ when storing 1M uniformly distributed 32 bit integers with 8 byte pointers.
+    Source: \cite{6544812}}
+    \label{fig:trie}
+\end{figure}
 
 \section{Adaptive Radix Tree}
 Lorem ipsum.
