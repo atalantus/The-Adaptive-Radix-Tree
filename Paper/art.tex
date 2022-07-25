@@ -63,7 +63,7 @@ upon reaching its load balance.
 
 Another possible data structure used for indexing is a trie, also called prefix tree. Tries are search trees 
 with the difference that keys are inserted in pieces (partial keys). This means that two keys sharing a common
-prefix will have the same path from the root until their next partial key differs. A radix tree is a variant of
+prefix will have the same path from the root until their next partial key differs. A radix tree, sometimes also called Patricia-Trie, is a variant of
 a trie that further compactifies its structure by compressing nodes for partial keys that only have one child, as 
 shown in Figure \ref{fig:trie}. With radix trees, some form of leaf nodes holding the compressed rest key is required 
 to restore full keys.
@@ -122,11 +122,11 @@ index in ART. Section 4 evaluates ART by comparing its performance and memory co
 micro-benchmarks and then the TPC-C benchmark. Section 5 discusses related work and research done since the 
 original proposition of ART back in 2013. The final part draws a conclusion and discusses future work.
 
-\section{Adaptive Radix Tree}
+\section{The Adaptive Radix Tree}
 The Adaptive Radix Tree (ART) was first proposed by Leis et al. \cite{6544812} as a performant, order-preserving 
 in-memory index structure. As a radix tree using multiple different node types with different fanouts, it applies 
-vertical compression to reduce the overall tree height and improve performance, as well as horizontal compression 
-to lower memory consumption.
+horizontal compression to drastically lower memory consumption and vertical compression to reduce the overall tree 
+height and further memory usage while improving performance.
 
 \subsection{Horizontal Compression (Adaptive Nodes)}
 Similar to Judy Arrays, ART uses a number of different node types, each with a different fanout but the same span 
@@ -157,6 +157,41 @@ child pointer array as value in the key array, which is indexed directly using t
 
 \textbf{Node256:} Finally, the largest node stores children in the classical trie approach with a child pointer 
 array of size 256 so that, similarly to Node48, the partial key is used directly as index.
+
+Additionally, all nodes have a header of constant size storing the node type, the number of non-null children, 
+and a prefix variable containing information about the compressed path (see Section 2.2).
+
+\subsection{Vertical Compression}
+As a radix tree, ART implements two techniques often used in tree-like structures: lazy expansion and path compression. 
+Thus ART compresses node chains where each node only has a single child, further reducing tree height and space 
+consumption while improving performance.
+
+\textbf{Lazy Expansion:} 
+Lazy expansion refers to the standard radix tree approach introduced by Morrison \cite{10.1145/321479.321481} to 
+expand nodes lazily upon insertion, meaning that
+nodes are only created as long as they are needed to distinguish between at least two different keys. This can be seen
+again in Figure \ref{fig:art-vertical-compression} where the key FOO is lazy expanded, meaning the path for storing the
+two Os is omitted. Since the path to a leaf may be compressed, this requires the full key to be stored alongside 
+its value or be retrievable based on it. The latter is most often the case in database indexes, where the value 
+is used as a reference to a data tuple containing the key.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.45\textwidth]{images/04-art-vertical-compression.PNG}
+    \caption{Lazy expansion and path compression in effect
+    Source: \cite{6544812}}
+    \label{fig:art-vertical-compression}
+\end{figure}
+
+\textbf{Path Compression:}
+
+\subsection{Storing Values}
+
+\subsection{Algorithms}
+
+\subsection{Space Consumption}
+As briefly mention in Section 1
+In the original ART paper \cite{6544812} the authors proofed that on average a
 
 \section{Constructing Binary-Comparable Keys}
 Lorem ipsum.
