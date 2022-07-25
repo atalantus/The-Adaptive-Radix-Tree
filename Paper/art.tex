@@ -19,8 +19,7 @@
     adaptive radix tree (ART) is a trie-based index structure designed explicitly for in-memory usage. 
     It utilizes newer architecture features like SIMD and caching effectively and compresses its structure 
     dynamically, both horizontal and vertical. With these measures, ART achieves a performance that beats 
-    other state-of-the-art order-preserving indexes in both insertion and single-lookup time while having 
-    a lower memory footprint at the same time.
+    other state-of-the-art order-preserving indexes while having a lower memory footprint at the same time.
 \end{abstract}
 
 \maketitle
@@ -170,17 +169,16 @@ consumption while improving performance.
 
 \textbf{Lazy Expansion:} 
 Lazy expansion refers to the standard radix tree approach introduced by Morrison \cite{10.1145/321479.321481} to 
-expand nodes lazily upon insertion. New nodes are therefore only created as long as they are needed to distinguish between at l
-east two different keys. This can be seen
+expand nodes lazily upon insertion. New nodes are therefore only created as long as they are needed to distinguish between at least two different keys. This can be seen
 again in Figure \ref{fig:art-vertical-compression} where the key "FOO" is lazy expanded, meaning the path for storing the
 two "O"s is omitted. Since paths to leaves may be compressed, this requires the full key to be stored alongside its value 
-or be retrievable based on it. The latter is most often the case in database indexes, where the value 
+or be retrievable based on the value. The latter is most often the case in database indexes, where the value 
 is used as a reference to a data tuple also containing the key.
 
 \begin{figure}
     \centering
     \includegraphics[width=0.45\textwidth]{images/04-art-vertical-compression.PNG}
-    \caption{Lazy expansion and path compression in effect
+    \caption{Lazy expansion and path compression in effect.
     Source: \cite{6544812}}
     \label{fig:art-vertical-compression}
 \end{figure}
@@ -224,18 +222,24 @@ The original ART paper \cite{6544812} also shows and explains pseudo code for th
 bulk loading and delete which is ommitted here for brevity.
 
 Similarly, Leis et al. also presented a proof for the worst-case space consumption per key, which is bounded by 52 bits even for
-arbitrarily long keys. As we will see in Section 4.1, this space consumption per key can be in practice as low as 8.1 bits
+arbitrarily long keys. As we will see in Section 4, this space consumption per key can be in practice as low as 8.1 bits
 for dense keys.
 
 \section{Constructing Binary-Comparable Keys}
 
-To preserve order on keys in a radix tree and therefore allow range-based queries, partial keys have to be sorted. 
-To allow for different spans and variable length keys, it is required that the bitwise representation of a key is 
+\begin{figure*}
+    \centering
+    \includegraphics[width=\textwidth]{images/06-art-micro-benchmark-16.PNG}
+    \caption{Benchmark results for 16 million 32 bit unsigned integers.}
+    \label{fig:art-micro-benchmark-16}
+\end{figure*}
+
+To preserve order on keys in a radix tree and therefore allow range-based queries, it is required that the bitwise representation of a key is 
 ordered in the same way as the key in its own context. This is the case for some key types like ASCII encoded strings 
-as the binary representation of 'A' is smaller than the one of 'B'. However, for general types, this may not be the case.
+as the binary representation of 'A' is smaller than the one of 'B' and so forth. However, for general types, this may not be the case.
 
 For this reason, Leis et al. proposed various key transformations for common types such that the binary 
-representation of a type implies the same order as the type itself \cite{6544812}.
+representation of a type implies the same order as the type itself.
 
 Having the same order means for two values $a$, $b$ of the same type
 \[a < b \iff bin(a) <bin(b)\qquad\text{(same for $>$ and $=$)}\]
@@ -258,35 +262,23 @@ Additionally the authors of ART also showed transformations for floats and nulla
 
 \section{Evaluation}
 
-In this section, we evaluate ART first with our implementation and with microbenchmarks and compare the
-results to the same microbenchmarks used in the original ART paper before showing their results for performing the
+In this section, we evaluate ART first with our implementation and with microbenchmarks comparing the
+results to the same microbenchmarks used in the original ART paper. Then we show Leis et al. results and evaluation 
+for performing the
 standard OLTP benchmark TPC-C.
 
 Our ART implementation \cite{fritschart} uses combined value/pointer slots on 64 bit architecture with SIMD instructions for Node16 
 and does not include path compression, only storing a 2 byte header (node type and number of non-null children).
 Leaving out path compression does not result in any performance loss due to the keys of the microbenchmarks
-being only 32 bits long. At such short lengths, path compression generally introduces more overhead and memory consumption.
+being only 32 bits long. At such short lengths, path compression generally introduces more overhead and 
+additional memory consumption, so it is better to deactivate it.
 
 Our benchmarks were run on an Intel Core i5-8400 CPU with around 3.7 GHz reported clock rate during benchmarks.
-It has 6 cores, 6 threads, 8 MB shared, last-level cache, and 16 GB dual-channel DDR4-2666 RAM. As operation system, we used Windows 10.0.19044 and the MSVC v143 compiler with flags /O2 and /Ob3.
+It has 6 cores, 6 threads, 8 MB shared, last-level cache. Our system has 16 GB dual-channel DDR4-2666 RAM. As operation system, we used Windows 10.0.19044 and the MSVC v143 compiler with flags /O2 and /Ob3.
 
 \subsection{Micobenchmarks}
 
-\begin{figure*}
-    \centering
-    \includegraphics[width=\textwidth]{images/05-art-micro-benchmark-56.PNG}
-    \caption{Benchmark results for 56 thousand 32 bit unsigned integers.}
-    \label{fig:art-micro-benchmark-56}
-\end{figure*}
-
-\begin{figure*}
-    \centering
-    \includegraphics[width=\textwidth]{images/06-art-micro-benchmark-16.PNG}
-    \caption{Benchmark results for 16 million 32 bit unsigned integers.}
-    \label{fig:art-micro-benchmark-16}
-\end{figure*}
-
-The microbenchmarks uses 56 thousand and 16 million 32 bit unsigned integers as keys without another associated value. We compare ARTs 
+The microbenchmarks uses 16 million 32 bit unsigned integers as keys without another associated value. We compare ARTs 
 performance to a Trie implementation storing child pointers or the last partial key in a std::map (M-Trie), a 
 Sorted List (SL), a chained hash-table (HT) using the std::unordered\_set implementation, and a red-black tree 
 (RB-Tree) using the std::set implementation.
@@ -294,25 +286,21 @@ Sorted List (SL), a chained hash-table (HT) using the std::unordered\_set implem
 We split our datasets into dense and sparse keys, where sparse are uniformly random 32 bit keys and dense keys only
 range from $0$ to $n-1$ where $n$ is the number of keys inserted (16 million).
 
-While the dense 65 thousand / 16 million key set effectively only uses 16 / 24 bit keys ($\log_265000\approx16$ / $\log_216000000\approx24$)
+While the dense 16 million key set effectively only uses 24 bit keys ($\log_216000000\approx24$)
 the sparse set always uses full random 32 bit keys.
 
-For both benchmark sizes and each dataset, we measured memory consumption in MB for 56 thousand keys and GB for 
-16 million keys, insert, and positive/successful search performance with million operations per second. 
-The results can be seen in Figure \ref{fig:art-micro-benchmark-56} and Figure \ref{fig:art-micro-benchmark-16} respectively.
+For both benchmark sizes and each dataset, we measured memory consumption in GB, insert, and positive/successful search performance with million operations per second. 
+The results can be seen in Figure \ref{fig:art-micro-benchmark-16}.
 
 \textbf{Memory Consumption:} We see that ART uses less memory than the other data structures except for the Sorted List, which stores all keys in a single vector and thus has almost optimal memory consumption. Additionally, for the 
 trie-based structures, the difference in memory between dense and sparse is due to the nature of common prefix
-compression of tries. ART does not have such a huge increase in memory consumption for the sparse set
-compared to the increase for M-Trie because of its vertical compression (specifically lazy expansion in this case).
+compression of tries. Compared to the M-Trie, ART does not have such a huge increase in memory consumption for the sparse set
+because of its vertical compression (specifically lazy expansion in this case).
 
-\textbf{Insert Performance:} For 65 thousand keys, ART outperforms all other data structures. 
-Because of the small number of keys, all structures except M-Trie for the sparse set fit entirely into the cache, 
-and the performance is therefore
-bound by the speed of the CPU instructions and, more so, the cache hierarchy as opposed to main-memory access.
-For 16 million keys, the results stay similar except for the Sorted List, which competes with ART. Note that 
-insertion into the Sorted List is done as a bulk insert $O(n\log n)$ rather than constantly 
-inserting a new key at the correct position shifting all later keys $O(n^2)$.
+\textbf{Insert Performance:} ART outperforms all other data structures except the Sorted List. 
+Note that for the Sorted List, insertion is done as bulk insert $O(n\log n)$ rather than constantly 
+inserting a new key at the correct position shifting all later keys $O(n^2)$. Otherwise, its performance would be significantly
+worse. Bulk insertion for ART also improves performance but mostly for dense sets \cite{6544812} with a factor of 2.5.
 
 \textbf{Search Performance:} For single-point searches, ART is only outperformed by the Hash-Table, which has amortized
 constant lookup time. The Sorted List with binary search performs the third best.
@@ -322,20 +310,66 @@ The only significant difference is that in Leis et al. search benchmarks, ART co
 dense set, even topping the hash table. This can be explained by the fact that the hash function chosen by the authors 
 MurmurHash64A \cite{murmur} while considered very robust is slower than a simpler hash function.
 
-Because of this, Leis et al. concluded that only a hash table could be competitive in terms
+Because of their results, Leis et al. concluded that only a hash table could be competitive in terms
 of performance. However, we will see in Section 5 that state-of-the-art hash tables can have lower memory consumption
 or outperform ART's search performance by several factors.
 
 \subsection{End-to-End Evaluation}
-As final evaluation
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.4\textwidth]{images/07-art-tpc-c.png}
+    \caption{TPC-C performance.
+    Source: \cite{6544812}}
+    \label{fig:art-tpc-c}
+\end{figure}
+
+As the final evaluation, ART was implemented in the main-memory database system HyPer \cite{5767867} and evaluated 
+using the TPC-C benchmark \cite{6544812}. Its performance was compared by using a red-black tree index and a 
+combination of a red-black tree and a hash table index. The results are shown in Figure \ref{fig:art-tpc-c}. ART 
+performs twice as fast as the combination of hash table and red-black tree, where the performance dips of the combination of indexes can be 
+explained by the hash table reaching its load balance and doing a complete re-hash.
+
+Further results of this benchmark were ART only using half as much space as the hash table and the red-black tree. 
+In practice, ART used around 8.1 bits per key for dense sets and up to 32.6 bits per key for sparser sets which 
+again matches the results of our microbenchmarks in Section 4.1.
+
+It also shows that both vertical compression techniques significantly impact overall tree height, 
+reducing it from as much as 40 down to 8.1 on average.
 
 \section{Related Work}
+As the authors of the original ART paper concluded that only a hash table was competitive with the performance of ART \cite{6544812} 
+with ART still outperforming it in some cases, Alvarez et al. published a paper \cite{7113370} in response further comparing ART to
+not only a variety of different hashing schemes and hash functions but also the Judy Array, another adaptive radix tree.
 
-Lorem ipsum.
+In it, they showed that with better hashing schemes such as Cuckoo-Hashing \cite{PAGH2004122} instead of a chained hash table
+and simpler hash functions such as multiplicative hashing instead of Marmur hash tables do outperform ART by several factors in
+both insertion and single-lookup performance or other hash tables achieve similar performance but only require half the space.
+
+Compared to Judy Arrays, ART achieved double the performance while also needing around twice as much space.
+
+Another more recent paper by Wang et al. compared ART to more state-of-the-art order-preserving index structures such 
+as the Bw-Tree, MassTree, and a B\textsuperscript{+}-Tree version optimized for main memory usage. They also ran multi-threaded
+benchmarks using a synchronized version of ART presented by Leis et al. \cite{10.1145/2933349.2933352}. Their results show
+that ART generally performs better or similar than all other indexes in both performance and memory consumption except for
+range-based queries where the B\textsuperscript{+}-Tree outperforms all other indexes because of its spacial locality of 
+leaf nodes.
+
+In recent years further variants of ART have been developed like HOT \cite{10.1145/3183713.3196896}, where nodes can have different spans to improve performance
+on sparse sets, or START \cite{9094133} where lower level nodes are dynamically combined and optimized using
+a cost model and optimizer, further improving performance and memory consumption.
 
 \section{Conclusion and Future Work}
 
-Lorem ipsum.
+Concluding ART is a synchronized, general purpose, order-preserving index structure that is space efficient, 
+generally outperforms other order-preserving indexes in performance.
+It is, however, outperformed by state-of-the-art hashing-based indexes in at least single-threaded environments.
+
+The Adaptive Radix Tree is used as an index in main memory database systems like HyPer \cite{5767867} or DuckDB \cite{10.1145/3299869.3320212}.
+
+With the Judy Array patent just expired, it remains to be seen how ART would compare to a modernized version of
+Judy Arrays and if ART could even benefit from some of Judy Arrays' design choices like Judy Pointers, to reach 
+Judy Arrays' memory efficiency.
 
 \bibliographystyle{ACM-Reference-Format.bst}
 \bibliography{refs}
