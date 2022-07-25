@@ -71,7 +71,7 @@ to restore full keys.
 \begin{figure}
     \centering
     \includegraphics[width=0.5\textwidth]{images/01-trie-radix-tree-example.PNG}
-    \caption{A trie with span 8 (1 byte per character) storing the keys HELLO, HAT, and HAVE on the left and its radix tree variant on the right. Nodes marking the end of a word are outlined.}
+    \caption{A trie with span 8 (1 byte per character) storing the keys "HELLO", "HAT", and "HAVE" on the left and its radix tree variant on the right. Nodes marking the end of a word are outlined.}
     \label{fig:trie}
 \end{figure}
 
@@ -170,9 +170,9 @@ consumption while improving performance.
 Lazy expansion refers to the standard radix tree approach introduced by Morrison \cite{10.1145/321479.321481} to 
 expand nodes lazily upon insertion. New nodes are therefore only created as long as they are needed to distinguish between at l
 east two different keys. This can be seen
-again in Figure \ref{fig:art-vertical-compression} where the key FOO is lazy expanded, meaning the path for storing the
-two Os is omitted. Since the path to a leaf may be compressed, this requires the full key to be stored alongside 
-its value or be retrievable based on the value. The latter is most often the case in database indexes, where the value 
+again in Figure \ref{fig:art-vertical-compression} where the key "FOO" is lazy expanded, meaning the path for storing the
+two "O"s is omitted. Since paths to leaves may be compressed, this requires the full key to be stored alongside its value 
+or be retrievable based on it. The latter is most often the case in database indexes, where the value 
 is used as a reference to a data tuple also containing the key.
 
 \begin{figure}
@@ -184,14 +184,46 @@ is used as a reference to a data tuple also containing the key.
 \end{figure}
 
 \textbf{Path Compression:}
+Similarly, path compression removes nodes containing only one child and gets applied during insertion when expanding 
+upon a previously lazy expanded key or deletion. Figure \ref{fig:art-vertical-compression} shows an example where 
+the node for key part "A" would be omitted. To still be able to compare the full key Leis et al. identify three different approaches:
+\begin{itemize}
+    \item Pessimistic: Each node can store a variable length part of the key in its header. 
+    Upon compression, the compressed key part is stored in the parent. When traversing a node, the additional
+    stored key part is compared first, and then, in case of a match, we continue with the next partial key.
+    \item Optimistic: Instead of storing the omitted key part itself, the parent node only stores the number of 
+    omitted nodes. Thus, traversing a node just skips this number of partial keys. When reaching a value, we will 
+    again have to compare the entire key to ensure the optimistically skipped key part matches.
+    \item Hybrid: While the pessimistic approach does not require rechecking keys, it needs to store a variable length 
+    key part in its header leading to further cache misses when skipping long key parts. This differs from the 
+    optimistic approach, where each node only stores a single number.
+\end{itemize}
+
+ART uses the hybrid approach and stores the key part pessimistically for up to 8 bytes. If more than eight nodes 
+get compressed, it switches to the optimistic approach.
 
 \subsection{Storing Values}
+Values associated with keys can be stored in different ways:
+\begin{itemize}
+    \item Single-value leaves: The classical approach of storing a value in an extra leaf type node.
+    \item Multi-value leaves: Multiple leaf node types based on the inner node types (Section 2.1) 
+    but storing values instead of child pointers.
+    \item Combined pointer/value slots: When values fit the size of a pointer storing the value at the place instead 
+    of a child pointer can be done via pointer tagging or using an additional bit per pointer.
+\end{itemize}
 
-\subsection{Algorithms}
+Single-value leaves increase the tree height but can differentiate keys of different lengths as opposed to 
+multi-value leaves. Combined pointer/value slots is generally the best approach. On typical 64 bit architectures, 
+the lowest bit of an alleged pointer can be set to indicate an actual stored value of up to 63 bits length as 
+pointers are 8 byte aligned.
 
-\subsection{Space Consumption}
-As briefly mention in Section 1
-In the original ART paper \cite{6544812} the authors proofed that on average a
+\subsection{Algorithms \& Space Consumption}
+The original ART paper \cite{6544812} also shows and explains pseudo code for the search, insert, 
+bulk loading and delete which is ommitted here for brevity.
+
+Similarly, Leis et al. also presented a proof for the worst-case space consumption per key, which is bounded by 52 bits even for
+arbitrarily long keys. As we will see in Section 4.1, this space consumption per key can be in practice as low as 8.1 bits
+for dense keys.
 
 \section{Constructing Binary-Comparable Keys}
 Lorem ipsum.
