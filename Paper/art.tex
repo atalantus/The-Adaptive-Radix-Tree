@@ -26,6 +26,7 @@
 \maketitle
 
 \section{Introduction}
+
 The architecture of DBMS has constantly been evolving due to advances in hardware. 
 Over the last few decades, main memory capacities increased from several megabytes up to thousands 
 of gigabytes, such that nowadays, databases can fit entirely into main memory. This change significantly 
@@ -123,6 +124,7 @@ micro-benchmarks and then the TPC-C benchmark. Section 5 discusses related work 
 original proposal of ART back in 2013. The final part draws a conclusion and discusses future work.
 
 \section{The Adaptive Radix Tree}
+
 The Adaptive Radix Tree (ART) was first proposed by Leis et al. \cite{6544812} as a performant, order-preserving 
 in-memory index structure. Being an adaptive radix tree similar to Judy Arrays it uses multiple node types 
 with different fanouts to drastically lower memory consumption and vertical compression to reduce the overall tree 
@@ -226,15 +228,78 @@ arbitrarily long keys. As we will see in Section 4.1, this space consumption per
 for dense keys.
 
 \section{Constructing Binary-Comparable Keys}
-Lorem ipsum.
+
+To preserve order on keys in a radix tree and therefore allow range-based queries, partial keys have to be sorted. 
+To allow for different spans and variable length keys, it is required that the bitwise representation of a key is 
+ordered in the same way as the key in its own context. This is the case for some key types like ASCII encoded strings 
+as the binary representation of 'A' is smaller than the one of 'B'. However, for general types, this may not be the case.
+
+For this reason, Leis et al. proposed various key transformations for common types such that the binary 
+representation of a type implies the same order as the type itself \cite{6544812}.
+
+Having the same order means for two values $a$, $b$ of the same type
+\[a < b \iff bin(a) <bin(b)\qquad\text{(same for $>$ and $=$)}\]
+where $bin(x)$ is the binary representation of $x$.
+
+The transformation for the most common types are as follows:
+\begin{itemize}
+    \item Unsigned Integers: The binary representation of unsigned integers is already ordered correctly. 
+    However, when operating on keys in memory, the endianness generally matters as for little endian, the bytes 
+    have to be swapped first. This can also be done implicitly in the implementation.
+    \item Signed Integers: For signed two-complement integers, the sign bit must first be flipped. Then it can be 
+    stored like an unsigned integer.
+    \item Strings: The Unicode Collation Algorithm (UCA) already defines transformations for strings to 
+    binary-comparable keys.
+    \item Compound Keys: Keys with multiple types can be transformed by transforming each type individually and 
+    concatenating the result.
+\end{itemize}
+
+Additionally the authors of ART also showed transformations for floats and nullable types \cite{6544812}.
 
 \section{Evaluation}
-Lorem ipsum.
+
+In this section, we evaluate ART first with our implementation and with microbenchmarks and compare the
+results to the same microbenchmarks used in the original ART paper before showing their results for performing the
+standard OLTP benchmark TPC-C.
+
+Our ART implementation \cite{fritschart} uses combined value/pointer slots on 64 bit architecture with SIMD instructions for Node16 
+and does not include path compression, only storing a 2 byte header (node type and number of non-null children).
+Leaving out path compression does not result in any performance loss due to the keys of the microbenchmarks
+being only 32 bits long. At such short lengths, path compression generally introduces more overhead and memory consumption.
+
+Our benchmarks were run on an Intel Core i5-8400 CPU with around 3.7 GHz reported clock rate during benchmarks.
+It has 6 cores, 6 threads, 8 MB shared, last-level cache, and 16 GB dual-channel DDR4-2666 RAM. As operation system, we used Windows 10.0.19044 and the MSVC v143 compiler with flags /O2 and /Ob3.
+
+\subsection{Mico-Benchmarks}
+
+\begin{figure*}
+    \centering
+    \includegraphics[width=\textwidth]{images/05-art-micro-benchmark-56.PNG}
+    \caption{Benchmark results for 56 thousand 32 bit unsigned integers.}
+    \label{fig:art-micro-benchmark}
+\end{figure*}
+
+\begin{figure*}
+    \centering
+    \includegraphics[width=\textwidth]{images/06-art-micro-benchmark-16.PNG}
+    \caption{Benchmark results for 16 million 32 bit unsigned integers.}
+    \label{fig:art-micro-benchmark}
+\end{figure*}
+
+The micro-benchmarks uses 56 thousand and 16 million 32 bit unsigned integers as keys without another associated value. We compare ARTs 
+performance to a Trie implementation storing child pointers or the last partial key in a std::map (M-Trie), a 
+Sorted List (SL), a chained hash-table (HT) using the std::unordered\_set implementation, and a red-black tree 
+(RB-Tree) using the std::set implementation. The results can be seen in Figure \ref{fig:art-micro-benchmark}.
+
+We split our datasets into dense and sparse keys where sparse are uniformly random 32 bit keys and dense keys only
+range from $0$ to $n-1$ where $n$ is the number of keys inserted (16 million).
 
 \section{Related Work}
+
 Lorem ipsum.
 
 \section{Conclusion and Future Work}
+
 Lorem ipsum.
 
 \bibliographystyle{ACM-Reference-Format.bst}
