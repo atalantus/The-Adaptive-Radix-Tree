@@ -120,7 +120,7 @@ it has not yet been researched as much. Also, its original, almost two-decade-ol
 The rest of this paper is organized as follows. We first introduce the Adaptive Radix Tree as an index structure 
 and explain its key design features. In Section 3, we show how to convert different key types to binary-comparable keys to 
 index in ART. Section 4 evaluates ART by comparing its performance and memory consumption first in 
-micro-benchmarks and then the TPC-C benchmark. Section 5 discusses related work and research done since the 
+microbenchmarks and then the TPC-C benchmark. Section 5 discusses related work and research done since the 
 original proposal of ART back in 2013. The final part draws a conclusion and discusses future work.
 
 \section{The Adaptive Radix Tree}
@@ -270,29 +270,64 @@ being only 32 bits long. At such short lengths, path compression generally intro
 Our benchmarks were run on an Intel Core i5-8400 CPU with around 3.7 GHz reported clock rate during benchmarks.
 It has 6 cores, 6 threads, 8 MB shared, last-level cache, and 16 GB dual-channel DDR4-2666 RAM. As operation system, we used Windows 10.0.19044 and the MSVC v143 compiler with flags /O2 and /Ob3.
 
-\subsection{Mico-Benchmarks}
+\subsection{Micobenchmarks}
 
 \begin{figure*}
     \centering
     \includegraphics[width=\textwidth]{images/05-art-micro-benchmark-56.PNG}
     \caption{Benchmark results for 56 thousand 32 bit unsigned integers.}
-    \label{fig:art-micro-benchmark}
+    \label{fig:art-micro-benchmark-56}
 \end{figure*}
 
 \begin{figure*}
     \centering
     \includegraphics[width=\textwidth]{images/06-art-micro-benchmark-16.PNG}
     \caption{Benchmark results for 16 million 32 bit unsigned integers.}
-    \label{fig:art-micro-benchmark}
+    \label{fig:art-micro-benchmark-16}
 \end{figure*}
 
-The micro-benchmarks uses 56 thousand and 16 million 32 bit unsigned integers as keys without another associated value. We compare ARTs 
+The microbenchmarks uses 56 thousand and 16 million 32 bit unsigned integers as keys without another associated value. We compare ARTs 
 performance to a Trie implementation storing child pointers or the last partial key in a std::map (M-Trie), a 
 Sorted List (SL), a chained hash-table (HT) using the std::unordered\_set implementation, and a red-black tree 
-(RB-Tree) using the std::set implementation. The results can be seen in Figure \ref{fig:art-micro-benchmark}.
+(RB-Tree) using the std::set implementation.
 
-We split our datasets into dense and sparse keys where sparse are uniformly random 32 bit keys and dense keys only
+We split our datasets into dense and sparse keys, where sparse are uniformly random 32 bit keys and dense keys only
 range from $0$ to $n-1$ where $n$ is the number of keys inserted (16 million).
+
+While the dense 65 thousand / 16 million key set effectively only uses 16 / 24 bit keys ($\log_265000\approx16$ / $\log_216000000\approx24$)
+the sparse set always uses full random 32 bit keys.
+
+For both benchmark sizes and each dataset, we measured memory consumption in MB for 56 thousand keys and GB for 
+16 million keys, insert, and positive/successful search performance with million operations per second. 
+The results can be seen in Figure \ref{fig:art-micro-benchmark-56} and Figure \ref{fig:art-micro-benchmark-16} respectively.
+
+\textbf{Memory Consumption:} We see that ART uses less memory than the other data structures except for the Sorted List, which stores all keys in a single vector and thus has almost optimal memory consumption. Additionally, for the 
+trie-based structures, the difference in memory between dense and sparse is due to the nature of common prefix
+compression of tries. ART does not have such a huge increase in memory consumption for the sparse set
+compared to the increase for M-Trie because of its vertical compression (specifically lazy expansion in this case).
+
+\textbf{Insert Performance:} For 65 thousand keys, ART outperforms all other data structures. 
+Because of the small number of keys, all structures except M-Trie for the sparse set fit entirely into the cache, 
+and the performance is therefore
+bound by the speed of the CPU instructions and, more so, the cache hierarchy as opposed to main-memory access.
+For 16 million keys, the results stay similar except for the Sorted List, which competes with ART. Note that 
+insertion into the Sorted List is done as a bulk insert $O(n\log n)$ rather than constantly 
+inserting a new key at the correct position shifting all later keys $O(n^2)$.
+
+\textbf{Search Performance:} For single-point searches, ART is only outperformed by the Hash-Table, which has amortized
+constant lookup time. The Sorted List with binary search performs the third best.
+
+Overall these benchmark results are comparable to the results in the original ART paper \cite{6544812}. 
+The only significant difference is that in Leis et al. search benchmarks, ART consistently performed best for the 
+dense set, even topping the hash table. This can be explained by the fact that the hash function chosen by the authors 
+MurmurHash64A \cite{murmur} while considered very robust is slower than a simpler hash function.
+
+Because of this, Leis et al. concluded that only a hash table could be competitive in terms
+of performance. However, we will see in Section 5 that state-of-the-art hash tables can have lower memory consumption
+or outperform ART's search performance by several factors.
+
+\subsection{End-to-End Evaluation}
+As final evaluation
 
 \section{Related Work}
 
