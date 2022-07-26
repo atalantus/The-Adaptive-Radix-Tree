@@ -30,27 +30,27 @@ The architecture of DBMS has constantly been evolving due to advances in hardwar
 Over the last few decades, main memory capacities increased from several megabytes up to thousands 
 of gigabytes, such that nowadays, databases can fit entirely into main memory. This change significantly 
 impacted the general architecture of DBMS, which resulted in performance improvements 
-by several factors \cite{10.1145/1376616.1376713}, \cite{7097722}.
+by several factors~\cite{10.1145/1376616.1376713},~\cite{7097722}.
 
 The design of index structures used to query a set of data more efficiently was heavily influenced 
 by the main performance bottleneck of disk I/O in traditional disk-based DBMS. 
 Original indexes like the B-Tree designed to minimize disk accesses perform poorly 
 in an in-memory environment. 
-The T-Tree \cite{lehman1985study} was one of the first index structures proposed for main memory DBMS. 
+The T-Tree~\cite{lehman1985study} was one of the first index structures proposed for main memory DBMS. 
 However, over the last 35 years, the hardware landscape changed dramatically, causing T-Trees 
 and all other index structures not explicitly designed with caching effects in mind to be rendered 
-inefficient for in-memory usage\cite{rao1998cache}. Further focus on developing cache-sensitive index structures resulted in many 
+inefficient for in-memory usage~\cite{rao1998cache}. Further focus on developing cache-sensitive index structures resulted in many 
 different search tree variants.
 
-Cache-sensitive search trees (CSS-Trees) \cite{rao1998cache}, while utilizing cache lines efficiently, 
+Cache-sensitive search trees (CSS-Trees)~\cite{rao1998cache}, while utilizing cache lines efficiently, 
 introduce a significant overhead for updates as the tree is compactly stored in an array. 
-Similarly, the more recent k-ary search tree \cite{10.1145/1565694.1565705} and the Fast Architecture 
-Sensitive Tree (FAST) \cite{10.1145/1807167.1807206} both utilize Single Instruction Multiple Data (SIMD) 
+Similarly, the more recent k-ary search tree~\cite{10.1145/1565694.1565705} and the Fast Architecture 
+Sensitive Tree (FAST)~\cite{10.1145/1807167.1807206} both utilize Single Instruction Multiple Data (SIMD) 
 instructions for data-level parallelism (DLP) to increase performance. However, as static data 
 structures, they do not support incremental updates. A way to circumvent this limitation is to 
 use a delta mechanism where another data structure stores differences and is periodically merged 
 into the static structure. However, this comes at an additional performance cost. The cache-conscious 
-B\textsuperscript{+}-Tree (CSB\textsuperscript{+}) \cite{10.1145/342009.335449} introduced as a variant of 
+B\textsuperscript{+}-Tree (CSB\textsuperscript{+})~\cite{10.1145/342009.335449} introduced as a variant of 
 B\textsuperscript{+}-Trees improves cache utilization by reducing the need to store all different 
 child pointers in each node.
 
@@ -65,7 +65,7 @@ with the difference that keys are inserted in pieces (partial keys). This means 
 prefix will have the same path from the root until their first partial key differs (common prefix compression). A radix tree, 
 sometimes also called Patricia-Trie, is a variant of
 a trie that further compactifies its structure by compressing nodes for partial keys that only have one child, as 
-shown in Figure \ref{fig:trie} (unique postfix compression). With radix trees, some form of leaf nodes holding the compressed rest key is required 
+shown in Figure~\ref{fig:trie} (unique postfix compression). With radix trees, some form of leaf nodes holding the compressed rest key is required 
 to restore full keys.
 
 \begin{figure}
@@ -96,22 +96,22 @@ all operations.
 
 On the other hand, increasing the span results in an exponentially higher fanout, thus requiring more space as even 
 if few children exist, the array will be filled with null pointers wasting memory. 
-For this reason, having a very high span is generally impractical. The Generalized Prefix Tree (GPT) \cite{mci/Boehm2011} 
-has a span of 4, and the radix tree implementation used in the Linux kernel (LRT) uses 6 bits \cite{corbet2006lrt}. 
-The Adaptive Radix Tree (ART) \cite{6544812}, as depicted in Figure \ref{fig:trie-mem}, while using a span of 8, manages to have both 
+For this reason, having a very high span is generally impractical. The Generalized Prefix Tree (GPT)~\cite{mci/Boehm2011} 
+has a span of 4, and the radix tree implementation used in the Linux kernel (LRT) uses 6 bits~\cite{corbet2006lrt}. 
+The Adaptive Radix Tree (ART)~\cite{6544812}, as depicted in Figure~\ref{fig:trie-mem}, while using a span of 8, manages to have both 
 fairly low memory consumption as well as a small tree height.
 
 \begin{figure}
     \centering
     \includegraphics[width=0.4\textwidth]{images/02-trie-memory-consumption.png}
     \caption{Comparison of tree height versus space consumption for different radix tree spans $s$ when storing 1M uniformly distributed 32 bit integers with 8 byte pointers.
-    Source: \cite{6544812}}
+    Source:~\cite{6544812}}
     \label{fig:trie-mem}
 \end{figure}
 
 The key idea in lowering memory consumption while maintaining a high span for tries is to adaptively use nodes 
 with different fanouts based on the number of actual children present. One of the first data structures to utilize such 
-adaptive nodes was the Judy Array \cite{baskins2004judy} which was invented by Doug Baskins and developed at 
+adaptive nodes was the Judy Array~\cite{baskins2004judy} which was invented by Doug Baskins and developed at 
 Hewlett-Packard research labs as a general associative array. However, due to its patent and overall complexity, 
 it has not yet been researched as much. Also, its original, almost two-decade-old design has flaws like assuming 
 16 byte cache-line sizes and not utilizing SIMD.
@@ -124,7 +124,7 @@ original proposal of ART back in 2013. The final part draws a conclusion and dis
 
 \section{The Adaptive Radix Tree}
 
-The Adaptive Radix Tree (ART) was first proposed by Leis et al. \cite{6544812} as a performant, order-preserving 
+The Adaptive Radix Tree (ART) was first proposed by Leis et al.~\cite{6544812} as a performant, order-preserving 
 in-memory index structure. Being an adaptive radix tree similar to Judy Arrays it uses multiple node types 
 with different fanouts to drastically lower memory consumption and vertical compression to reduce the overall tree 
 height and further memory usage while improving performance.
@@ -133,7 +133,7 @@ height and further memory usage while improving performance.
 ART uses four different node types, each with a different fanout but the same span 
 of 8, to adaptively change between them based on the actual number of child nodes. This way, less space is wasted 
 storing null pointers. Additionally, storing the children in sorted order allows for range scans along nodes. The node types 
-illustrated in Figure \ref{fig:nodes} are named after the maximum number of children 
+illustrated in Figure~\ref{fig:nodes} are named after the maximum number of children 
 they can store. For better cache line utilization during searches ART stores partial keys and child pointers in two 
 seperate arrays as opposed to storing key-pointer pairs in one single array:
 
@@ -141,8 +141,8 @@ seperate arrays as opposed to storing key-pointer pairs in one single array:
     \centering
     \includegraphics[width=0.5\textwidth]{images/03-art-node-types.png}
     \caption{Different node structures used by ART. For each node, the partial keys 0, 2, 3, and 255 are mapped to the subtrees a, b, c, and d, respectively.
-    Source: \cite{6544812}}
-    \label{fig:trie-mem}
+    Source:~\cite{6544812}}
+    \label{fig:nodes}
 \end{figure}
 
 \textbf{Node4:} Stores up to 4 children by maintaining a sorted array with size 4 of partial keys where the searched index 
@@ -168,9 +168,9 @@ With these ART compresses node chains where each node only has a single child, f
 consumption while improving performance.
 
 \textbf{Lazy Expansion:} 
-Lazy expansion refers to the standard radix tree approach introduced by Morrison \cite{10.1145/321479.321481} to 
+Lazy expansion refers to the standard radix tree approach introduced by Morrison~\cite{10.1145/321479.321481} to 
 expand nodes lazily upon insertion. New nodes are therefore only created as long as they are needed to distinguish between at least two different keys. This can be seen
-again in Figure \ref{fig:art-vertical-compression} where the key "FOO" is lazy expanded, meaning the path for storing the
+again in Figure~\ref{fig:art-vertical-compression} where the key "FOO" is lazy expanded, meaning the path for storing the
 two "O"s is omitted. Since paths to leaves may be compressed, this requires the full key to be stored alongside its value 
 or be retrievable based on the value. The latter is most often the case in database indexes, where the value 
 is used as a reference to a data tuple also containing the key.
@@ -179,13 +179,13 @@ is used as a reference to a data tuple also containing the key.
     \centering
     \includegraphics[width=0.45\textwidth]{images/04-art-vertical-compression.PNG}
     \caption{Lazy expansion and path compression in effect.
-    Source: \cite{6544812}}
+    Source:~\cite{6544812}}
     \label{fig:art-vertical-compression}
 \end{figure}
 
 \textbf{Path Compression:}
 Similarly, path compression removes nodes containing only one child and gets applied during insertion when expanding 
-upon a previously lazy expanded key or deletion. Figure \ref{fig:art-vertical-compression} shows an example where 
+upon a previously lazy expanded key or deletion. Figure~\ref{fig:art-vertical-compression} shows an example where 
 the node for key part "A" would be omitted. To still be able to compare the full key Leis et al. identify three different approaches:
 \begin{itemize}
     \item Pessimistic: Each node can store a variable length part of the key in its header. 
@@ -218,7 +218,7 @@ the lowest bit of an alleged pointer can be set to indicate an actual stored val
 pointers are 8 byte aligned.
 
 \subsection{Algorithms \& Space Consumption}
-The original ART paper \cite{6544812} also shows and explains pseudo code for the search, insert, 
+The original ART paper~\cite{6544812} also shows and explains pseudo code for the search, insert, 
 bulk loading and delete which is ommitted here for brevity.
 
 Similarly, Leis et al. also presented a proof for the worst-case space consumption per key, which is bounded by 52 bits even for
@@ -258,7 +258,7 @@ The transformation for the most common types are as follows:
     concatenating the result.
 \end{itemize}
 
-Additionally the authors of ART also showed transformations for floats and nullable types \cite{6544812}.
+Additionally the authors of ART also showed transformations for floats and nullable types~\cite{6544812}.
 
 \section{Evaluation}
 
@@ -267,7 +267,7 @@ results to the same microbenchmarks used in the original ART paper. Then we show
 for performing the
 standard OLTP benchmark TPC-C.
 
-Our ART implementation \cite{fritschart} uses combined value/pointer slots on 64 bit architecture with SIMD instructions for Node16 
+Our ART implementation~\cite{fritschart} uses combined value/pointer slots on 64 bit architecture with SIMD instructions for Node16 
 and does not include path compression, only storing a 2 byte header (node type and number of non-null children).
 Leaving out path compression does not result in any performance loss due to the keys of the microbenchmarks
 being only 32 bits long. At such short lengths, path compression generally introduces more overhead and 
@@ -290,7 +290,7 @@ While the dense 16 million key set effectively only uses 24 bit keys ($\log_2160
 the sparse set always uses full random 32 bit keys.
 
 For both benchmark sizes and each dataset, we measured memory consumption in GB, insert, and positive/successful search performance with million operations per second. 
-The results can be seen in Figure \ref{fig:art-micro-benchmark-16}.
+The results can be seen in Figure~\ref{fig:art-micro-benchmark-16}.
 
 \textbf{Memory Consumption:} We see that ART uses less memory than the other data structures except for the Sorted List, which stores all keys in a single vector and thus has almost optimal memory consumption. Additionally, for the 
 trie-based structures, the difference in memory between dense and sparse is due to the nature of common prefix
@@ -300,15 +300,15 @@ because of its vertical compression (specifically lazy expansion in this case).
 \textbf{Insert Performance:} ART outperforms all other data structures except the Sorted List. 
 Note that for the Sorted List, insertion is done as bulk insert $O(n\log n)$ rather than constantly 
 inserting a new key at the correct position shifting all later keys $O(n^2)$. Otherwise, its performance would be significantly
-worse. Bulk insertion for ART also improves performance but mostly for dense sets \cite{6544812} with a factor of 2.5.
+worse. Bulk insertion for ART also improves performance but mostly for dense sets~\cite{6544812} with a factor of 2.5.
 
 \textbf{Search Performance:} For single-point searches, ART is only outperformed by the Hash-Table, which has amortized
 constant lookup time. The Sorted List with binary search performs the third best.
 
-Overall these benchmark results are comparable to the results in the original ART paper \cite{6544812}. 
+Overall these benchmark results are comparable to the results in the original ART paper~\cite{6544812}. 
 The only significant difference is that in Leis et al. search benchmarks, ART consistently performed best for the 
 dense set, even topping the hash table. This can be explained by the fact that the hash function chosen by the authors 
-MurmurHash64A \cite{murmur} while considered very robust is slower than a simpler hash function.
+MurmurHash64A~\cite{murmur} while considered very robust is slower than a simpler hash function.
 
 Because of their results, Leis et al. concluded that only a hash table could be competitive in terms
 of performance. However, we will see in Section 5 that state-of-the-art hash tables can have lower memory consumption
@@ -320,13 +320,13 @@ or outperform ART's search performance by several factors.
     \centering
     \includegraphics[width=0.4\textwidth]{images/07-art-tpc-c.png}
     \caption{TPC-C performance.
-    Source: \cite{6544812}}
+    Source:~\cite{6544812}}
     \label{fig:art-tpc-c}
 \end{figure}
 
-As the final evaluation, ART was implemented in the main-memory database system HyPer \cite{5767867} and evaluated 
-using the TPC-C benchmark \cite{6544812}. Its performance was compared by using a red-black tree index and a 
-combination of a red-black tree and a hash table index. The results are shown in Figure \ref{fig:art-tpc-c}. ART 
+As the final evaluation, ART was implemented in the main-memory database system HyPer~\cite{5767867} and evaluated 
+using the TPC-C benchmark~\cite{6544812}. Its performance was compared by using a red-black tree index and a 
+combination of a red-black tree and a hash table index. The results are shown in Figure~\ref{fig:art-tpc-c}. ART 
 performs twice as fast as the combination of hash table and red-black tree, where the performance dips of the combination of indexes can be 
 explained by the hash table reaching its load balance and doing a complete re-hash.
 
@@ -338,25 +338,24 @@ It also shows that both vertical compression techniques significantly impact ove
 reducing it from as much as 40 down to 8.1 on average.
 
 \section{Related Work}
-As the authors of the original ART paper concluded that only a hash table was competitive with the performance of ART \cite{6544812} 
-with ART still outperforming it in some cases, Alvarez et al. published a paper \cite{7113370} in response further comparing ART to
-not only a variety of different hashing schemes and hash functions but also the Judy Array, another adaptive radix tree.
-
-In it, they showed that with better hashing schemes such as Cuckoo-Hashing \cite{PAGH2004122} instead of a chained hash table
+As the authors of the original ART paper concluded that only a hash table was competitive with the performance of ART~\cite{6544812} 
+with ART still outperforming it in some cases, Alvarez et al. published a paper in response further comparing ART to
+not only a variety of different hashing schemes and hash functions but also the Judy Array, another adaptive radix tree~\cite{7113370}.
+In it, they showed that with better hashing schemes such as Cuckoo-Hashing~\cite{PAGH2004122} instead of a chained hash table
 and simpler hash functions such as multiplicative hashing instead of Marmur hash tables do outperform ART by several factors in
 both insertion and single-lookup performance or other hash tables achieve similar performance but only require half the space.
 
 Compared to Judy Arrays, ART achieved double the performance while also needing around twice as much space.
 
 Another more recent paper by Wang et al. compared ART to more state-of-the-art order-preserving index structures such 
-as the Bw-Tree, MassTree, and a B\textsuperscript{+}-Tree version optimized for main memory usage. They also ran multi-threaded
-benchmarks using a synchronized version of ART presented by Leis et al. \cite{10.1145/2933349.2933352}. Their results show
+as the Bw-Tree, MassTree, and a B\textsuperscript{+}-Tree version optimized for main memory usage~\cite{10.1145/3183713.3196895}. They also ran multi-threaded
+benchmarks using a synchronized version of ART presented by Leis et al.~\cite{10.1145/2933349.2933352}. Their results show
 that ART generally performs better or similar than all other indexes in both performance and memory consumption except for
 range-based queries where the B\textsuperscript{+}-Tree outperforms all other indexes because of its spacial locality of 
 leaf nodes.
 
-In recent years further variants of ART have been developed like HOT \cite{10.1145/3183713.3196896}, where nodes can have different spans to improve performance
-on sparse sets, or START \cite{9094133} where lower level nodes are dynamically combined and optimized using
+In recent years further variants of ART have been developed like HOT~\cite{10.1145/3183713.3196896}, where nodes can have different spans to improve performance
+on sparse sets, or START~\cite{9094133} where lower level nodes are dynamically combined and optimized using
 a cost model and optimizer, further improving performance and memory consumption.
 
 \section{Conclusion and Future Work}
@@ -365,7 +364,7 @@ Concluding ART is a synchronized, general purpose, order-preserving index struct
 generally outperforms other order-preserving indexes in performance.
 It is, however, outperformed by state-of-the-art hashing-based indexes in at least single-threaded environments.
 
-The Adaptive Radix Tree is used as an index in main memory database systems like HyPer \cite{5767867} or DuckDB \cite{10.1145/3299869.3320212}.
+The Adaptive Radix Tree is used as an index in main memory database systems like HyPer~\cite{5767867} or DuckDB~\cite{10.1145/3299869.3320212}.
 
 With the Judy Array patent just expired, it remains to be seen how ART would compare to a modernized version of
 Judy Arrays and if ART could even benefit from some of Judy Arrays' design choices like Judy Pointers, to reach 
