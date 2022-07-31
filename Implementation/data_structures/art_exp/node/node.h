@@ -22,6 +22,9 @@ namespace art_exp
         kNode256
     };
 
+    /**
+     * Abstract base class for different nodes.
+     */
     class Node
     {
     public:
