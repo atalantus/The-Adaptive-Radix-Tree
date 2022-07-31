@@ -13,7 +13,7 @@ public:
 
     void InitializeStructure() override
     {
-        art_ = new art::Art();
+        art_ = new art_exp::Art();
     }
 
     void DeleteStructure() override

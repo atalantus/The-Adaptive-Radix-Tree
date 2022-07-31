@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../data_structures/art/art.h"
+#include "../../data_structures/art_exp/art.h"
 #include "../benchmark.h"
 
 class ArtExpBenchmark : public Benchmark
@@ -13,7 +13,7 @@ public:
 
     void InitializeStructure() override
     {
-        art_ = new art::Art();
+        art_ = new art_exp::Art();
     }
 
     void DeleteStructure() override
@@ -66,5 +66,5 @@ public:
     }
 
 private:
-    art::Art* art_ = nullptr;
+    art_exp::Art* art_ = nullptr;
 };

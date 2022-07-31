@@ -42,7 +42,7 @@ namespace art_exp
         return null_node;
     }
 
-    std::vector<uint32_t> Node4::GetRange(const uint32_t from, const uint32_t to, const int offset) const
+    std::vector<uint32_t> Node4::GetRange(const uint32_t from, const uint32_t to, const int offset)
     {
         std::vector<uint32_t> res;
 
@@ -102,7 +102,7 @@ namespace art_exp
         return res;
     }
 
-    std::vector<uint32_t> Node4::GetLowerRange(const uint32_t from, const int offset) const
+    std::vector<uint32_t> Node4::GetLowerRange(const uint32_t from, const int offset)
     {
         std::vector<uint32_t> res;
 
@@ -139,7 +139,7 @@ namespace art_exp
         return res;
     }
 
-    std::vector<uint32_t> Node4::GetUpperRange(const uint32_t to, const int offset) const
+    std::vector<uint32_t> Node4::GetUpperRange(const uint32_t to, const int offset)
     {
         std::vector<uint32_t> res;
 
@@ -174,7 +174,7 @@ namespace art_exp
         return res;
     }
 
-    std::vector<uint32_t> Node4::GetFullRange() const
+    std::vector<uint32_t> Node4::GetFullRange()
     {
         std::vector<uint32_t> res;
 
@@ -216,6 +216,11 @@ namespace art_exp
             if (Node::IsLazyExpanded(children_[i])) continue;
             children_[i]->PrintTree(depth + 1);
         }
+    }
+
+    bool Node4::IsFull() const
+    {
+        return child_count_ == 4;
     }
 
     void Node4::Destruct()
