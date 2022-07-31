@@ -42,7 +42,7 @@ namespace art_exp
         return null_node;
     }
 
-    std::vector<uint32_t> Node48::GetRange(const uint32_t from, const uint32_t to, const int offset) const
+    std::vector<uint32_t> Node48::GetRange(const uint32_t from, const uint32_t to, const int offset)
     {
         std::vector<uint32_t> res;
 
@@ -100,7 +100,7 @@ namespace art_exp
         return res;
     }
 
-    std::vector<uint32_t> Node48::GetLowerRange(const uint32_t from, const int offset) const
+    std::vector<uint32_t> Node48::GetLowerRange(const uint32_t from, const int offset)
     {
         std::vector<uint32_t> res;
 
@@ -133,7 +133,7 @@ namespace art_exp
         return res;
     }
 
-    std::vector<uint32_t> Node48::GetUpperRange(const uint32_t to, const int offset) const
+    std::vector<uint32_t> Node48::GetUpperRange(const uint32_t to, const int offset)
     {
         std::vector<uint32_t> res;
 
@@ -166,7 +166,7 @@ namespace art_exp
         return res;
     }
 
-    std::vector<uint32_t> Node48::GetFullRange() const
+    std::vector<uint32_t> Node48::GetFullRange()
     {
         std::vector<uint32_t> res;
 
@@ -214,6 +214,11 @@ namespace art_exp
                 children_[keys_[i]]->PrintTree(depth + 1);
             }
         }
+    }
+
+        bool Node48::IsFull() const
+    {
+        return child_count_ == 48;
     }
 
     void Node48::Destruct()

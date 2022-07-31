@@ -1,7 +1,6 @@
 #include "node.h"
 
 #include <cstring>
-#include <immintrin.h>
 
 namespace art
 {

@@ -14,7 +14,7 @@ namespace art_exp
         return children_[partial_key];
     }
 
-    std::vector<uint32_t> Node256::GetRange(const uint32_t from, const uint32_t to, const int offset) const
+    std::vector<uint32_t> Node256::GetRange(const uint32_t from, const uint32_t to, const int offset)
     {
         std::vector<uint32_t> res;
 
@@ -72,7 +72,7 @@ namespace art_exp
         return res;
     }
 
-    std::vector<uint32_t> Node256::GetLowerRange(const uint32_t from, const int offset) const
+    std::vector<uint32_t> Node256::GetLowerRange(const uint32_t from, const int offset)
     {
         std::vector<uint32_t> res;
 
@@ -105,7 +105,7 @@ namespace art_exp
         return res;
     }
 
-    std::vector<uint32_t> Node256::GetUpperRange(const uint32_t to, const int offset) const
+    std::vector<uint32_t> Node256::GetUpperRange(const uint32_t to, const int offset)
     {
         std::vector<uint32_t> res;
 
@@ -138,7 +138,7 @@ namespace art_exp
         return res;
     }
 
-    std::vector<uint32_t> Node256::GetFullRange() const
+    std::vector<uint32_t> Node256::GetFullRange()
     {
         std::vector<uint32_t> res;
 
@@ -175,6 +175,11 @@ namespace art_exp
             if (children_[i] == nullptr || Node::IsLazyExpanded(children_[i])) continue;
             children_[i]->PrintTree(depth + 1);
         }
+    }
+
+    bool Node256::IsFull() const
+    {
+        return false;
     }
 
     void Node256::Destruct()

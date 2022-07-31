@@ -5,7 +5,6 @@
 #include <vector>
 
 #include "node.h"
-#include "node_util.h"
 #include "../../../util.h"
 
 namespace art

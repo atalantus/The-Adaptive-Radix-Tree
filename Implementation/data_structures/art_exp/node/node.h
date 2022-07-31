@@ -5,7 +5,6 @@
 #include <vector>
 
 #include "node.h"
-#include "node_util.h"
 #include "../../../util.h"
 
 namespace art_exp
@@ -34,7 +33,7 @@ namespace art_exp
          * Inserts a new partial key with a pointer to a child node into the node and returns the pointer to it.
          * The returned pointer might point to a new node if the node was already full.
          */
-        Node* Insert(uint8_t partial_key, Node* child_node);
+        virtual Node* Insert(uint8_t partial_key, Node* child_node) = 0;
 
         /**
          * Finds the child node for a given partial key and returns a reference to the pointer to its memory address.
@@ -51,43 +50,43 @@ namespace art_exp
          * for an actual address. The low 3 bits being 1 indicates the high 32 bits storing an 32 key
          * value.
          */
-        Node*& FindChild(uint8_t partial_key);
+        virtual Node*& FindChild(uint8_t partial_key) = 0;
 
         /**
          * Recursively finds all values in a given range (inclusive).
          * TODO: Implement GetRange without recursion using custom input iterator.
          */
-        std::vector<uint32_t> GetRange(uint32_t from, uint32_t to, int offset);
+        virtual std::vector<uint32_t> GetRange(uint32_t from, uint32_t to, int offset) = 0;
 
         /**
          * Recursively finds all values higher than a given value (inclusive).
          */
-        std::vector<uint32_t> GetLowerRange(uint32_t from, int offset);
+        virtual std::vector<uint32_t> GetLowerRange(uint32_t from, int offset) = 0;
 
         /**
          * Recursively finds all values lower than a given value (inclusive).
          */
-        std::vector<uint32_t> GetUpperRange(uint32_t to, int offset);
+        virtual std::vector<uint32_t> GetUpperRange(uint32_t to, int offset) = 0;
 
         /**
          * Finds all values.
          */
-        std::vector<uint32_t> GetFullRange();
+        virtual std::vector<uint32_t> GetFullRange() = 0;
 
         /**
          * Returns true if the node is full.
          */
-        bool IsFull() const;
+        virtual bool IsFull() const = 0;
 
         /**
          * Destroys this node and its children recursively.
          */
-        void Destruct();
+        virtual void Destruct() = 0;
 
         /**
          * Print Tree in preorder way.
          */
-        void PrintTree(int depth);
+        virtual void PrintTree(int depth) const = 0;
 
         /**
          * Prints a pointer to a child
@@ -121,21 +120,23 @@ namespace art_exp
         {
         }
 
-        Node* Insert(uint8_t partial_key, Node* child_node);
+        Node* Insert(uint8_t partial_key, Node* child_node) override;
 
-        Node*& FindChild(uint8_t partial_key);
+        Node*& FindChild(uint8_t partial_key) override;
 
-        std::vector<uint32_t> GetRange(uint32_t from, uint32_t to, int offset) const;
+        std::vector<uint32_t> GetRange(uint32_t from, uint32_t to, int offset) override;
 
-        std::vector<uint32_t> GetLowerRange(uint32_t from, int offset) const;
+        std::vector<uint32_t> GetLowerRange(uint32_t from, int offset) override;
 
-        std::vector<uint32_t> GetUpperRange(uint32_t to, int offset) const;
+        std::vector<uint32_t> GetUpperRange(uint32_t to, int offset) override;
 
-        std::vector<uint32_t> GetFullRange() const;
+        std::vector<uint32_t> GetFullRange() override;
 
-        void Destruct();
+        bool IsFull() const override;
 
-        void PrintTree(int depth) const;
+        void Destruct() override;
+
+        void PrintTree(int depth) const override;
 
     private:
         uint8_t keys_[4];
@@ -149,21 +150,23 @@ namespace art_exp
         {
         }
 
-        Node* Insert(uint8_t partial_key, Node* child_node);
+        Node* Insert(uint8_t partial_key, Node* child_node) override;
 
-        Node*& FindChild(uint8_t partial_key);
+        Node*& FindChild(uint8_t partial_key) override;
 
-        std::vector<uint32_t> GetRange(uint32_t from, uint32_t to, int offset);
+        std::vector<uint32_t> GetRange(uint32_t from, uint32_t to, int offset) override;
 
-        std::vector<uint32_t> GetLowerRange(uint32_t from, int offset);
+        std::vector<uint32_t> GetLowerRange(uint32_t from, int offset) override;
 
-        std::vector<uint32_t> GetUpperRange(uint32_t to, int offset) const;
+        std::vector<uint32_t> GetUpperRange(uint32_t to, int offset) override;
 
-        std::vector<uint32_t> GetFullRange() const;
+        std::vector<uint32_t> GetFullRange() override;
 
-        void Destruct();
+        bool IsFull() const override;
 
-        void PrintTree(int depth) const;
+        void Destruct() override;
+
+        void PrintTree(int depth) const override;
 
     private:
         uint8_t keys_[16];
@@ -182,21 +185,23 @@ namespace art_exp
             std::fill_n(keys_, 256, free_marker_);
         }
 
-        Node* Insert(uint8_t partial_key, Node* child_node);
+        Node* Insert(uint8_t partial_key, Node* child_node) override;
 
-        Node*& FindChild(uint8_t partial_key);
+        Node*& FindChild(uint8_t partial_key) override;
 
-        std::vector<uint32_t> GetRange(uint32_t from, uint32_t to, int offset) const;
+        std::vector<uint32_t> GetRange(uint32_t from, uint32_t to, int offset) override;
 
-        std::vector<uint32_t> GetLowerRange(uint32_t from, int offset) const;
+        std::vector<uint32_t> GetLowerRange(uint32_t from, int offset) override;
 
-        std::vector<uint32_t> GetUpperRange(uint32_t to, int offset) const;
+        std::vector<uint32_t> GetUpperRange(uint32_t to, int offset) override;
 
-        std::vector<uint32_t> GetFullRange() const;
+        std::vector<uint32_t> GetFullRange() override;
 
-        void Destruct();
+        bool IsFull() const override;
 
-        void PrintTree(int depth) const;
+        void Destruct() override;
+
+        void PrintTree(int depth) const override;
 
     private:
         uint8_t keys_[256];
@@ -212,21 +217,23 @@ namespace art_exp
         {
         }
 
-        Node* Insert(uint8_t partial_key, Node* child_node);
+        Node* Insert(uint8_t partial_key, Node* child_node) override;
 
-        Node*& FindChild(uint8_t partial_key);
+        Node*& FindChild(uint8_t partial_key) override;
 
-        std::vector<uint32_t> GetRange(uint32_t from, uint32_t to, int offset) const;
+        std::vector<uint32_t> GetRange(uint32_t from, uint32_t to, int offset) override;
 
-        std::vector<uint32_t> GetLowerRange(uint32_t from, int offset) const;
+        std::vector<uint32_t> GetLowerRange(uint32_t from, int offset) override;
 
-        std::vector<uint32_t> GetUpperRange(uint32_t to, int offset) const;
+        std::vector<uint32_t> GetUpperRange(uint32_t to, int offset) override;
 
-        std::vector<uint32_t> GetFullRange() const;
+        std::vector<uint32_t> GetFullRange() override;
 
-        void Destruct();
+        bool IsFull() const override;
 
-        void PrintTree(int depth) const;
+        void Destruct() override;
+
+        void PrintTree(int depth) const override;
 
     private:
         Node* children_[256];
