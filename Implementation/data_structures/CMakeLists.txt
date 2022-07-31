@@ -1,4 +1,5 @@
 add_subdirectory(art)
+add_subdirectory(art_exp)
 add_subdirectory(trie)
 add_subdirectory(mtrie)
 add_subdirectory(htrie)
@@ -8,4 +9,4 @@ add_subdirectory(rbtree)
 
 add_library(data_structures INTERFACE)
 
-target_link_libraries(data_structures INTERFACE art trie mtrie htrie sorted_list hash_table rbtree)
+target_link_libraries(data_structures INTERFACE art art_exp trie mtrie htrie sorted_list hash_table rbtree)
