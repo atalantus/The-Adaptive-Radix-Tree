@@ -180,7 +180,7 @@ void RunBenchmark()
             number_elements = 256'000'000;
     }
 
-    auto t1 = std::chrono::system_clock::now();
+    const auto t1 = std::chrono::system_clock::now();
 
     std::cout << "Starting '" << benchmark_to_string() << "' benchmark with size '" << size << "' (" << number_elements
             << " keys), '" << iterations << "' iterations and '" << (dense ? "dense" : "sparse") << "' keys." <<
@@ -256,7 +256,7 @@ void RunBenchmark()
                 << "s\t|" << GetDoubleOffset(avg) << avg
                 << "s\t|" << GetDoubleOffset(med) << med
                 << "s\t|" << GetDoubleOffset(avg_ops) << avg_ops
-                << "s\t|" << GetDoubleOffset(med_ops) << med_ops
+                << "\t|" << GetDoubleOffset(med_ops) << med_ops
                 << "\t|\t"
                 << std::endl;
 
