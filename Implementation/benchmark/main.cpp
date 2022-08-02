@@ -223,12 +223,12 @@ void RunBenchmark()
             << std::setprecision(1) << time << " minutes.\n"
             << std::endl;
 
-    std::cout << "=================================================================================" << std::endl;
-    std::cout << "\t\t\t\tBENCHMARK RESULTS" << std::endl;
-    std::cout << "=================================================================================" << std::endl;
+    std::cout << "=================================================================================================================" << std::endl;
+    std::cout << "\t\t\t\t\t\t\t\tBENCHMARK RESULTS" << std::endl;
+    std::cout << "=================================================================================================================" << std::endl;
 
-    std::cout << "Index Structure\t|      Min\t|      Max\t|      Avg\t|      Med\t|M Ops/s (Avg)\t|M Ops/s (Med)\t|" << std::endl;
-    std::cout << "---------------------------------------------------------------------------------" << std::endl;
+    std::cout << "Index Structure\t|      Min\t|      Max\t|      Avg\t|      Med\t| M Ops/s (Avg)\t| M Ops/s (Med)\t|" << std::endl;
+    std::cout << "-----------------------------------------------------------------------------------------------------------------" << std::endl;
 
     std::cout.precision(4);
 
