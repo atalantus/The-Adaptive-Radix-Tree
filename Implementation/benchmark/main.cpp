@@ -71,9 +71,6 @@ void GenerateRandomNumbers(std::vector<uint32_t>& numbers, std::vector<uint32_t>
 
     numbers.reserve(number_elements);
 
-    if (verbose)
-        std::cout << "\nAllocating Memory for numbers..." << std::endl;
-
     for (uint32_t i = 0; i < number_elements; ++i)
     {
         numbers.push_back(numbers_distr(eng));
@@ -81,9 +78,6 @@ void GenerateRandomNumbers(std::vector<uint32_t>& numbers, std::vector<uint32_t>
 
     if (benchmark == BenchmarkTypes::kSearch)
     {
-        if (verbose)
-            std::cout << "Allocating Memory for search_numbers..." << std::endl;
-
         search_numbers.reserve(number_elements);
 
         for (uint32_t i = 0; i < number_elements; ++i)
@@ -91,9 +85,6 @@ void GenerateRandomNumbers(std::vector<uint32_t>& numbers, std::vector<uint32_t>
     }
     else if (benchmark == BenchmarkTypes::kRangeSearch)
     {
-        if (verbose)
-            std::cout << "Allocating Memory for search_numbers..." << std::endl;
-
         search_numbers.reserve(2ULL * number_elements);
 
         for (uint64_t i = 0; i < 2ULL * number_elements; i += 2)
@@ -127,9 +118,6 @@ auto RunBenchmarkIteration()
         const auto& [name, _, structure] = kIndexStructures[i];
 
         if (skip.contains(name)) continue;
-
-        if (verbose)
-            std::cout << "\nAllocating " << name << "..." << std::endl;
 
         structure->InitializeStructure();
 
@@ -195,7 +183,7 @@ void RunBenchmark()
     auto t1 = std::chrono::system_clock::now();
 
     std::cout << "Starting '" << benchmark_to_string() << "' benchmark with size '" << size << "' (" << number_elements
-            << " keys), '" << iterations << "' iterations and '" << (dense ? "dense" : "sparse") << "' keys.\n" <<
+            << " keys), '" << iterations << "' iterations and '" << (dense ? "dense" : "sparse") << "' keys." <<
             std::endl;
 
     std::vector structure_times(kIndexStructures.size(), std::vector<double>(iterations));
@@ -204,7 +192,7 @@ void RunBenchmark()
     for (uint32_t i = 0; i < iterations; ++i)
     {
         if (verbose)
-            std::cout << "Running iteration " << (i + 1) << "/" << iterations << "..." << std::endl;
+            std::cout << "\nRunning iteration " << (i + 1) << "/" << iterations << " with seed " << seed << "..." << std::endl;
 
         auto times = RunBenchmarkIteration();
 
@@ -217,18 +205,21 @@ void RunBenchmark()
 
     const auto time = static_cast<double>(std::chrono::duration_cast<
         std::chrono::seconds>(std::chrono::system_clock::now() - t1).count()) / 60;
-    std::cout << "Finished '" << benchmark_to_string() << "' benchmark with size '" << size << "' (" << number_elements
+    std::cout << "\nFinished '" << benchmark_to_string() << "' benchmark with size '" << size << "' (" << number_elements
             << " keys), '" <<
             iterations << "' iterations and '" << (dense ? "dense" : "sparse") << "' keys in " << std::fixed
             << std::setprecision(1) << time << " minutes.\n"
             << std::endl;
 
-    std::cout << "=================================================================================================================" << std::endl;
-    std::cout << "\t\t\t\t\t\t\t\tBENCHMARK RESULTS" << std::endl;
-    std::cout << "=================================================================================================================" << std::endl;
+    std::cout << "=================================================================================================================" <<
+            std::endl;
+    std::cout << "\t\t\t\t\t\tBENCHMARK RESULTS" << std::endl;
+    std::cout << "=================================================================================================================" <<
+            std::endl;
 
     std::cout << "Index Structure\t|      Min\t|      Max\t|      Avg\t|      Med\t| M Ops/s (Avg)\t| M Ops/s (Med)\t|" << std::endl;
-    std::cout << "-----------------------------------------------------------------------------------------------------------------" << std::endl;
+    std::cout << "-----------------------------------------------------------------------------------------------------------------" <<
+            std::endl;
 
     std::cout.precision(4);
 
