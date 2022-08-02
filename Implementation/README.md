@@ -24,7 +24,7 @@ any key transformations storing keys in Tries even for little-endian architectur
 **ART Implementation without path compression.**
 
 **Notes:**
-- Deriving from an abstract base class and calling Node functions via dynamic dispatch was faster than manual switch case with static_cast (See branch [`dynamic_dispatch_vs_static_cast`](https://github.com/atalantus/The-Adaptive-Radix-Tree/tree/dynamic_dispatch_vs_static_cast))
+- Deriving from an abstract base class and calling Node functions via dynamic dispatch was faster than manual switch case with static_cast (See branch [`dynamic_dispatch_vs_static_cast`](https://github.com/atalantus/The-Adaptive-Radix-Tree/tree/dynamic_dispatch_vs_static_cast) for comparison implementation and [this blog post](https://eli.thegreenplace.net/2013/12/05/the-cost-of-dynamic-virtual-calls-vs-static-crtp-dispatch-in-c) as a great resource on the topic.)
 - Without path compression all nodes only store a 2 byte header (1 Byte node type, 1 Byte number of non-null children)
 - SIMD comparison for Node16 (SSE2 x86-64 specific)
 - Combined value/pointer slots using pointer tagging (64 bit architecture specific)
