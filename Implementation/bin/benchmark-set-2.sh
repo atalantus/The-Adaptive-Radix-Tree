@@ -19,4 +19,4 @@ echo
 # Range Search
 $DIR_PATH/Benchmark -b range_search -s 2 -i 10 -d --seed 60000
 echo
-$DIR_PATH/Benchmark -b range_search -s 2 -i 10 --skip Trie --seed 75000
+$DIR_PATH/Benchmark -b range_search -s 2 -i 3 --skip Trie --seed 75000

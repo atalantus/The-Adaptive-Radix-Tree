@@ -18,4 +18,4 @@ ECHO.
 :: Range Search
 START /WAIT /B ./%DIR_PATH%/Benchmark.exe -b range_search -s 2 -i 10 -d --seed 60000
 ECHO.
-START /WAIT /B ./%DIR_PATH%/Benchmark.exe -b range_search -s 2 -i 10 --skip Trie --seed 75000
+START /WAIT /B ./%DIR_PATH%/Benchmark.exe -b range_search -s 2 -i 3 --skip Trie --seed 75000
