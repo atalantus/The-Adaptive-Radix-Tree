@@ -24,17 +24,19 @@ inline std::string FormatMemory(const uint32_t n)
     const size_t digits = n_str.length();
 
     std::stringstream s;
-
-    for (int i = 0; i < 13 - digits; ++i)
-        s << " ";
+    std::string fn_str;
 
     for (size_t i = 1; i <= digits; ++i)
     {
-        s << n_str[i - 1];
-        if (i < digits && (digits - i) % 3 == 0) s << ".";
+        fn_str.push_back(n_str[i - 1]);
+        if (i < digits && (digits - i) % 3 == 0)
+            fn_str.push_back('.');
     }
 
-    s << " byte\t|";
+    for (size_t i = 0; i < 16 - fn_str.size(); ++i)
+        s << " ";
+
+    s << fn_str << " byte\t|";
 
     return s.str();
 }
