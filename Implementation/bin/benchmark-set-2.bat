@@ -3,6 +3,12 @@
 @ECHO off
 SET DIR_PATH=../out/build/msvc-x64-release
 
+:: Memory
+START /WAIT /B ./%DIR_PATH%/Memory-Benchmark.exe -b insert -s 2 -i 50 -d --seed 1 %*
+ECHO.
+START /WAIT /B ./%DIR_PATH%/Memory-Benchmark.exe -b insert -s 2 -i 50 --skip Trie --seed 15000 %*
+ECHO.
+
 :: Insert
 START /WAIT /B ./%DIR_PATH%/Benchmark.exe -b insert -s 2 -i 50 -d --seed 1 %*
 ECHO.

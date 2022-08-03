@@ -32,12 +32,12 @@ constexpr char kHelpMsg[] = "This program benchmarks different indexing structur
 const std::vector<std::tuple<std::string, uint8_t, Benchmark*>> kIndexStructures{
         {"ART", 2, new ArtBenchmark()},
         {"ART (EXP)", 1, new ArtExpBenchmark()},
-        //{"Trie", 2, new TrieBenchmark()},
-        //{"M-Trie", 2, new MTrieBenchmark()},
+        {"Trie", 2, new TrieBenchmark()},
+        {"M-Trie", 2, new MTrieBenchmark()},
         //{"H-Trie", 2, new HTrieBenchmark()},
         {"Sorted List", 1, new SortedListBenchmark()},
-        //{"Hash-Table", 1, new HashTableBenchmark()},
-        //{"RB-Tree", 2, new RbTreeBenchmark()}
+        {"Hash-Table", 1, new HashTableBenchmark()},
+        {"RB-Tree", 2, new RbTreeBenchmark()}
 };
 
 constexpr uint32_t kDefaultIterations{3};
@@ -79,8 +79,8 @@ struct MemoryAllocator
     {
         if (total_allocated - total_freed != 0)
         {
-            std::cerr << "\033[1;31mPossible Memory Leak detected! total_allocated: " << total_allocated << " total_freed: " << total_freed
-                    << "\033[0m" << std::endl;
+            std::cerr << "\033[1;31mPossible Memory Leak detected! total_allocated: " << total_allocated << ", total_freed: " << total_freed
+                    << ", Difference: " << total_allocated - total_freed << "\033[0m" << std::endl;
         }
 
         total_allocated = 0;
@@ -180,7 +180,7 @@ auto RunBenchmarkIteration()
         auto s1 = std::chrono::system_clock::now();
         structure->Insert(numbers);
 #ifdef TRACK_MEMORY
-        metric = memory_allocator.GetMemoryUsage();
+        result = memory_allocator.GetMemoryUsage();
 #else
         result = static_cast<double>(std::chrono::duration_cast<
             std::chrono::nanoseconds>(std::chrono::system_clock::now() - s1).count()) / 1e9;
@@ -191,7 +191,7 @@ auto RunBenchmarkIteration()
             s1 = std::chrono::system_clock::now();
             structure->Search(search_numbers);
 #ifdef TRACK_MEMORY
-            metric = memory_allocator.GetMemoryUsage();
+            result = memory_allocator.GetMemoryUsage();
 #else
             result = static_cast<double>(std::chrono::duration_cast<
                 std::chrono::nanoseconds>(std::chrono::system_clock::now() - s1).count()) / 1e9;
@@ -202,7 +202,7 @@ auto RunBenchmarkIteration()
             s1 = std::chrono::system_clock::now();
             structure->RangeSearch(search_numbers);
 #ifdef TRACK_MEMORY
-            metric = memory_allocator.GetMemoryUsage();
+            result = memory_allocator.GetMemoryUsage();
 #else
             result = static_cast<double>(std::chrono::duration_cast<
                 std::chrono::nanoseconds>(std::chrono::system_clock::now() - s1).count()) / 1e9;
@@ -210,7 +210,7 @@ auto RunBenchmarkIteration()
         }
 
         if (verbose)
-            std::cout << "Finished " << name << ". Deleting..." << std::endl;
+            std::cout << "Finished " << name << "." << std::endl;
 
         structure_times[i] = result;
         structure->DeleteStructure();
@@ -276,17 +276,27 @@ void RunBenchmark()
             << std::setprecision(1) << time << " minutes.\n"
             << std::endl;
 
+#ifdef TRACK_MEMORY
     std::cout << "=================================================================================================================" <<
             std::endl;
-    std::cout << "\t\t\t\t\t\tBENCHMARK RESULTS" << std::endl;
+    std::cout << "\t\t\t\t\tMEMORY BENCHMARK RESULTS" << std::endl;
+    std::cout << "=================================================================================================================" <<
+            std::endl;
+
+    std::cout << "Index Structure\t|         Min\t\t|         Max\t\t|         Avg\t\t|         Med\t\t|" << std::endl;
+    std::cout << "-----------------------------------------------------------------------------------------------------------------" <<
+            std::endl;
+#else
+    std::cout << "=================================================================================================================" <<
+            std::endl;
+    std::cout << "\t\t\t\t\tPERFORMANCE BENCHMARK RESULTS" << std::endl;
     std::cout << "=================================================================================================================" <<
             std::endl;
 
     std::cout << "Index Structure\t|      Min\t|      Max\t|      Avg\t|      Med\t| M Ops/s (Avg)\t| M Ops/s (Med)\t|" << std::endl;
     std::cout << "-----------------------------------------------------------------------------------------------------------------" <<
             std::endl;
-
-    std::cout.precision(4);
+#endif
 
     for (uint32_t i = 0; i < kIndexStructures.size(); ++i)
     {
@@ -320,12 +330,10 @@ void RunBenchmark()
                 << " Byte\t|" << GetIntOffset(max) << max
                 << " Byte\t|" << GetIntOffset(avg) << avg
                 << " Byte\t|" << GetIntOffset(med) << med
-                << " Byte\t|" << "\t-"
-                << "\t|" << "\t-"
-                << "\t|\t"
+                << " Byte\t|"
                 << std::endl;
 #else
-        std::cout << std::fixed
+        std::cout << std::fixed << std::setprecision(4)
                 << "|" << GetDoubleOffset(min) << min
                 << "s\t|" << GetDoubleOffset(max) << max
                 << "s\t|" << GetDoubleOffset(avg) << avg

@@ -23,7 +23,7 @@ inline std::string GetIntOffset(const double n)
 
     std::string s;
 
-    for (int i = 0; i < 9 - digits; ++i)
+    for (int i = 0; i < 13 - digits; ++i)
         s.append(" ");
 
     return s;
