@@ -35,7 +35,7 @@ const std::vector<std::tuple<std::string, uint8_t, Benchmark*>> kIndexStructures
         //{"Trie", 2, new TrieBenchmark()},
         //{"M-Trie", 2, new MTrieBenchmark()},
         //{"H-Trie", 2, new HTrieBenchmark()},
-        //{"Sorted List", 1, new SortedListBenchmark()},
+        {"Sorted List", 1, new SortedListBenchmark()},
         //{"Hash-Table", 1, new HashTableBenchmark()},
         //{"RB-Tree", 2, new RbTreeBenchmark()}
 };
@@ -58,13 +58,59 @@ uint32_t number_elements = 0;
 uint32_t iterations{kDefaultIterations};
 std::set<std::string> skip;
 bool dense = false;
-int seed = -1;
+bool custom_seed = false;
 bool verbose = false;
+
+size_t seed = -1;
+//#define TRACK_MEMORY
+#ifdef TRACK_MEMORY
+
+struct MemoryAllocator
+{
+    uint32_t total_allocated = 0;
+    uint32_t total_freed = 0;
+
+    uint32_t GetMemoryUsage() const
+    {
+        return total_allocated - total_freed;
+    }
+
+    void Reset()
+    {
+        if (total_allocated - total_freed != 0)
+        {
+            std::cerr << "\033[1;31mPossible Memory Leak detected! total_allocated: " << total_allocated << " total_freed: " << total_freed
+                    << "\033[0m" << std::endl;
+        }
+
+        total_allocated = 0;
+        total_freed = 0;
+    }
+};
+
+static MemoryAllocator memory_allocator;
+
+void* operator new(size_t size)
+{
+    memory_allocator.total_allocated += size;
+
+    return malloc(size);
+}
+
+void operator delete(void* memory, size_t size)
+{
+    memory_allocator.total_freed += size;
+
+    free(memory);
+}
+
+#endif
 
 void GenerateRandomNumbers(std::vector<uint32_t>& numbers, std::vector<uint32_t>& search_numbers)
 {
     std::random_device rnd;
-    std::mt19937_64 eng(seed == -1 ? rnd() : seed);
+    seed = custom_seed ? ++seed : rnd();
+    std::mt19937_64 eng(seed);
     const uint32_t s = dense ? number_elements - 1 : 4'294'967'295;
     std::uniform_int_distribution<uint32_t> numbers_distr(0, s);
     std::uniform_int_distribution<uint32_t> search_numbers_distr(0, number_elements - 1);
@@ -109,42 +155,64 @@ auto RunBenchmarkIteration()
     if (verbose)
         std::cout << "Finished allocating Memory for Numbers." << std::endl;
 
+#ifdef TRACK_MEMORY
+    memory_allocator.total_allocated = 0;
+    memory_allocator.total_freed = 0;
+#endif
+
     /**
      * Benchmark Index Structures
      */
-
     for (uint32_t i = 0; i < kIndexStructures.size(); ++i)
     {
         const auto& [name, _, structure] = kIndexStructures[i];
+        // result used for this benchmark (runtime in seconds or memory used in bytes)
+        double result = 0.0;
 
         if (skip.contains(name)) continue;
+
+#ifdef TRACK_MEMORY
+        memory_allocator.Reset();
+#endif
 
         structure->InitializeStructure();
 
         auto s1 = std::chrono::system_clock::now();
         structure->Insert(numbers);
-        double time = static_cast<double>(std::chrono::duration_cast<
+#ifdef TRACK_MEMORY
+        metric = memory_allocator.GetMemoryUsage();
+#else
+        result = static_cast<double>(std::chrono::duration_cast<
             std::chrono::nanoseconds>(std::chrono::system_clock::now() - s1).count()) / 1e9;
+#endif
 
         if (benchmark == BenchmarkTypes::kSearch)
         {
             s1 = std::chrono::system_clock::now();
             structure->Search(search_numbers);
-            time = static_cast<double>(std::chrono::duration_cast<
+#ifdef TRACK_MEMORY
+            metric = memory_allocator.GetMemoryUsage();
+#else
+            result = static_cast<double>(std::chrono::duration_cast<
                 std::chrono::nanoseconds>(std::chrono::system_clock::now() - s1).count()) / 1e9;
+#endif
         }
         else if (benchmark == BenchmarkTypes::kRangeSearch)
         {
             s1 = std::chrono::system_clock::now();
             structure->RangeSearch(search_numbers);
-            time = static_cast<double>(std::chrono::duration_cast<
+#ifdef TRACK_MEMORY
+            metric = memory_allocator.GetMemoryUsage();
+#else
+            result = static_cast<double>(std::chrono::duration_cast<
                 std::chrono::nanoseconds>(std::chrono::system_clock::now() - s1).count()) / 1e9;
+#endif
         }
 
         if (verbose)
             std::cout << "Finished " << name << ". Deleting..." << std::endl;
 
-        structure_times[i] = time;
+        structure_times[i] = result;
         structure->DeleteStructure();
     }
 
@@ -177,7 +245,7 @@ void RunBenchmark()
             number_elements = 16'000'000;
             break;
         case 3:
-            number_elements = 256'000'000;
+            number_elements = 250;
     }
 
     const auto t1 = std::chrono::system_clock::now();
@@ -198,9 +266,6 @@ void RunBenchmark()
 
         for (uint32_t j = 0; j < kIndexStructures.size(); ++j)
             structure_times[j][i] = times[j];
-
-        if (seed != -1)
-            ++seed;
     }
 
     const auto time = static_cast<double>(std::chrono::duration_cast<
@@ -249,7 +314,17 @@ void RunBenchmark()
         {
             std::cout << "\t";
         }
-
+#ifdef TRACK_MEMORY
+        std::cout << std::fixed << std::setprecision(0)
+                << "|" << GetIntOffset(min) << min
+                << " Byte\t|" << GetIntOffset(max) << max
+                << " Byte\t|" << GetIntOffset(avg) << avg
+                << " Byte\t|" << GetIntOffset(med) << med
+                << " Byte\t|" << "\t-"
+                << "\t|" << "\t-"
+                << "\t|\t"
+                << std::endl;
+#else
         std::cout << std::fixed
                 << "|" << GetDoubleOffset(min) << min
                 << "s\t|" << GetDoubleOffset(max) << max
@@ -259,6 +334,7 @@ void RunBenchmark()
                 << "\t|" << GetDoubleOffset(med_ops) << med_ops
                 << "\t|\t"
                 << std::endl;
+#endif
 
         // Delete Structure Benchmark
         delete structure;
@@ -397,6 +473,7 @@ int main(int argc, char* argv[])
 
     if (seed_arg != nullptr)
     {
+        custom_seed = true;
         const std::string seed_str{seed_arg};
 
         try
@@ -416,6 +493,8 @@ int main(int argc, char* argv[])
                     << "\". Expected positive integer." << std::endl;
             return EXIT_FAILURE;
         }
+
+        seed--;
     }
 
     dense = CmdArgExists(argv, argv + argc, "-d");

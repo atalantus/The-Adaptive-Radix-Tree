@@ -16,7 +16,11 @@ endif()
 add_subdirectory(data_structures)
 
 add_executable("Benchmark" "benchmark/main.cpp")
+add_executable("Memory-Benchmark" "benchmark/main.cpp")
 add_executable("Test" "test/main.cpp")
 
 target_link_libraries("Benchmark" data_structures)
+target_link_libraries("Memory-Benchmark" data_structures)
 target_link_libraries("Test" data_structures)
+
+target_compile_definitions("Memory-Benchmark" PRIVATE TRACK_MEMORY)
