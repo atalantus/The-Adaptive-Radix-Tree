@@ -4,6 +4,12 @@
 
 DIR_PATH="../out/build/gcc-x64-release"
 
+# Memory
+$DIR_PATH/Memory-Benchmark -b insert -s 1 -i 1000 -d --seed 1 $@
+echo
+$DIR_PATH/Memory-Benchmark -b insert -s 1 -i 1000 --seed 15000 $@
+echo
+
 # Insert
 $DIR_PATH/Benchmark -b insert -s 1 -i 1000 -d --seed 1 $@
 echo
