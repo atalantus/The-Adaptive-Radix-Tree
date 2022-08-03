@@ -3,30 +3,40 @@
 #include <string>
 #include <cmath>
 
-inline std::string GetDoubleOffset(const double n)
+inline std::string FormatTime(const double n, const bool unit)
 {
     const int p = static_cast<int>(n);
     const int digits = p == 0 ? 1 : static_cast<int>(log10(p)) + 1;
 
-    std::string s;
+    std::stringstream s;
 
     for (int i = 0; i < 7 - digits; ++i)
-        s.append(" ");
+        s << " ";
 
-    return s;
+    s << std::fixed << std::setprecision(4) << n << (unit ? "s" : "") << "\t|";
+
+    return s.str();
 }
 
-inline std::string GetIntOffset(const double n)
+inline std::string FormatMemory(const uint32_t n)
 {
-    const int p = static_cast<int>(n);
-    const int digits = p == 0 ? 1 : static_cast<int>(log10(p)) + 1;
+    const std::string n_str = std::to_string(n);
+    const size_t digits = n_str.length();
 
-    std::string s;
+    std::stringstream s;
 
     for (int i = 0; i < 13 - digits; ++i)
-        s.append(" ");
+        s << " ";
 
-    return s;
+    for (size_t i = 1; i <= digits; ++i)
+    {
+        s << n_str[i - 1];
+        if (i < digits && (digits - i) % 3 == 0) s << ".";
+    }
+
+    s << " byte\t|";
+
+    return s.str();
 }
 
 inline char* GetCmdArg(char** begin, char** end, const std::string& arg)

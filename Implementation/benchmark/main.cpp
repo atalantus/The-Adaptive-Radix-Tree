@@ -325,22 +325,15 @@ void RunBenchmark()
             std::cout << "\t";
         }
 #ifdef TRACK_MEMORY
-        std::cout << std::fixed << std::setprecision(0)
-                << "|" << GetIntOffset(min) << min
-                << " Byte\t|" << GetIntOffset(max) << max
-                << " Byte\t|" << GetIntOffset(avg) << avg
-                << " Byte\t|" << GetIntOffset(med) << med
-                << " Byte\t|"
+        std::cout << "|"
+                << FormatMemory(min) << FormatMemory(max)
+                << FormatMemory(avg) << FormatMemory(med)
                 << std::endl;
 #else
-        std::cout << std::fixed << std::setprecision(4)
-                << "|" << GetDoubleOffset(min) << min
-                << "s\t|" << GetDoubleOffset(max) << max
-                << "s\t|" << GetDoubleOffset(avg) << avg
-                << "s\t|" << GetDoubleOffset(med) << med
-                << "s\t|" << GetDoubleOffset(avg_ops) << avg_ops
-                << "\t|" << GetDoubleOffset(med_ops) << med_ops
-                << "\t|\t"
+        std::cout << "|"
+                << FormatTime(min, true) << FormatTime(max, true)
+                << FormatTime(avg, true) << FormatTime(med, true)
+                << FormatTime(avg_ops, false) << FormatTime(med_ops, false)
                 << std::endl;
 #endif
 
