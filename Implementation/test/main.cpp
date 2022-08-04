@@ -16,11 +16,11 @@ const std::vector<std::tuple<std::string, uint8_t, Benchmark*>> kIndexStructures
     {"Sorted List", 1, new SortedListBenchmark()},
     {"ART", 2, new ArtBenchmark()},
     {"ART (EXP)", 2, new ArtExpBenchmark()},
-    //{"Trie", 2, new TrieBenchmark()},
-    //{"M-Trie", 2, new MTrieBenchmark()},
+    {"Trie", 2, new TrieBenchmark()},
+    {"M-Trie", 2, new MTrieBenchmark()},
     //{"H-Trie", 2, new HTrieBenchmark()},
-    //{"Hash-Table", 1, new HashTableBenchmark()},
-    //{"RB-Tree", 2, new RbTreeBenchmark()}
+    {"Hash-Table", 1, new HashTableBenchmark()},
+    {"RB-Tree", 2, new RbTreeBenchmark()}
 };
 
 enum class BenchmarkTypes
