@@ -1,5 +1,7 @@
 #pragma once
 
+#include <sstream>
+#include <iomanip>
 #include <string>
 #include <cmath>
 
@@ -18,7 +20,7 @@ inline std::string FormatTime(const double n, const bool unit)
     return s.str();
 }
 
-inline std::string FormatMemory(const uint32_t n)
+inline std::string FormatMemory(const uint64_t n)
 {
     const std::string n_str = std::to_string(n);
     const size_t digits = n_str.length();

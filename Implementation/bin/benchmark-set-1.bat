@@ -4,9 +4,9 @@
 SET DIR_PATH=../out/build/msvc-x64-release
 
 :: Memory
-START /WAIT /B %DIR_PATH%/Memory-Benchmark.exe -b insert -s 1 -i 200 -d --seed 1 %*
+START /WAIT /B %DIR_PATH%/Memory-Benchmark.exe -b insert -s 1 -i 50 -d --seed 1 %*
 ECHO.
-START /WAIT /B %DIR_PATH%/Memory-Benchmark.exe -b insert -s 1 -i 200 --seed 15000 %*
+START /WAIT /B %DIR_PATH%/Memory-Benchmark.exe -b insert -s 1 -i 50 --seed 15000 %*
 ECHO.
 
 :: Insert

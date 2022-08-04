@@ -62,15 +62,15 @@ bool custom_seed = false;
 bool verbose = false;
 
 size_t seed = -1;
-//#define TRACK_MEMORY
+
 #ifdef TRACK_MEMORY
 
 struct MemoryAllocator
 {
-    uint32_t total_allocated = 0;
-    uint32_t total_freed = 0;
+    uint64_t total_allocated = 0;
+    uint64_t total_freed = 0;
 
-    uint32_t GetMemoryUsage() const
+    uint64_t GetMemoryUsage() const
     {
         return total_allocated - total_freed;
     }
@@ -171,46 +171,50 @@ auto RunBenchmarkIteration()
 
         if (skip.contains(name)) continue;
 
+        const auto t0 = std::chrono::system_clock::now();
+
 #ifdef TRACK_MEMORY
         memory_allocator.Reset();
 #endif
 
         structure->InitializeStructure();
 
-        auto s1 = std::chrono::system_clock::now();
+        auto t1 = std::chrono::system_clock::now();
         structure->Insert(numbers);
 #ifdef TRACK_MEMORY
-        result = memory_allocator.GetMemoryUsage();
+        result = static_cast<double>(memory_allocator.GetMemoryUsage());
 #else
         result = static_cast<double>(std::chrono::duration_cast<
-            std::chrono::nanoseconds>(std::chrono::system_clock::now() - s1).count()) / 1e9;
+            std::chrono::nanoseconds>(std::chrono::system_clock::now() - t1).count()) / 1e9;
 #endif
 
         if (benchmark == BenchmarkTypes::kSearch)
         {
-            s1 = std::chrono::system_clock::now();
+            t1 = std::chrono::system_clock::now();
             structure->Search(search_numbers);
 #ifdef TRACK_MEMORY
-            result = memory_allocator.GetMemoryUsage();
+            result = static_cast<double>(memory_allocator.GetMemoryUsage());
 #else
             result = static_cast<double>(std::chrono::duration_cast<
-                std::chrono::nanoseconds>(std::chrono::system_clock::now() - s1).count()) / 1e9;
+                std::chrono::nanoseconds>(std::chrono::system_clock::now() - t1).count()) / 1e9;
 #endif
         }
         else if (benchmark == BenchmarkTypes::kRangeSearch)
         {
-            s1 = std::chrono::system_clock::now();
+            t1 = std::chrono::system_clock::now();
             structure->RangeSearch(search_numbers);
 #ifdef TRACK_MEMORY
-            result = memory_allocator.GetMemoryUsage();
+            result = static_cast<double>(memory_allocator.GetMemoryUsage());
 #else
             result = static_cast<double>(std::chrono::duration_cast<
-                std::chrono::nanoseconds>(std::chrono::system_clock::now() - s1).count()) / 1e9;
+                std::chrono::nanoseconds>(std::chrono::system_clock::now() - t1).count()) / 1e9;
 #endif
         }
 
         if (verbose)
-            std::cout << "Finished " << name << "." << std::endl;
+            std::cout << "Finished " << name << " in " << std::fixed << std::setprecision(1)
+            << static_cast<double>(std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now() - t0).count()) / 60 
+            << " minutes." << std::endl;
 
         structure_times[i] = result;
         structure->DeleteStructure();
@@ -318,8 +322,6 @@ void RunBenchmark()
         const double med = times.size() % 2 == 1
                                ? times[times.size() / 2]
                                : (times[times.size() / 2] + times[times.size() / 2 + 1]) / 2.0;
-        const double avg_ops = number_elements / avg / 1e6;
-        const double med_ops = number_elements / med / 1e6;
 
         std::cout << name;
         for (uint8_t j = 0; j < spacing; ++j)
@@ -328,10 +330,13 @@ void RunBenchmark()
         }
 #ifdef TRACK_MEMORY
         std::cout << "|"
-                << FormatMemory(min) << FormatMemory(max)
-                << FormatMemory(avg) << FormatMemory(med)
+                << FormatMemory(static_cast<uint64_t>(min)) << FormatMemory(static_cast<uint64_t>(max))
+                << FormatMemory(static_cast<uint64_t>(avg)) << FormatMemory(static_cast<uint64_t>(med))
                 << std::endl;
 #else
+        const double avg_ops = number_elements / avg / 1e6;
+        const double med_ops = number_elements / med / 1e6;
+
         std::cout << "|"
                 << FormatTime(min, true) << FormatTime(max, true)
                 << FormatTime(avg, true) << FormatTime(med, true)
