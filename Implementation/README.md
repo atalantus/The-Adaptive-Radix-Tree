@@ -24,8 +24,15 @@ any key transformations storing keys in Tries even for little-endian architectur
 **ART Implementation without path compression.**
 
 **Notes:**
-- Deriving from an abstract base class and calling Node functions via dynamic dispatch was faster than manual switch case with static_cast (See branch [`dynamic_dispatch_vs_static_cast`](https://github.com/atalantus/The-Adaptive-Radix-Tree/tree/dynamic_dispatch_vs_static_cast) for comparison implementation and [this blog post](https://eli.thegreenplace.net/2013/12/05/the-cost-of-dynamic-virtual-calls-vs-static-crtp-dispatch-in-c) as a great resource on the topic.)
+- Deriving from an abstract base class and calling Node functions via dynamic dispatch was faster than manual switch 
+case with static_cast while introducing a memory overhead of 8 byte for each node instance which is the extra pointer to the node-specific vtable (only one per class so small constant space).
+(See branch [`dynamic_dispatch_vs_static_cast`](https://github.com/atalantus/The-Adaptive-Radix-Tree/tree/dynamic_dispatch_vs_static_cast) for comparison implementation and [this blog post](https://eli.thegreenplace.net/2013/12/05/the-cost-of-dynamic-virtual-calls-vs-static-crtp-dispatch-in-c) as a great resource on the topic in general.)
 - Without path compression all nodes only store a 2 byte header (1 Byte node type, 1 Byte number of non-null children)
+The node sizes are as follows (+ 8 byte vtable pointer):
+  - Node4: 2+4+4*8 = 38 byte (padded to 40 byte)
+  - Node16: 2+16+16*8 = 146 byte (padded to 152 byte)
+  - Node48: 2+256+48*8 = 642 byte (padded to 648 byte)
+  - Node48: 2+256*8 = 2050 byte (padded to 2056 byte)
 - SIMD comparison for Node16 (SSE2 x86-64 specific)
 - Combined value/pointer slots using pointer tagging (64 bit architecture specific)
 

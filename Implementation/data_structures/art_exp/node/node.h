@@ -32,6 +32,8 @@ namespace art_exp
         {
         }
 
+        virtual ~Node() = default;
+
         /**
          * Inserts a new partial key with a pointer to a child node into the node and returns the pointer to it.
          * The returned pointer might point to a new node if the node was already full.
@@ -123,6 +125,8 @@ namespace art_exp
         {
         }
 
+        ~Node4() override = default;
+
         Node* Insert(uint8_t partial_key, Node* child_node) override;
 
         Node*& FindChild(uint8_t partial_key) override;
@@ -152,6 +156,8 @@ namespace art_exp
         Node16() : Node(kNode16), keys_{}, children_{}
         {
         }
+
+        ~Node16() override = default;
 
         Node* Insert(uint8_t partial_key, Node* child_node) override;
 
@@ -188,6 +194,8 @@ namespace art_exp
             std::fill_n(keys_, 256, free_marker_);
         }
 
+        ~Node48() override = default;
+
         Node* Insert(uint8_t partial_key, Node* child_node) override;
 
         Node*& FindChild(uint8_t partial_key) override;
@@ -219,6 +227,8 @@ namespace art_exp
         Node256() : Node(kNode256), children_{}
         {
         }
+
+        ~Node256() override = default;
 
         Node* Insert(uint8_t partial_key, Node* child_node) override;
 
