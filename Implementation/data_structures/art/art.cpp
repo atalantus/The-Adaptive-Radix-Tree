@@ -29,8 +29,23 @@ namespace art
                 if (new_node != node_ref.get())
                 {
                     // node has changed
-                    // -> update parent pointer and delete old child
-                    delete node_ref.get();
+                    // -> delete old child and update parent pointer
+                    switch (node_ref.get()->type_)
+                    {
+                        case kNode4:
+                            delete static_cast<Node4*>(node_ref.get());
+                            break;
+                        case kNode16:
+                            delete static_cast<Node16*>(node_ref.get());
+                            break;
+                        case kNode48:
+                            delete static_cast<Node48*>(node_ref.get());
+                            break;
+                        case kNode256:
+                            delete static_cast<Node256*>(node_ref.get());
+                            break;
+                    }
+
                     node_ref.get() = new_node;
                 }
 

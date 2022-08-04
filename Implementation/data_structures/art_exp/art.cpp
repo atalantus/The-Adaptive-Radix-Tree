@@ -29,7 +29,7 @@ namespace art_exp
                 if (new_node != node_ref.get())
                 {
                     // node has changed
-                    // -> update parent pointer and delete old child
+                    // -> delete old child and update parent pointer
                     delete node_ref.get();
                     node_ref.get() = new_node;
                 }

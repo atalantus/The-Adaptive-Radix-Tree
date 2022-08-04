@@ -104,7 +104,7 @@ namespace art
          */
         static int CmpLazyExpansion(Node* node_ptr, uint32_t key);
 
-    protected:
+    public:
         NodeType type_;
         uint8_t child_count_;
     };
