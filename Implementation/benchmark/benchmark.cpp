@@ -261,6 +261,8 @@ void RunBenchmark()
     {
         if (verbose)
             std::cout << "\nRunning iteration " << (i + 1) << "/" << iterations << " with seed " << seed << "..." << std::endl;
+        else
+            std::cout << '\r' << "Running iteration " << (i + 1) << "/" << iterations << " with seed " << seed << "..." << std::flush;
 
         auto times = RunBenchmarkIteration();
 
