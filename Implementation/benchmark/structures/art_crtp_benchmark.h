@@ -1,19 +1,19 @@
 #pragma once
 
-#include "../../data_structures/art_exp/art.h"
+#include "../../data_structures/art_crtp/art.h"
 #include "../benchmark.h"
 
-class ArtExpBenchmark : public Benchmark
+class ArtCRTPBenchmark : public Benchmark
 {
 public:
-    ~ArtExpBenchmark() override
+    ~ArtCRTPBenchmark() override
     {
         delete art_;
     }
 
     void InitializeStructure() override
     {
-        art_ = new art_exp::Art();
+        art_ = new art_crtp::Art();
     }
 
     void DeleteStructure() override
@@ -41,5 +41,5 @@ public:
     }
 
 private:
-    art_exp::Art* art_ = nullptr;
+    art_crtp::Art* art_ = nullptr;
 };

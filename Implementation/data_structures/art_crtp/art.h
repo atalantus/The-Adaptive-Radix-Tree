@@ -4,7 +4,7 @@
 #include <vector>
 #include "node/node.h"
 
-namespace art_exp
+namespace art_crtp
 {
     class Art
     {

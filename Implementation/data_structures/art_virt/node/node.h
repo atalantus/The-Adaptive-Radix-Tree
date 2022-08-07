@@ -7,7 +7,7 @@
 #include "node.h"
 #include "../../../util.h"
 
-namespace art_exp
+namespace art_virt
 {
     class Node;
 

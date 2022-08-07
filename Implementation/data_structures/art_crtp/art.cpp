@@ -2,7 +2,7 @@
 
 #include <functional>
 
-namespace art_exp
+namespace art_crtp
 {
     void Art::Insert(const uint32_t value)
     {
