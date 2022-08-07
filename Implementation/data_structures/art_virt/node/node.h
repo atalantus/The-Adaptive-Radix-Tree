@@ -14,21 +14,13 @@ namespace art_virt
     // null pointer used to indicate non-existing node
     extern Node* null_node;
 
-    enum NodeType : uint8_t
-    {
-        kNode4,
-        kNode16,
-        kNode48,
-        kNode256
-    };
-
     /**
      * Abstract base class for different nodes.
      */
     class Node
     {
     public:
-        explicit Node(const NodeType type) : type_{type}, child_count_{0}
+        explicit Node() : child_count_{0}
         {
         }
 
@@ -110,7 +102,6 @@ namespace art_virt
         static int CmpLazyExpansion(Node* node_ptr, uint32_t key);
 
     protected:
-        NodeType type_;
         uint8_t child_count_;
     };
 
@@ -121,7 +112,7 @@ namespace art_virt
     class Node4 : public Node
     {
     public:
-        Node4() : Node(kNode4), keys_{}, children_{}
+        Node4() : Node(), keys_{}, children_{}
         {
         }
 
@@ -153,7 +144,7 @@ namespace art_virt
     class Node16 : public Node
     {
     public:
-        Node16() : Node(kNode16), keys_{}, children_{}
+        Node16() : Node(), keys_{}, children_{}
         {
         }
 
@@ -189,7 +180,7 @@ namespace art_virt
         static constexpr uint8_t free_marker_ = 48;
 
     public:
-        Node48() : Node(kNode48), keys_{}, children_{}
+        Node48() : Node(), keys_{}, children_{}
         {
             std::fill_n(keys_, 256, free_marker_);
         }
@@ -224,7 +215,7 @@ namespace art_virt
     class Node256 : public Node
     {
     public:
-        Node256() : Node(kNode256), children_{}
+        Node256() : Node(), children_{}
         {
         }
 

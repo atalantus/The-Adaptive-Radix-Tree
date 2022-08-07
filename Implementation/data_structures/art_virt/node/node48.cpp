@@ -192,7 +192,7 @@ namespace art_virt
         for (int i = 0; i < depth; ++i)
             std::cout << "-- ";
 
-        std::cout << std::hex << std::uppercase << this << std::dec << " tp:" << +type_ << " cc:" << +child_count_ <<
+        std::cout << std::hex << std::uppercase << this << std::dec << " tp:" << 2 << " cc:" << +child_count_ <<
             " keys{";
         for (int i = 0; i < 256; ++i)
         {

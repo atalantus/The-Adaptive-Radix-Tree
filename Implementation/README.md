@@ -28,7 +28,7 @@ any key transformations storing keys in Tries even for little-endian architectur
 case with static_cast while introducing a memory overhead of 8 byte for each node instance which is the extra pointer to the node-specific vtable (only one per class so small constant space).
 (See branch [`dynamic_dispatch_vs_static_cast`](https://github.com/atalantus/The-Adaptive-Radix-Tree/tree/dynamic_dispatch_vs_static_cast) for comparison implementation and [this blog post](https://eli.thegreenplace.net/2013/12/05/the-cost-of-dynamic-virtual-calls-vs-static-crtp-dispatch-in-c) as a great resource on the topic in general.)
 - Without path compression all nodes only store a 2 byte header (1 Byte node type, 1 Byte number of non-null children)
-The node sizes are as follows (+ 8 byte vtable pointer):
+The node sizes are as follows (+ 8 byte vtable pointer, but since we don't need to store the node type explicitly anymore we have a total overhead of 7 byte):
   - Node4: 2+4+4*8 = 38 byte (padded to 40 byte)
   - Node16: 2+16+16*8 = 146 byte (padded to 152 byte)
   - Node48: 2+256+48*8 = 642 byte (padded to 648 byte)
