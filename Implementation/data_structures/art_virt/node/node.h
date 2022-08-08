@@ -14,6 +14,9 @@ namespace art_virt
     // null pointer used to indicate non-existing node
     extern Node* null_node;
 
+// TODO: Check performance of packing?
+#pragma pack (push, 4)
+
     /**
      * Abstract base class for different nodes.
      */
@@ -109,7 +112,7 @@ namespace art_virt
     //                      Specific Nodes
     // ================================================================
 
-    class Node4 : public Node
+    class Node4 final : public Node
     {
     public:
         Node4() : Node(), keys_{}, children_{}
@@ -141,7 +144,7 @@ namespace art_virt
         Node* children_[4];
     };
 
-    class Node16 : public Node
+    class Node16 final : public Node
     {
     public:
         Node16() : Node(), keys_{}, children_{}
@@ -175,7 +178,7 @@ namespace art_virt
         friend class Node4;
     };
 
-    class Node48 : public Node
+    class Node48 final : public Node
     {
         static constexpr uint8_t free_marker_ = 48;
 
@@ -212,7 +215,7 @@ namespace art_virt
         friend class Node16;
     };
 
-    class Node256 : public Node
+    class Node256 final : public Node
     {
     public:
         Node256() : Node(), children_{}
@@ -244,4 +247,6 @@ namespace art_virt
 
         friend class Node48;
     };
+
+#pragma pack(pop)
 }
