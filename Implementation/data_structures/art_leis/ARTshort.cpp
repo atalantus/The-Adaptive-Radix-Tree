@@ -10,9 +10,10 @@
 #include <emmintrin.h> // x86 SSE intrinsics
 #include <assert.h>
 #include <stdio.h>
-#include <sys/time.h>
+#include <ctime>
 #include <set>
 #include <algorithm>
+#include "../../util.h"
 
 // Constants for the node types
 static const int8_t NodeType4=0;
@@ -91,7 +92,7 @@ uint32_t* leaves;
 inline void loadKey(uintptr_t tid,uint8_t key[]) {
    // Store the key of the tuple into the key vector
    // Implementation is database specific
-   reinterpret_cast<uint32_t*>(key)[0]=__builtin_bswap32(leaves[tid]);
+   //reinterpret_cast<uint32_t*>(key)[0]=__builtin_bswap32(leaves[tid]);
 }
 
 Node* nullNode=NULL;
@@ -111,7 +112,7 @@ inline Node** findChildPtr(Node* n,uint8_t keyByte) {
          __m128i cmp=_mm_cmpeq_epi8(_mm_set1_epi8(flipSign(keyByte)),_mm_loadu_si128(reinterpret_cast<__m128i*>(node->key)));
          uint16_t bitfield=_mm_movemask_epi8(cmp)&(0xFFFF>>(16-node->count));
          if (bitfield)
-            return &node->child[__builtin_ctz(bitfield)]; else
+            return &node->child[__ctz(bitfield)]; else
             return &nullNode;
       }
       case NodeType48: {
@@ -125,20 +126,20 @@ inline Node** findChildPtr(Node* n,uint8_t keyByte) {
          return &(node->child[keyByte]);
       }
    }
-   __builtin_unreachable();
+   __unreachable();
 }
 
-bool leafMatches(Node* leaf,uint8_t key[],unsigned keyLength,unsigned depth,unsigned maxKeyLength) {
+bool leafMatches(Node* leaf,uint8_t key[],unsigned depth) {
    // Check if the key of the leaf is equal to the searched key
-   uint8_t leafKey[maxKeyLength];
+   uint8_t leafKey[4];
    loadKey(getLeafValue(leaf),leafKey);
-   for (unsigned i=depth;i<keyLength;i++)
+   for (unsigned i=depth;i<4;i++)
       if (leafKey[i]!=key[i])
          return false;
    return true;
 }
 
-inline Node* lookup(Node* n,uint8_t* key,unsigned keyLength,unsigned maxKeyLength,unsigned depth=0) {
+inline Node* lookup(Node* n,uint8_t* key,unsigned depth=0) {
    // Lookup the key
    if (n==NULL)
       return NULL;
@@ -147,7 +148,7 @@ inline Node* lookup(Node* n,uint8_t* key,unsigned keyLength,unsigned maxKeyLengt
       next:
 
       if (isLeaf(n)) {
-         if (depth==keyLength||leafMatches(n,key,keyLength,depth,maxKeyLength))
+         if (depth==4||leafMatches(n,key,depth))
             return n;
          return NULL;
       }
@@ -185,7 +186,7 @@ inline Node* lookup(Node* n,uint8_t* key,unsigned keyLength,unsigned maxKeyLengt
             __m128i cmp=_mm_cmpeq_epi8(_mm_set1_epi8(flipSign(keyByte)),_mm_loadu_si128(reinterpret_cast<__m128i*>(node->key)));
             unsigned bitfield=_mm_movemask_epi8(cmp)& ((1<<node->count)-1);
             if (bitfield) {
-               n=node->child[__builtin_ctz(bitfield)];
+               n=node->child[__ctz(bitfield)];
                continue;
             } else
                return NULL;
@@ -207,7 +208,7 @@ inline Node* lookup(Node* n,uint8_t* key,unsigned keyLength,unsigned maxKeyLengt
                return NULL;
          }
       }
-      __builtin_unreachable();
+      __unreachable();
    }
 }
 
@@ -217,7 +218,7 @@ void insertNode16(Node16* node,Node** nodeRef,uint8_t keyByte,Node* child);
 void insertNode48(Node48* node,Node** nodeRef,uint8_t keyByte,Node* child);
 void insertNode256(Node256* node,Node** nodeRef,uint8_t keyByte,Node* child);
 
-void insert(Node* node,Node** nodeRef,uint8_t key[],uintptr_t value,unsigned maxKeyLength,unsigned depth=0) {
+void insert(Node* node,Node** nodeRef,uint8_t key[],uintptr_t value,unsigned depth=0) {
    // Insert the leaf value into the tree
 
    if (node==NULL) {
@@ -227,7 +228,7 @@ void insert(Node* node,Node** nodeRef,uint8_t key[],uintptr_t value,unsigned max
 
    if (isLeaf(node)) {
       // Replace leaf with Node4 and store both leafs in it
-      uint8_t existingKey[maxKeyLength];
+      uint8_t existingKey[4];
       loadKey(getLeafValue(node),existingKey);
 
       //assert(memcmp(key,existingKey,maxKeyLength)!=0);
@@ -237,7 +238,7 @@ void insert(Node* node,Node** nodeRef,uint8_t key[],uintptr_t value,unsigned max
       insertNode4(newNode,nodeRef,existingKey[depth],node);
 
       if (existingKey[depth]==key[depth])
-         insert(node,&newNode->child[0],key,value,maxKeyLength,depth+1); else
+         insert(node,&newNode->child[0],key,value,depth+1); else
          insertNode4(newNode,nodeRef,key[depth],makeLeaf(value));
 
       return;
@@ -246,7 +247,7 @@ void insert(Node* node,Node** nodeRef,uint8_t key[],uintptr_t value,unsigned max
    // Recurse
    Node** child=findChildPtr(node,key[depth]);
    if (*child) {
-      insert(*child,child,key,value,maxKeyLength,depth+1);
+      insert(*child,child,key,value,depth+1);
       return;
    }
 
@@ -291,7 +292,7 @@ void insertNode16(Node16* node,Node** nodeRef,uint8_t keyByte,Node* child) {
       uint8_t keyByteFlipped=flipSign(keyByte);
       __m128i cmp=_mm_cmplt_epi8(_mm_set1_epi8(keyByteFlipped),_mm_loadu_si128(reinterpret_cast<__m128i*>(node->key)));
       uint16_t bitfield=_mm_movemask_epi8(cmp)&(0xFFFF>>(16-node->count));
-      unsigned pos=bitfield?__builtin_ctz(bitfield):node->count;
+      unsigned pos=bitfield?__ctz(bitfield):node->count;
       memmove(node->key+pos+1,node->key+pos,node->count-pos);
       memmove(node->child+pos+1,node->child+pos,(node->count-pos)*sizeof(uintptr_t));
       node->key[pos]=keyByteFlipped;
@@ -339,6 +340,7 @@ void insertNode256(Node256* node,Node** nodeRef,uint8_t keyByte,Node* child) {
    node->child[keyByte]=child;
 }
 
+/*
 static inline double gettime(void) {
   struct timeval now_tv;
   gettimeofday (&now_tv,NULL);
@@ -398,3 +400,4 @@ int main(int argc,char** argv) {
 
    return 0;
 }
+*/

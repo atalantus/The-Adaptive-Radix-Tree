@@ -32,6 +32,7 @@ constexpr char kHelpMsg[] = "This program benchmarks different indexing structur
 const std::vector<std::tuple<std::string, uint8_t, Benchmark*>> kIndexStructures{
         {"ART", 2, new ArtBenchmark()},
         {"ART (EXP)", 1, new ArtExpBenchmark()},
+        {"ART (LEIS)", 1, new ArtLeisBenchmark()},
         {"Trie", 2, new TrieBenchmark()},
         {"M-Trie", 2, new MTrieBenchmark()},
         //{"H-Trie", 2, new HTrieBenchmark()},
