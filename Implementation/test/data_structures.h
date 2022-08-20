@@ -2,6 +2,7 @@
 
 #include "structures/art_benchmark.h"
 #include "structures/art_exp_benchmark.h"
+#include "structures/art_leis_benchmark.h"
 #include "structures/trie_benchmark.h"
 #include "structures/mtrie_benchmark.h"
 #include "structures/htrie_benchmark.h"
