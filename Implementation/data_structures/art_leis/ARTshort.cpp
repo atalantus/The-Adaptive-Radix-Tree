@@ -96,7 +96,7 @@ inline void loadKey(uintptr_t tid,uint8_t key[]) {
    // Implementation is database specific
    //reinterpret_cast<uint32_t*>(key)[0]=__builtin_bswap32(leaves[tid]);
 
-    // key is directly stored in lower 32 bits
+    // modified: key is directly stored in lower 32 bits
     key[0] = tid & 0xFF;
     key[1] = (tid & 0xFF00) >> 8;
     key[2] = (tid & 0xFF0000) >> 16;
