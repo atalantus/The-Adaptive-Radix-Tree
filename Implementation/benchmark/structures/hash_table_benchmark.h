@@ -34,7 +34,7 @@ public:
             hash_table_->Find(numbers[i]);
     }
 
-    void RangeSearch(const std::vector<uint32_t>& numbers) override
+    void RangeSearch(const std::vector<uint32_t>&) override
     {
         // Hash-Table doesn't support range queries
     }

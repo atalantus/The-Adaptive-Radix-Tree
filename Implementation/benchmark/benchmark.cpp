@@ -31,14 +31,15 @@ constexpr char kHelpMsg[] = "This program benchmarks different indexing structur
  */
 const std::vector<std::tuple<std::string, uint8_t, Benchmark*>> kIndexStructures{
         {"ART", 2, new ArtBenchmark()},
-        {"ART (Exp)", 1, new ArtExpBenchmark()},
+        {"ART (Virt)", 1, new ArtVirtBenchmark()},
+        {"ART (CRTP)", 1, new ArtCRTPBenchmark()},
         {"ART (Leis)", 1, new ArtLeisBenchmark()},
-        {"Trie", 2, new TrieBenchmark()},
-        {"M-Trie", 2, new MTrieBenchmark()},
+        //{"Trie", 2, new TrieBenchmark()},
+        //{"M-Trie", 2, new MTrieBenchmark()},
         //{"H-Trie", 2, new HTrieBenchmark()},
-        {"Sorted List", 1, new SortedListBenchmark()},
-        {"Hash-Table", 1, new HashTableBenchmark()},
-        {"RB-Tree", 2, new RbTreeBenchmark()}
+        //{"Sorted List", 1, new SortedListBenchmark()},
+        //{"Hash-Table", 1, new HashTableBenchmark()},
+        //{"RB-Tree", 2, new RbTreeBenchmark()}
 };
 
 constexpr uint32_t kDefaultIterations{3};
@@ -167,8 +168,12 @@ auto RunBenchmarkIteration()
     for (uint32_t i = 0; i < kIndexStructures.size(); ++i)
     {
         const auto& [name, _, structure] = kIndexStructures[i];
-        // result used for this benchmark (runtime in seconds or memory used in bytes)
-        double result = 0.0;
+
+#ifdef TRACK_MEMORY
+        double memory_used;
+#else
+        double time_spent;
+#endif
 
         if (skip.contains(name)) continue;
 
@@ -183,9 +188,9 @@ auto RunBenchmarkIteration()
         auto t1 = std::chrono::system_clock::now();
         structure->Insert(numbers);
 #ifdef TRACK_MEMORY
-        result = static_cast<double>(memory_allocator.GetMemoryUsage());
+        memory_used = static_cast<double>(memory_allocator.GetMemoryUsage());
 #else
-        result = static_cast<double>(std::chrono::duration_cast<
+        time_spent = static_cast<double>(std::chrono::duration_cast<
             std::chrono::nanoseconds>(std::chrono::system_clock::now() - t1).count()) / 1e9;
 #endif
 
@@ -194,9 +199,9 @@ auto RunBenchmarkIteration()
             t1 = std::chrono::system_clock::now();
             structure->Search(search_numbers);
 #ifdef TRACK_MEMORY
-            result = static_cast<double>(memory_allocator.GetMemoryUsage());
+            memory_used = static_cast<double>(memory_allocator.GetMemoryUsage());
 #else
-            result = static_cast<double>(std::chrono::duration_cast<
+            time_spent = static_cast<double>(std::chrono::duration_cast<
                 std::chrono::nanoseconds>(std::chrono::system_clock::now() - t1).count()) / 1e9;
 #endif
         }
@@ -205,19 +210,25 @@ auto RunBenchmarkIteration()
             t1 = std::chrono::system_clock::now();
             structure->RangeSearch(search_numbers);
 #ifdef TRACK_MEMORY
-            result = static_cast<double>(memory_allocator.GetMemoryUsage());
+            memory_used = static_cast<double>(memory_allocator.GetMemoryUsage());
 #else
-            result = static_cast<double>(std::chrono::duration_cast<
+            time_spent = static_cast<double>(std::chrono::duration_cast<
                 std::chrono::nanoseconds>(std::chrono::system_clock::now() - t1).count()) / 1e9;
 #endif
         }
 
         if (verbose)
             std::cout << "Finished " << name << " in " << std::fixed << std::setprecision(1)
-            << static_cast<double>(std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now() - t0).count()) / 60 
-            << " minutes." << std::endl;
+                    << static_cast<double>(std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now() - t0).count())
+                    / 60 << " minutes." << std::endl;
 
-        structure_times[i] = result;
+#ifdef TRACK_MEMORY
+        // subtract size of pointer to actual structure in benchmark object
+        structure_times[i] = memory_used - 8;
+#else
+        structure_times[i] = time_spent;
+#endif
+
         structure->DeleteStructure();
     }
 
@@ -250,7 +261,7 @@ void RunBenchmark()
             number_elements = 16'000'000;
             break;
         case 3:
-            number_elements = 250;
+            number_elements = 1;
     }
 
     const auto t1 = std::chrono::system_clock::now();
@@ -379,6 +390,11 @@ int main(int argc, char* argv[])
 
     const std::string benchmark_str{benchmark_arg};
     const std::string size_str{size_arg};
+
+    /*
+    const std::string benchmark_str{"insert"};
+    const std::string size_str{"3"};
+    */
 
     if (benchmark_str == "insert")
     {
@@ -509,6 +525,12 @@ int main(int argc, char* argv[])
 
     dense = CmdArgExists(argv, argv + argc, "-d");
     verbose = CmdArgExists(argv, argv + argc, "-v");
+
+    /*
+    dense = false;
+    verbose = true;
+    iterations = 1;
+    */
 
     /**
      * Run Benchmark.

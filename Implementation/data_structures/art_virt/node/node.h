@@ -7,20 +7,15 @@
 #include "node.h"
 #include "../../../util.h"
 
-namespace art_exp
+namespace art_virt
 {
     class Node;
 
     // null pointer used to indicate non-existing node
     extern Node* null_node;
 
-    enum NodeType : uint8_t
-    {
-        kNode4,
-        kNode16,
-        kNode48,
-        kNode256
-    };
+// TODO: Check performance of packing?
+#pragma pack (push, 4)
 
     /**
      * Abstract base class for different nodes.
@@ -28,7 +23,7 @@ namespace art_exp
     class Node
     {
     public:
-        explicit Node(const NodeType type) : type_{type}, child_count_{0}
+        explicit Node() : child_count_{0}
         {
         }
 
@@ -110,7 +105,6 @@ namespace art_exp
         static int CmpLazyExpansion(Node* node_ptr, uint32_t key);
 
     protected:
-        NodeType type_;
         uint8_t child_count_;
     };
 
@@ -118,10 +112,10 @@ namespace art_exp
     //                      Specific Nodes
     // ================================================================
 
-    class Node4 : public Node
+    class Node4 final : public Node
     {
     public:
-        Node4() : Node(kNode4), keys_{}, children_{}
+        Node4() : Node(), keys_{}, children_{}
         {
         }
 
@@ -150,10 +144,10 @@ namespace art_exp
         Node* children_[4];
     };
 
-    class Node16 : public Node
+    class Node16 final : public Node
     {
     public:
-        Node16() : Node(kNode16), keys_{}, children_{}
+        Node16() : Node(), keys_{}, children_{}
         {
         }
 
@@ -184,12 +178,12 @@ namespace art_exp
         friend class Node4;
     };
 
-    class Node48 : public Node
+    class Node48 final : public Node
     {
         static constexpr uint8_t free_marker_ = 48;
 
     public:
-        Node48() : Node(kNode48), keys_{}, children_{}
+        Node48() : Node(), keys_{}, children_{}
         {
             std::fill_n(keys_, 256, free_marker_);
         }
@@ -221,10 +215,10 @@ namespace art_exp
         friend class Node16;
     };
 
-    class Node256 : public Node
+    class Node256 final : public Node
     {
     public:
-        Node256() : Node(kNode256), children_{}
+        Node256() : Node(), children_{}
         {
         }
 
@@ -253,4 +247,6 @@ namespace art_exp
 
         friend class Node48;
     };
+
+#pragma pack(pop)
 }

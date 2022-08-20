@@ -1,6 +1,6 @@
 #include "node.h"
 
-namespace art_exp
+namespace art_crtp
 {
     Node* Node48::Insert(const uint8_t partial_key, Node* child_node)
     {

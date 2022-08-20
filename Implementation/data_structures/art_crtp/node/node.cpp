@@ -1,6 +1,6 @@
 #include "node.h"
 
-namespace art_exp
+namespace art_crtp
 {
     Node* null_node = nullptr;
 

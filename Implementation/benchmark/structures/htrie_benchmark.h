@@ -34,7 +34,7 @@ public:
             htrie_->Find(numbers[i]);
     }
 
-    void RangeSearch(const std::vector<uint32_t>& numbers) override
+    void RangeSearch(const std::vector<uint32_t>&) override
     {
         // H-Trie doesn't support range queries
     }

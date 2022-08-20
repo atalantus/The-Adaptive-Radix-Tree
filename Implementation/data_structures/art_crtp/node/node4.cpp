@@ -2,7 +2,7 @@
 
 #include <cstring>
 
-namespace art_exp
+namespace art_crtp
 {
     Node* Node4::Insert(const uint8_t partial_key, Node* child_node)
     {
