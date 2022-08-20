@@ -20,8 +20,8 @@ constexpr char kHelpMsg[] = "This program benchmarks different indexing structur
         "\t-s <1/2/3>\t\t\t: Specifies the benchmark size. Options are 1 with 65 thousand integers, 2 with 16 million integers and 3 with 256 million integers.\n"
         "\t-i <number>\t\t\t: Specifies the number of iterations the benchmark is run. Default value is %u. Should be an integer between 1 and 10000 (inclusive).\n"
         "\t-d\t\t\t\t: Use a dense (from 0 up to number of elements - 1) set of integers as keys. Otherwise a sparse (uniform random 32 bit integer) set will be used.\n"
-        "\t--only <structure_list>\t\t\t: Specifies index structures to be used during this benchmark. Given as comma separated list of names (ART, Trie, M-Trie, H-Trie, Sorted List, Hash-Table, RB-Tree). If not set all index structures will be used.\n"
-        "\t--skip <structure_list>\t\t\t: Specifies index structures to be skipped during this benchmark. Given as comma separated list of names (ART, Trie, M-Trie, H-Trie, Sorted List, Hash-Table, RB-Tree).\n"
+        "\t--only <structure_list>\t\t\t: Specifies index structures to be used during this benchmark. Given as comma separated list of names (ART, ART (Exp), ART (Leis), Trie, M-Trie, H-Trie, Sorted List, Hash-Table, RB-Tree). If not set all index structures will be used.\n"
+        "\t--skip <structure_list>\t\t\t: Specifies index structures to be skipped during this benchmark. Given as comma separated list of names (ART, ART (Exp), ART (Leis), Trie, M-Trie, H-Trie, Sorted List, Hash-Table, RB-Tree).\n"
         "\t--seed <seed_number>\t\t\t: Use deterministic values by starting first benchmark iteration with a given seed and all subsequent iterations with increasing seeds. If not set all iterations will use a random seed.\n"
         "\t-v\t\t\t\t: Enable verbose logging.\n";
 
@@ -31,8 +31,8 @@ constexpr char kHelpMsg[] = "This program benchmarks different indexing structur
  */
 const std::vector<std::tuple<std::string, uint8_t, Benchmark*>> kIndexStructures{
         {"ART", 2, new ArtBenchmark()},
-        {"ART (EXP)", 1, new ArtExpBenchmark()},
-        {"ART (LEIS)", 1, new ArtLeisBenchmark()},
+        {"ART (Exp)", 1, new ArtExpBenchmark()},
+        {"ART (Leis)", 1, new ArtLeisBenchmark()},
         {"Trie", 2, new TrieBenchmark()},
         {"M-Trie", 2, new MTrieBenchmark()},
         //{"H-Trie", 2, new HTrieBenchmark()},
@@ -393,6 +393,7 @@ int main(int argc, char* argv[])
         benchmark = BenchmarkTypes::kRangeSearch;
 
         // skip structures not supporting range queries
+        skip.insert("ART (Leis)");
         skip.insert("H-Trie");
         skip.insert("Hash-Table");
     }

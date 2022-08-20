@@ -2,6 +2,8 @@
   Adaptive Radix Tree (without path compression)
   Viktor Leis, 2012
   leis@in.tum.de
+
+  slightly modified to better fit this project
  */
 
 #include <stdlib.h>    // malloc, free
@@ -93,6 +95,12 @@ inline void loadKey(uintptr_t tid,uint8_t key[]) {
    // Store the key of the tuple into the key vector
    // Implementation is database specific
    //reinterpret_cast<uint32_t*>(key)[0]=__builtin_bswap32(leaves[tid]);
+
+    // key is directly stored in lower 32 bits
+    key[0] = tid & 0xFF;
+    key[1] = (tid & 0xFF00) >> 8;
+    key[2] = (tid & 0xFF0000) >> 16;
+    key[3] = (tid & 0xFF000000) >> 24;
 }
 
 Node* nullNode=NULL;

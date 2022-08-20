@@ -15,7 +15,8 @@ const std::vector<std::tuple<std::string, uint8_t, Benchmark*>> kIndexStructures
     // Do Sorted List first as it's results will be used to test the other structures
     {"Sorted List", 1, new SortedListBenchmark()},
     {"ART", 2, new ArtBenchmark()},
-    {"ART (EXP)", 2, new ArtExpBenchmark()},
+    {"ART (Exp)", 1, new ArtExpBenchmark()},
+    {"ART (Leis)", 1, new ArtLeisBenchmark()},
     {"Trie", 2, new TrieBenchmark()},
     {"M-Trie", 2, new MTrieBenchmark()},
     //{"H-Trie", 2, new HTrieBenchmark()},
@@ -213,6 +214,7 @@ int main(int argc, char* argv[])
      * Run RangeSearch Tests.
      */
     benchmark = BenchmarkTypes::kRangeSearch;
+    skip.insert("ART (Leis)");
     skip.insert("H-Trie");
     skip.insert("Hash-Table");
 
