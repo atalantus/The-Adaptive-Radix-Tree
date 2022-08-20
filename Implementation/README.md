@@ -38,6 +38,17 @@ The node sizes are as follows (+ 8 byte vtable pointer, but since we don't need 
 - SIMD comparison for Node16 (SSE2 x86-64 specific)
 - Combined value/pointer slots using pointer tagging (64 bit architecture specific)
 
+#### ART (Leis)
+**Slightly modified version of the [source implementation](https://db.in.tum.de/~leis/index/ART.tgz) by [Leis et al.](https://db.in.tum.de/~leis/papers/ART.pdf).
+
+Note that for comparison the `ARTshort.cpp` without path compression is used.
+
+The original implementation was slightly modified to be usable in this benchmark:
+- Allow keys to be directly stored using pointer tagging
+- Allow for inserting the same key multiple times
+- Modify some intrinsics to also be compileable on MSVC
+- Set `maxKeyLength` and actual `keyLength` to compile time constant 4
+
 #### Trie
 **A 256-way trie storing children in a 256 sized child pointer array.**
 

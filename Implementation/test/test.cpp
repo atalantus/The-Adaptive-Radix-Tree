@@ -17,6 +17,7 @@ const std::vector<std::tuple<std::string, uint8_t, Benchmark*>> kIndexStructures
     {"ART", 2, new ArtBenchmark()},
     {"ART (Virt)", 1, new ArtVirtBenchmark()},
     {"ART (CRTP)", 1, new ArtCRTPBenchmark()},
+    {"ART (Leis)", 1, new ArtLeisBenchmark()},
     //{"Trie", 2, new TrieBenchmark()},
     //{"M-Trie", 2, new MTrieBenchmark()},
     //{"H-Trie", 2, new HTrieBenchmark()},
@@ -214,6 +215,7 @@ int main(int argc, char* argv[])
      * Run RangeSearch Tests.
      */
     benchmark = BenchmarkTypes::kRangeSearch;
+    skip.insert("ART (Leis)");
     skip.insert("H-Trie");
     skip.insert("Hash-Table");
 
