@@ -235,6 +235,9 @@ void insert(Node* node,Node** nodeRef,uint8_t key[],uintptr_t value,unsigned dep
    }
 
    if (isLeaf(node)) {
+       // modified: first check if key is already present
+       if (leafMatches(node, key, depth)) return;
+
       // Replace leaf with Node4 and store both leafs in it
       uint8_t existingKey[4];
       loadKey(getLeafValue(node),existingKey);
