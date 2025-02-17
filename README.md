@@ -1,2 +1,2 @@
 # The Adaptive Radix Tree (ART)
-The Adaptive Radix Tree: ARTful Indexing for Main-Memory Databases [\[Paper\]](./Paper/art.pdf)
+State of the ART: The Adaptive Radix Tree Index for Main-Memory Databases [\[Paper\]](./Paper/art.pdf)
